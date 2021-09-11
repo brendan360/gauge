@@ -351,6 +351,56 @@ def highlightDisplay(TEXT,hightext):
 
 #non gauge items go here such as reset reboot ip address
 #DTC read and reset also setup in here
+def reboot_pi():
+    drawimage=setupDisplay()
+    image=drawimage[0]
+    draw=drawimage[1]
+    draw.text((30,85),"REBOOT", font=font, fill=255)
+    draw.text((20,150),"Press button to cancel",font=font2, fill="WHITE")
+    tempcount=0
+    draw.text((60,30),"..........", font=font, fill="WHITE")
+    im_r=image.rotate(rotation)
+    disp.ShowImage(im_r)
+    time.sleep(5) 
+    
+    while tempcount <=10:
+        buttonState=GPIO.input(SW)
+        if buttonState == False:
+            menuloop(4,topmenu)
+        diedots="."*tempcount
+        draw.text((60,30),diedots, font=font, fill=255)
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        time.sleep(1)
+        tempcount+=1
+
+    os.system('sudo reboot')
+
+def reinitialise():
+    resetComm()
+    firstBoot()
+
+def resetComm():
+    os.system('sudo rfcomm release all')
+    time.sleep(5)
+    os.system('sudo rfcomm bind rfcomm0 00:04:3E:4A:26:B0')
+    
+def getIpAddress():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+
+def ipaddress():
+    IP=getIpAddress()
+    highlightDisplay(IP,"Car Guage")
+    time.sleep(5)
+    menuloop(0,configmenu)
 
 
 #********************
@@ -362,6 +412,33 @@ def highlightDisplay(TEXT,hightext):
 ##################### 
 #********************
 #********************
+def firstBoot():
+    disp.Init()
+    bootcount=0
+    while bootcount <7 :
+        bootdots="."*bootcount
+        bootext="Booting"+bootdots
+        highlightDisplay(bootext,"")
+        time.sleep(.3)
+        bootcount+=1
+    image=Image.open('/home/pi/wrx_gauge/logo.jpg')
+    im_r=image.rotate(rotation)
+    disp.ShowImage(im_r)
+    time.sleep(3)
+    os.system('sudo rfcomm bind rfcomm0 '+btmac)
+    connectBT()
+
+def connectBT():
+    print("connecting BT")
+
+
+def connectADC():
+    print("connecting ADC")
+
+
+def connectOBD():
+    print("connecting obd")
+
 
 #boot up 
 #start obd threads
@@ -374,8 +451,7 @@ def cleanupMenu():
     for key, value in gaugeItems.items():
         if value[2] == 0:
             inactiveItems.append(key)
-
-
+    
     for x in inactiveItems:
         del gaugeItems[x]
     
@@ -383,19 +459,15 @@ def cleanupMenu():
         gaugemenu.insert(0,value[3])
         gaugemenu.insert(1,key)
 
-def randomShit():
-    while True:
-        print("Thread2")
 
 
+firstBoot()
 
-disp.Init()
 highlightDisplay("test","test")
 cleanupMenu()
 
 print("starting thread1")
 try:
-    threading.Thread(target=randomShit).start()
     threading.Thread(target=menuloop, args=(0,topmenu)).start()
 except:
     print("failed threads")
