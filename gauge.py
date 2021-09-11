@@ -91,10 +91,10 @@ bus=0
 device = 0
 
 #Display
+SW=26
 disp = LCD_1inch28.LCD_1inch28()
 rotation=0
 GPIO.setup(SW, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(SW1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setmode(GPIO.BCM)
 #--------------------------#
 
@@ -140,9 +140,9 @@ gaugeItems={"FUEL_STATUS":["03","OBD",0],
             "SPEED":["0D","OBD",0],
             "TIMING_ADVANCE":["0E","OBD",0],
             "INTAKE_TEMP":["0F","OBD",0],
-            "MAF":["10","OBD",0]
+            "MAF":["10","OBD",0],
             "THROTTLE_POS":["11","OBD",0],
-            "RUN_TIME":["1F","OBD",0]
+            "RUN_TIME":["1F","OBD",0],
             "FUEL_LEVEL":["2F","OBD",0],
             "BAROMETRIC_PRESSURE":["33","OBD",0],
             "AMBIANT_AIR_TEMP":["46","OBD",0],
@@ -154,6 +154,7 @@ gaugeItems={"FUEL_STATUS":["03","OBD",0],
             "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",1],
             "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",1],
             "CABIN_TEMP_i2c":["TEMPADDR","I2C",1]
+            }
             
 
 
@@ -256,3 +257,4 @@ def highlightDisplay(TEXT,hightext):
 disp.Init()
 
 highlightDisplay("test","test")
+time.sleep(10)
