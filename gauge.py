@@ -11,6 +11,8 @@ import board
 import digitalio
 import socket
 import time
+import _thread
+import threading
 import busio
 from digitalio import DigitalInOut, Direction, Pull
 from PIL import Image, ImageDraw, ImageFont
@@ -74,7 +76,6 @@ up_OILP_ADC =0
 ###
 #DISPLAY SETUP
 ###
-
 #PIN CONFIG LCD
 RST=27
 DC=25
@@ -382,10 +383,21 @@ def cleanupMenu():
         gaugemenu.insert(0,value[3])
         gaugemenu.insert(1,key)
 
+def randomShit():
+    while True:
+        print("Thread2")
+
+
 
 disp.Init()
-
 highlightDisplay("test","test")
 cleanupMenu()
 
-menuloop(0,topmenu)
+print("starting thread1")
+try:
+    threading.Thread(target=randomShit).start()
+    threading.Thread(target=menuloop, args=(0,topmenu)).start()
+except:
+    print("failed threads")
+
+
