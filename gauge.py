@@ -28,7 +28,7 @@ from lib import LCD_1inch28
 import colorsys
 import signal
 import sys
-
+import ioexpander as io
 
 
 
@@ -52,14 +52,6 @@ address="/home/pi/gauge/"
 ###
 
 #Global variables
-watch_RPM_OBD =0
-watch_OIL_OBD =0
-watch_BOOST_ADC =0
-watch_ITT_OBD = 0
-watch_WATER_OBD =0
-watch_BLOCK1_ADC =0
-watch_BLOCK2_ADC =0
-watch_OILP_ADC =0
 
 
 ADC=0
@@ -97,6 +89,41 @@ rotation=0
 GPIO.setup(SW, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setmode(GPIO.BCM)
 #--------------------------#
+
+
+
+###
+#Rotary encoder
+###
+SW = 26
+SW1=21
+rotaryCounter=0
+oldEncValue=0
+newEncValue=0
+movementValue=0
+I2C_ADDR = 0x0F  # 0x18 for IO Expander, 0x0F for the encoder breakout
+POT_ENC_A = 12
+POT_ENC_B = 3
+POT_ENC_C = 11
+
+PIN_RED = 1
+PIN_GREEN = 7
+PIN_BLUE = 2
+BRIGHTNESS = 0.30                # Effectively the maximum fraction of the period that the LED will be on
+PERIOD = int(255 / BRIGHTNESS)  # Add a period large enough to get 0-255 steps at the desired brightness
+ioe = io.IOE(i2c_addr=I2C_ADDR, interrupt_pin=4)
+
+# Swap the interrupt pin for the Rotary Encoder breakout
+if I2C_ADDR == 0x0F:
+    ioe.enable_interrupt_out(pin_swap=True)
+
+ioe.setup_rotary_encoder(1, POT_ENC_A, POT_ENC_B, pin_c=POT_ENC_C)
+ioe.set_pwm_period(PERIOD)
+ioe.set_pwm_control(divider=2)  # PWM as fast as we can to avoid LED flicker
+ioe.set_mode(PIN_RED, io.PWM, invert=True)
+ioe.set_mode(PIN_GREEN, io.PWM, invert=True)
+ioe.set_mode(PIN_BLUE, io.PWM, invert=True)
+r, g, b, = 0, 0, 0
 
 
 ###
@@ -202,7 +229,94 @@ gaugeItems={"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
 #********************
 
 #menu serup goes here and display of gauge screens
+def menuDisplay(currentMenu,menu):
+    drawimage=setupDisplay()
+    image=drawimage[0]
+    draw=drawimage[1]
+    
+    if (currentMenu-1 <0):
+        minusMenu=(len(menu)-2)
+    else:
+        minusMenu=currentMenu-2
+    
+    if (currentMenu+2 >= len(menu)):
+        plusMenu=0
+    else:
+        plusMenu=currentMenu+2
 
+    if (currentMenu+4 == len(menu)):
+        plus2Menu=0
+        
+    elif (currentMenu+4 == (len(menu)+2)):
+        plus2Menu=2
+    else:
+        plus2Menu=currentMenu+4
+
+    if (currentMenu-4 == -1):
+        minus2Menu=(len(menu)-2)
+    elif (currentMenu-4 == -2):
+        minus2Menu=(len(menu)-2)
+    else:
+        minus2Menu = currentMenu-4
+    if (len(menu)/2)>= 5:
+        draw.text((35,40), menu[minus2Menu], font=font3, fill="WHITE")
+        draw.text((35,190), menu[plus2Menu],font = font3, fill="WHITE")
+    
+    draw.text((55, 65), menu[minusMenu], font=font2, fill="WHITE")
+    draw.text((10, 95),">"+menu[currentMenu], font=font, fill=255)
+    draw.text((55, 155), menu[plusMenu], font=font2, fill="WHITE")
+    
+    
+    im_r=image.rotate(rotation)
+    disp.ShowImage(im_r)
+
+
+def menuloop(item,menu):
+    def buttonPushed(item,menu):
+        doaction(item,menu)
+    global newEncValue
+    global oldEncValue
+    while True:
+        if ioe.get_interrupt():
+            newEncValue=ioe.read_rotary_encoder(1)
+            ioe.clear_interrupt()
+
+            if newEncValue>oldEncValue:
+                item-=2
+                oldEncValue=newEncValue
+            if newEncValue<oldEncValue:
+                item+=2
+                oldEncValue=newEncValue
+            
+        if item == (len(menu)):
+            item=0
+        if item <0:
+            item=(len(menu))-2
+        
+        menuDisplay(item,menu)
+        
+        buttonState=GPIO.input(SW)
+        if buttonState == False:
+            doaction(item,menu)
+
+def doaction(item,menu):
+    time.sleep(.333)
+    if (menu[item]=="Gauges"):
+        menuloop(0,gaugemenu)
+    if (menu[item]=="ECU"):
+        menuloop(0,ecumenu)
+    if (menu[item] == "Config"):
+        menuloop(0,configmenu)
+    highlightDisplay("Loading",menu[item])
+    print(menu[item+1])
+    eval(menu[item+1] + "()")
+    
+def backtotop1():
+    menuloop(0,topmenu)
+def backtotop2():
+    menuloop(2,topmenu)
+def backtotop3():
+    menuloop(4,topmenu)
 
     
     
@@ -265,13 +379,13 @@ def cleanupMenu():
         del gaugeItems[x]
     
     for key,value in gaugeItems.items():
-        gaugemenu.insert(0,key)
-        gaugemenu.insert(1,value[3])
-        print(gaugemenu)
+        gaugemenu.insert(0,value[3])
+        gaugemenu.insert(1,key)
 
 
 disp.Init()
 
 highlightDisplay("test","test")
 cleanupMenu()
-time.sleep(10)
+
+menuloop(0,topmenu)
