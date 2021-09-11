@@ -253,5 +253,6 @@ def highlightDisplay(TEXT,hightext):
 #start display threads
 #start monitor and alert thread
 
+disp.Init()
 
-
+highlightDisplay("test","test")
