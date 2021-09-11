@@ -129,33 +129,33 @@ topmenu=("Gauges","gaugemenu","ECU","ecumenu","Config","configmenu","Multi 1","Q
 ecumenu=("Clear DTC","ecu_reset","Read DTC","ecu_read","Back","backtotop2")
 configmenu=("IP","ipaddress","Reload","reinitialise","Reboot","reboot_pi","Back","backtotop3")
 
-
-#              obd name    PID, location, enabled or false##, Friendly Name
-gaugeItems={"FUEL_STATUS":["03","OBD",0],
-            "ENGINE_LOAD":["04","OBD",0],
-            "COOLANT_TEMP":["05","OBD",0],
-            "FUEL_PRESSURE":["0A","OBD",0],
-            "INTAKE_PRESSURE":["0B","OBD",0],
-            "RPM":["0C","OBD",0],
-            "SPEED":["0D","OBD",0],
-            "TIMING_ADVANCE":["0E","OBD",0],
-            "INTAKE_TEMP":["0F","OBD",0],
-            "MAF":["10","OBD",0],
-            "THROTTLE_POS":["11","OBD",0],
-            "RUN_TIME":["1F","OBD",0],
-            "FUEL_LEVEL":["2F","OBD",0],
-            "BAROMETRIC_PRESSURE":["33","OBD",0],
-            "AMBIANT_AIR_TEMP":["46","OBD",0],
-            "FUEL_TYPE":["51","OBD",0],
-            "FUEL_RATE":["5E","OBD",0],
-            "OIL_TEMP":["5C","OBD",0],
-            "OIL_PRESSURE_ADC":["ADCPIN0","ADC",1],
-            "BOOST_ADC":["ADCPIN1","ADC",1],
-            "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",1],
-            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",1],
-            "CABIN_TEMP_i2c":["TEMPADDR","I2C",1]
+#              obd name    PID, location, enabled or false##, Friendly Name,value,pid squence, pid array
+gaugeItems={"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
+            "ENGINE_LOAD":["04","OBD",0,"Engine Load","",3,"a"],
+            "COOLANT_TEMP":["05","OBD",0,"Water C","",4,"a"],
+            "FUEL_PRESSURE":["0A","OBD",0,"Fuel Pres","",9,"a"],
+            "INTAKE_PRESSURE":["0B","OBD",0,"Intake Pres","",10,"a"],
+            "RPM":["0C","OBD",0,"RPM","",11,"a"],
+            "SPEED":["0D","OBD",0,"Speed","",12,"a"],
+            "TIMING_ADVANCE":["0E","OBD",0,"Timing","",13,"a"],
+            "INTAKE_TEMP":["0F","OBD",0,"Intake C","",14,"a"],
+            "MAF":["10","OBD",0,"MAF","",15,"a"],
+            "THROTTLE_POS":["11","OBD",0,"Throttle","",15,"a"],
+            "RUN_TIME":["1F","OBD",0,"Run Time","",30,"a"],
+            "FUEL_LEVEL":["2F","OBD",0,"Fuel %","",14,"b"],
+            "BAROMETRIC_PRESSURE":["33","OBD",0,"Out Pres","",18,"b"],
+            "AMBIANT_AIR_TEMP":["46","OBD",0,"Air Temp","",5,"c"],
+            "FUEL_TYPE":["51","OBD",0,"Fuel Type","",16,"c"],
+            "FUEL_RATE":["5E","OBD",0,"Fuel Rate","",29,"c"],
+            "OIL_TEMP":["5C","OBD",0,"Oil C","",27,"c"],
+            "OIL_PRESSURE_ADC":["ADCPIN0","ADC",1,"Oil Pres","",0,"adc"],
+            "BOOST_ADC":["ADCPIN1","ADC",1,"Boost","",1,"adc"],
+            "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",1,"Block1 C","",2,"adc"],
+            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",1,"Block2 C","",3,"adc"],
+            "CABIN_TEMP_i2c":["TEMPADDR","I2C",0,"Cabin C","",4,"adc"]
             }
-            
+
+
 
 
 #********************
