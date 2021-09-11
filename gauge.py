@@ -125,10 +125,10 @@ btname="OBDLink LX"
 #menu setup
 ###
 
-topmenu=("Gauges","gaugemenu","ECU","ecumenu","Config","configmenu","Multi 1","QUAD_GAUGE","","backtotop1")
-ecumenu=("Clear DTC","ecu_reset","Read DTC","ecu_read","Back","backtotop2")
-configmenu=("IP","ipaddress","Reload","reinitialise","Reboot","reboot_pi","Back","backtotop3")
-
+topmenu=["Gauges","gaugemenu","ECU","ecumenu","Config","configmenu","Multi 1","QUAD_GAUGE","","backtotop1"]
+ecumenu=["Clear DTC","ecu_reset","Read DTC","ecu_read","Back","backtotop2"]
+configmenu=["IP","ipaddress","Reload","reinitialise","Reboot","reboot_pi","Back","backtotop3"]
+gaugemenu=["Back","backttop2"]
 #              obd name    PID, location, enabled or false##, Friendly Name,value,pid squence, pid array
 gaugeItems={"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
             "ENGINE_LOAD":["04","OBD",0,"Engine Load","",3,"a"],
@@ -254,7 +254,24 @@ def highlightDisplay(TEXT,hightext):
 #start display threads
 #start monitor and alert thread
 
+def cleanupMenu():
+    inactiveItems=[]
+    for key, value in gaugeItems.items():
+        if value[2] == 0:
+            inactiveItems.append(key)
+
+
+    for x in inactiveItems:
+        del gaugeItems[x]
+    
+    for key,value in gaugeItems.items():
+        gaugemenu.insert(0,key)
+        gaugemenu.insert(1,value[3])
+        print(gaugemenu)
+
+
 disp.Init()
 
 highlightDisplay("test","test")
+cleanupMenu()
 time.sleep(10)
