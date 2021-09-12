@@ -31,7 +31,7 @@ import colorsys
 import signal
 import sys
 import ioexpander as io
-
+import subprocess as sp
 
 
 
@@ -151,6 +151,10 @@ gfont = ImageFont.truetype(address+"arial.tff", 54)
 #BT info
 btmac="00:04:3E:4A:26:B0"
 btname="OBDLink LX"
+
+
+
+
 
 
 ###
@@ -342,41 +346,49 @@ def highlightDisplay(TEXT,hightext):
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
 
-def highlightbootDisplay(boot):
+def highlightbootDisplay():
     drawimage=setupDisplay()
     image=drawimage[0]
     draw=drawimage[1]
 
-
-
-   if boot=="bth": 
+    if bootState['bth'][1]=="fail":
+        faildot="."*bootState['bth'][0]
         draw.text((40,40),"BTH", fill = "WHITE", font=font)
         draw.text((150,40),".....", fill = "WHITE", font=font)
-        draw.text((40,93),"ADC", fill = "WHITE", font =font)
+        draw.text((150,40),faildot, fill = "RED", font=font)
+        if bootState['bth'][0]==5:
+            draw.text((40,40),"BTH", fill = "RED", font=font)
+    else:
+        faildot="."*bootState['bth'][0]
+        draw.text((150,40),".....", fill = "WHITE", font=font)
+        draw.text((40,40),"BTH", fill = "GREEN", font=font)
+        draw.text((150,40),faildot, fill = "GREEN", font=font)
+
+    if bootState['adc'][1]=="fail":
+        faildot="."*bootState['adc'][0]
+        draw.text((40,93),"ADC", fill = "WHITE", font=font)
         draw.text((150,93),".....", fill = "WHITE", font=font)
+        draw.text((150,93),faildot, fill = "RED", font=font)
+        if bootState['adc'][0]==5:
+            draw.text((40,93),"ADC", fill = "RED", font=font)
+    else:
+        faildot="."*bootState['adc'][0]
+        draw.text((40,93),"ADC", fill = "GREEN", font=font)
+        draw.text((150,93),".....", fill = "WHITE", font=font)
+        draw.text((150,93),faildot, fill = "GREEN", font=font)
+
+    if bootState['obd'][1]=="fail":
+        faildot="."*bootState['obd'][0]
         draw.text((40,145),"OBD", fill = "WHITE", font=font)
         draw.text((150,145),".....", fill = "WHITE", font=font)
-    
-
-    if boot=="bth":
-        if state=="fail":
-            faildot="."*bootstate['bth'](0)
-            draw.text((40,40),"BTH", fill = "WHITE", font=font)
-            draw.text((150,40),".....", fill = "WHITE", font=font)
-            draw.text((150,40),faildot, fill = "RED", font=font)
-            im_r=image.rotate(rotation)
-            disp.ShowImage(im_r)
-            if count==5:
-                draw.text((40,40),"BTH", fill = "RED", font=font)
-                im_r=image.rotate(rotation)
-                disp.ShowImage(im_r)
-#        else:
-#            faildot="."*count
-#            draw.text((40,40),"BTH", fill = "GREEN", font=font)
-#            draw.text((150,40),faildot, fill = "GREEN", font=font)
-#           im_r=image.rotate(rotation)
-#            disp.ShowImage(im_r)
-
+        draw.text((150,145),faildot, fill = "RED", font=font)
+        if bootState['obd'][0]==5:
+            draw.text((40,145),"OBD", fill = "RED", font=font)
+    else:
+        faildot="."*bootState['obd'][0]
+        draw.text((40,145),"OBD", fill = "GREEN", font=font)
+        draw.text((150,145),".....", fill = "WHITE", font=font)
+        draw.text((150,145),faildot, fill = "GREEN", font=font)
 
 
     im_r=image.rotate(rotation)
@@ -463,33 +475,72 @@ def firstBoot():
     time.sleep(1)
     os.system('sudo rfcomm bind rfcomm0 '+btmac)
     connectBT()
+#    connectADC()
+    connectOBD()
 
 def connectBT():
     global BT
     print("connecting BT")
     i=0
     while i<5:
-        print("looping",i)
-        BTconnected=os.system('hcitool name "'+btname+'"')
-        if btname in str(BTconnected):
+        BTconnected=sp.getoutput('hcitool name '+btmac)
+        if btname == BTconnected:
             print("BT conected")
             BT=1
-            bootState['bth']=(1,"win")
-            highlightbootDisplay("bth")
+            bootState['bth']=(i,"win")
+            highlightbootDisplay()
             return
         i=i+1
         time.sleep(2)
         bootState['bth']=(i,"fail")
-        highlightbootDisplay("bth")
+        highlightbootDisplay()
     print("BT not avaliable")
     BT=0
 
 def connectADC():
-    print("connecting ADC")
 
+    global ADC
+    print("connecting ADC")
+    i=0
+    while i<5:
+        print("looping",i)
+        if i==4:
+            print("ADC conected")
+            ADC=1
+            bootState['adc']=(i,"win")
+            highlightbootDisplay()
+            return
+        i=i+1
+        time.sleep(2)
+        bootState['adc']=(i,"fail")
+        highlightbootDisplay()
+    print("ADC not avaliable")
+    ADC=0
 
 def connectOBD():
-    print("connecting obd")
+
+    global OBD
+    print("connecting OBD")
+    i=0
+    statusState=""
+    while i<5:
+        try:
+            connection = obd.OBD()
+            statusState=connection.status()
+            print(statusState)
+            print("OBD conected")
+            OBD=1
+            bootState['obd']=(i,"win")
+            highlightbootDisplay()
+            return
+        except:
+            print(statusState)
+            i=i+1
+            time.sleep(2)
+            bootState['obd']=(i,"fail")
+            highlightbootDisplay()
+    print("OBD not avaliable")
+    OBD=0
 
 
 #boot up 
@@ -514,7 +565,6 @@ def cleanupMenu():
 
 
 firstBoot()
-highlightbootDisplay("adc")
 time.sleep(10)
 #cleanupMenu()
 
