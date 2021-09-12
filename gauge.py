@@ -59,6 +59,10 @@ address="/home/pi/gauge/"
 ADC=0
 BT=0
 OBD=0
+bootState={"bth":[0,"fail"],
+           "adc":[0,"fail"],
+           "obd":[0,"fail"]
+           }
 
 
 #Monitor limits
@@ -320,7 +324,6 @@ def backtotop3():
     menuloop(4,topmenu)
 
     
-    
 def clearDisplay():
     disp.clear()
 
@@ -336,6 +339,63 @@ def highlightDisplay(TEXT,hightext):
     ##(accross screen),(upand down))(100,100 is centre)
     draw.text((70,30),hightext, fill = "WHITE", font=font2)
     draw.text((15,95),TEXT, fill = "WHITE", font =font)
+    im_r=image.rotate(rotation)
+    disp.ShowImage(im_r)
+
+def highlightbootDisplay(boot,count,state):
+    drawimage=setupDisplay()
+    image=drawimage[0]
+    draw=drawimage[1]
+
+
+
+   if boot=="bth": 
+        draw.text((40,40),"BTH", fill = "WHITE", font=font)
+        draw.text((150,40),".....", fill = "WHITE", font=font)
+        draw.text((40,93),"ADC", fill = "WHITE", font =font)
+        draw.text((150,93),".....", fill = "WHITE", font=font)
+        draw.text((40,145),"OBD", fill = "WHITE", font=font)
+        draw.text((150,145),".....", fill = "WHITE", font=font)
+    
+
+    if boot=="bth":
+        if state=="fail":
+            faildot="."*count
+            draw.text((40,40),"BTH", fill = "WHITE", font=font)
+            draw.text((150,40),".....", fill = "WHITE", font=font)
+            draw.text((150,40),faildot, fill = "RED", font=font)
+            im_r=image.rotate(rotation)
+            disp.ShowImage(im_r)
+            if count==5:
+                draw.text((40,40),"BTH", fill = "RED", font=font)
+                im_r=image.rotate(rotation)
+                disp.ShowImage(im_r)
+        else:
+            faildot="."*count
+            draw.text((40,40),"BTH", fill = "GREEN", font=font)
+            draw.text((150,40),faildot, fill = "GREEN", font=font)
+            im_r=image.rotate(rotation)
+            disp.ShowImage(im_r)
+
+
+    if boot=="adc":
+        if state=="fail":
+            faildot="."*count
+            draw.text((40,93),"ADC", fill = "WHITE", font=font)
+            draw.text((150,93),".....", fill = "WHITE", font=font)
+            draw.text((150,93),faildot, fill = "RED", font=font)
+            im_r=image.rotate(rotation)
+            disp.ShowImage(im_r)
+            if count==5:
+                draw.text((40,930),"BTH", fill = "RED", font=font)
+                im_r=image.rotate(rotation)
+                disp.ShowImage(im_r)
+        else:
+            faildot="."*count
+            draw.text((40,93),"ADC", fill = "GREEN", font=font)
+            draw.text((150,93),faildot, fill = "GREEN", font=font)
+            im_r=image.rotate(rotation)
+
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
 
@@ -414,23 +474,30 @@ def ipaddress():
 #********************
 def firstBoot():
     disp.Init()
-    bootcount=0
-    while bootcount <7 :
-        bootdots="."*bootcount
-        bootext="Booting"+bootdots
-        highlightDisplay(bootext,"")
-        time.sleep(.3)
-        bootcount+=1
-    image=Image.open('/home/pi/wrx_gauge/logo.jpg')
+    image=Image.open(address+'logo.jpg')
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
-    time.sleep(3)
+    time.sleep(1)
     os.system('sudo rfcomm bind rfcomm0 '+btmac)
     connectBT()
 
 def connectBT():
+    global BT
     print("connecting BT")
-
+    i=0
+    while i<5:
+        print("looping",i)
+        BTconnected=os.system('hcitool name "'+btname+'"')
+        if btname in str(BTconnected):
+            print("BT conected")
+            BT=1
+            highlightbootDisplay("bth",i,"win")
+            return
+        i=i+1
+        time.sleep(2)
+        highlightbootDisplay("bth",i,"fail")
+    print("BT not avaliable")
+    BT=0
 
 def connectADC():
     print("connecting ADC")
@@ -462,14 +529,14 @@ def cleanupMenu():
 
 
 firstBoot()
-
-highlightDisplay("test","test")
-cleanupMenu()
+highlightbootDisplay("adc",3,"win")
+time.sleep(10)
+#cleanupMenu()
 
 print("starting thread1")
-try:
-    threading.Thread(target=menuloop, args=(0,topmenu)).start()
-except:
-    print("failed threads")
+#try:
+#    threading.Thread(target=menuloop, args=(0,topmenu)).start()
+#except:
+#    print("failed threads")
 
 
