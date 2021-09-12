@@ -475,8 +475,9 @@ def firstBoot():
     time.sleep(1)
     os.system('sudo rfcomm bind rfcomm0 '+btmac)
     connectBT()
-#    connectADC()
+    connectADC()
     connectOBD()
+    OBDcleanup()
 
 def connectBT():
     global BT
@@ -498,7 +499,9 @@ def connectBT():
     BT=0
 
 def connectADC():
-
+#####
+###NEED TO FIX ADC ONCE NEW ADC ARRIVES
+###
     global ADC
     print("connecting ADC")
     i=0
@@ -527,7 +530,6 @@ def connectOBD():
         try:
             connection = obd.OBD()
             statusState=connection.status()
-            print(statusState)
             print("OBD conected")
             OBD=1
             bootState['obd']=(i,"win")
@@ -543,7 +545,60 @@ def connectOBD():
     OBD=0
 
 
-#boot up 
+
+def OBDcleanup():
+    global OBD
+    print("Starting menu")
+    print(gaugeItems)
+    print("----------------")
+    print("")
+    print("")
+    if OBD ==0:
+        cleanupMenu()
+        print("new menu")
+        print(gaugeItems)
+        return
+    if OBD ==1:
+        try:
+            connection = obd.OBD()
+            pidsA=connection.query(obd.commands.PIDS_A)
+            pidsB=connection.query(obd.commands.PIDS_B)
+            pidsC=connection.query(obd.commands.PIDS_C)
+            
+            
+            countera=0
+            for i in pidsA:
+                for key,value in gaugeItems.items():
+                    if value[6]=='a':
+                        if value[5]==countera:
+                            value[2]=1
+                countera+=1
+
+
+            counterb=0
+            for i in pidsB:
+                for key,value in gaugeItems.items():
+                    if value[6]=='b':
+                        if value[5]==counterb:
+                            value[2]=1
+                counterb+=1
+
+            counterc=0
+            for i in pidsC:
+                for key,value in gaugeItems.items():
+                    if value[6]=='c':
+                        if value[5]==counterc:
+                            value[2]=1
+                counterc=counterc+1
+        
+            cleanupMenu()
+            print("newmenu")
+            print(gaugeItems)
+        
+        except:
+            print("failed cleanup")
+
+
 #start obd threads
 #start ADC threads
 #start display threads
@@ -566,12 +621,11 @@ def cleanupMenu():
 
 firstBoot()
 time.sleep(10)
-#cleanupMenu()
 
 print("starting thread1")
-#try:
-#    threading.Thread(target=menuloop, args=(0,topmenu)).start()
-#except:
-#    print("failed threads")
+try:
+    threading.Thread(target=menuloop, args=(0,topmenu)).start()
+except:
+    print("failed threads")
 
 
