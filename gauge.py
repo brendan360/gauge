@@ -342,7 +342,7 @@ def highlightDisplay(TEXT,hightext):
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
 
-def highlightbootDisplay(boot,count,state):
+def highlightbootDisplay(boot):
     drawimage=setupDisplay()
     image=drawimage[0]
     draw=drawimage[1]
@@ -360,7 +360,7 @@ def highlightbootDisplay(boot,count,state):
 
     if boot=="bth":
         if state=="fail":
-            faildot="."*count
+            faildot="."*bootstate['bth'](0)
             draw.text((40,40),"BTH", fill = "WHITE", font=font)
             draw.text((150,40),".....", fill = "WHITE", font=font)
             draw.text((150,40),faildot, fill = "RED", font=font)
@@ -370,31 +370,14 @@ def highlightbootDisplay(boot,count,state):
                 draw.text((40,40),"BTH", fill = "RED", font=font)
                 im_r=image.rotate(rotation)
                 disp.ShowImage(im_r)
-        else:
-            faildot="."*count
-            draw.text((40,40),"BTH", fill = "GREEN", font=font)
-            draw.text((150,40),faildot, fill = "GREEN", font=font)
-            im_r=image.rotate(rotation)
-            disp.ShowImage(im_r)
+#        else:
+#            faildot="."*count
+#            draw.text((40,40),"BTH", fill = "GREEN", font=font)
+#            draw.text((150,40),faildot, fill = "GREEN", font=font)
+#           im_r=image.rotate(rotation)
+#            disp.ShowImage(im_r)
 
 
-    if boot=="adc":
-        if state=="fail":
-            faildot="."*count
-            draw.text((40,93),"ADC", fill = "WHITE", font=font)
-            draw.text((150,93),".....", fill = "WHITE", font=font)
-            draw.text((150,93),faildot, fill = "RED", font=font)
-            im_r=image.rotate(rotation)
-            disp.ShowImage(im_r)
-            if count==5:
-                draw.text((40,930),"BTH", fill = "RED", font=font)
-                im_r=image.rotate(rotation)
-                disp.ShowImage(im_r)
-        else:
-            faildot="."*count
-            draw.text((40,93),"ADC", fill = "GREEN", font=font)
-            draw.text((150,93),faildot, fill = "GREEN", font=font)
-            im_r=image.rotate(rotation)
 
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
@@ -491,11 +474,13 @@ def connectBT():
         if btname in str(BTconnected):
             print("BT conected")
             BT=1
-            highlightbootDisplay("bth",i,"win")
+            bootState['bth']=(1,"win")
+            highlightbootDisplay("bth")
             return
         i=i+1
         time.sleep(2)
-        highlightbootDisplay("bth",i,"fail")
+        bootState['bth']=(i,"fail")
+        highlightbootDisplay("bth")
     print("BT not avaliable")
     BT=0
 
@@ -529,7 +514,7 @@ def cleanupMenu():
 
 
 firstBoot()
-highlightbootDisplay("adc",3,"win")
+highlightbootDisplay("adc")
 time.sleep(10)
 #cleanupMenu()
 
