@@ -123,8 +123,8 @@ btname="OBDLink LX"
 topmenu=["Gauges","gaugemenu","ECU","ecumenu","Config","configmenu","Multi 1","QUAD_GAUGE","","backtotop1"]
 ecumenu=["Clear DTC","ecu_reset","Read DTC","ecu_read","Back","backtotop2"]
 configmenu=["IP","ipaddress","Reload","reinitialise","Reboot","reboot_pi","Back","backtotop3"]
-gaugemenu=["Back","backttop2"]
-#              obd name    PID, location, enabled or false##, Friendly Name,value,pid squence, pid array,alertlow,alerthigh
+gaugemenu=["Back","backtotop2"]
+#              obd name    PID, location, enabled or false##, Friendly Name,value,pid squence, pid array,alertlow,alerthigh,alertcount
 gaugeItems={#"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
 #            "ENGINE_LOAD":["04","OBD",0,"Engine Load","",3,"a"],
 #            "COOLANT_TEMP":["05","OBD",0,"Water C","",4,"a"],
@@ -143,11 +143,11 @@ gaugeItems={#"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
 #            "FUEL_TYPE":["51","OBD",0,"Fuel Type","",16,"c"],
 #            "FUEL_RATE":["5E","OBD",0,"Fuel Rate","",29,"c"],
 #            "OIL_TEMP":["5C","OBD",0,"Oil C","",27,"c"],
-            "OIL_PRESSURE_ADC":["ADCPIN0","ADC",1,"Oil Pres","0",0,"adc","na",100],
-##            "BOOST_ADC":["ADCPIN1","ADC",1,"Boost","",1,"adc","na","15"],
-            "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",1,"Block1 C","0",2,"adc","na",90],
-            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",1,"Block2 C","0",3,"adc","na",90],
-            "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin C","0",4,"adc","na","nai"]
+            "OIL_PRESSURE_ADC":["ADCPIN0","ADC",1,"Oil Pres","0",0,"adc","na","100",0],
+##            "BOOST_ADC":["ADCPIN1","ADC",1,"Boost","",1,"adc","na","15",0],
+            "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",1,"Block1 C","0",2,"adc","na","90",0],
+            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",1,"Block2 C","0",3,"adc","na","20",0],
+            "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin C","0",4,"adc","na","na",0]
             }
 
 
@@ -556,7 +556,6 @@ def OBDcleanup():
                             if value[5]==counterc:
                                 value[2]=1
                     counterc=counterc+1
-        
             cleanupMenu()
             print(len(gaugeItems))        
         except:
@@ -573,8 +572,16 @@ def obdTHREAD():
 
 def alertTHREAD():
     while True:
-        if int(gaugeItems["BLOCK_TEMP1_ADC"][4]) >= 10:
-                print("ALERT--:block temp")
+
+        for key,value in gaugeItems.items():
+            if value[8]=="na":
+                continue
+            elif int(value[4]) >= int(value[8]):
+                if value[9] <= 0: 
+                    print("Alert ",key," is going high")
+                    value[9]=10000000
+                else: 
+                    value[9]-=1
 
 def adcTHREAD():
     old_min=1088
@@ -592,20 +599,20 @@ def adcTHREAD():
         oilpsi=round(oilpsi)
 
         thermistor1 = chan1
-        R1 = 10000/ (41835/thermistor1.value - 1)
+        R1 = 10000/ (41134/thermistor1.value - 1)
         thermistor2 = chan2
         gaugeItems["BLOCK_TEMP1_ADC"][4]=round(steinhart_temperature_C(R1))
-        R2 = 10000 / (41835/thermistor1.value - 1)
+        R2 = 10000 / (41134/thermistor1.value - 1)
         gaugeItems["BLOCK_TEMP2_ADC"][4]=round(steinhart_temperature_C(R2))
 
-#        print("--------------------------")
-#        print(gaugeItems["CABIN_TEMP_i2c"][4])
-#        print(gaugeItems["BLOCK_TEMP1_ADC"][4])
-#        print(gaugeItems["BLOCK_TEMP2_ADC"][4])
-        
-#        print("--------------------------")
-#        print()
-#        print()
+        print("--------------------------")
+        print(gaugeItems["CABIN_TEMP_i2c"][4])
+        print(gaugeItems["BLOCK_TEMP1_ADC"][4])
+        print(gaugeItems["BLOCK_TEMP2_ADC"][4])
+       
+        print("--------------------------")
+        print()
+        print()
 
 
 #start obd threads
