@@ -8,13 +8,13 @@
 #********************
 #********************
 import board
-import digitalio
+#import digitalio
 import socket
 import time
-import _thread
+#import _thread
 import threading
 import busio
-from digitalio import DigitalInOut, Direction, Pull
+#from digitalio import DigitalInOut, Direction, Pull
 from PIL import Image, ImageDraw, ImageFont
 import fcntl
 import struct
@@ -24,13 +24,13 @@ import obd
 from obd import OBDStatus
 import sys
 import spidev as SPI
-from RPi import GPIO
+#from RPi import GPIO
 sys.path.append("..")
 from lib import LCD_1inch28
 import colorsys
 import signal
 import sys
-import ioexpander as io
+from adafruit_seesaw import seesaw, rotaryio, digitalio
 import subprocess as sp
 
 
@@ -88,47 +88,15 @@ bus=0
 device = 0
 
 #Display
-SW=26
 disp = LCD_1inch28.LCD_1inch28()
 rotation=0
-GPIO.setup(SW, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setmode(GPIO.BCM)
 #--------------------------#
+seesaw = seesaw.Seesaw(board.I2C(), addr=0x36)
+seesaw.pin_mode(24, seesaw.INPUT_PULLUP)
+button = digitalio.DigitalIO(seesaw, 24)
+encoder = rotaryio.IncrementalEncoder(seesaw)
+seesaw_product = (seesaw.get_version() >> 16) & 0xFFFF
 
-
-
-###
-#Rotary encoder
-###
-SW = 26
-SW1=21
-rotaryCounter=0
-oldEncValue=0
-newEncValue=0
-movementValue=0
-I2C_ADDR = 0x0F  # 0x18 for IO Expander, 0x0F for the encoder breakout
-POT_ENC_A = 12
-POT_ENC_B = 3
-POT_ENC_C = 11
-
-PIN_RED = 1
-PIN_GREEN = 7
-PIN_BLUE = 2
-BRIGHTNESS = 0.30                # Effectively the maximum fraction of the period that the LED will be on
-PERIOD = int(255 / BRIGHTNESS)  # Add a period large enough to get 0-255 steps at the desired brightness
-ioe = io.IOE(i2c_addr=I2C_ADDR, interrupt_pin=4)
-
-# Swap the interrupt pin for the Rotary Encoder breakout
-if I2C_ADDR == 0x0F:
-    ioe.enable_interrupt_out(pin_swap=True)
-
-ioe.setup_rotary_encoder(1, POT_ENC_A, POT_ENC_B, pin_c=POT_ENC_C)
-ioe.set_pwm_period(PERIOD)
-ioe.set_pwm_control(divider=2)  # PWM as fast as we can to avoid LED flicker
-ioe.set_mode(PIN_RED, io.PWM, invert=True)
-ioe.set_mode(PIN_GREEN, io.PWM, invert=True)
-ioe.set_mode(PIN_BLUE, io.PWM, invert=True)
-r, g, b, = 0, 0, 0
 
 
 ###
@@ -166,29 +134,29 @@ ecumenu=["Clear DTC","ecu_reset","Read DTC","ecu_read","Back","backtotop2"]
 configmenu=["IP","ipaddress","Reload","reinitialise","Reboot","reboot_pi","Back","backtotop3"]
 gaugemenu=["Back","backttop2"]
 #              obd name    PID, location, enabled or false##, Friendly Name,value,pid squence, pid array
-gaugeItems={"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
-            "ENGINE_LOAD":["04","OBD",0,"Engine Load","",3,"a"],
-            "COOLANT_TEMP":["05","OBD",0,"Water C","",4,"a"],
-            "FUEL_PRESSURE":["0A","OBD",0,"Fuel Pres","",9,"a"],
-            "INTAKE_PRESSURE":["0B","OBD",0,"Intake Pres","",10,"a"],
-            "RPM":["0C","OBD",0,"RPM","",11,"a"],
-            "SPEED":["0D","OBD",0,"Speed","",12,"a"],
-            "TIMING_ADVANCE":["0E","OBD",0,"Timing","",13,"a"],
-            "INTAKE_TEMP":["0F","OBD",0,"Intake C","",14,"a"],
-            "MAF":["10","OBD",0,"MAF","",15,"a"],
-            "THROTTLE_POS":["11","OBD",0,"Throttle","",15,"a"],
-            "RUN_TIME":["1F","OBD",0,"Run Time","",30,"a"],
-            "FUEL_LEVEL":["2F","OBD",0,"Fuel %","",14,"b"],
-            "BAROMETRIC_PRESSURE":["33","OBD",0,"Out Pres","",18,"b"],
-            "AMBIANT_AIR_TEMP":["46","OBD",0,"Air Temp","",5,"c"],
-            "FUEL_TYPE":["51","OBD",0,"Fuel Type","",16,"c"],
-            "FUEL_RATE":["5E","OBD",0,"Fuel Rate","",29,"c"],
-            "OIL_TEMP":["5C","OBD",0,"Oil C","",27,"c"],
-            "OIL_PRESSURE_ADC":["ADCPIN0","ADC",1,"Oil Pres","",0,"adc"],
-            "BOOST_ADC":["ADCPIN1","ADC",1,"Boost","",1,"adc"],
-            "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",1,"Block1 C","",2,"adc"],
-            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",1,"Block2 C","",3,"adc"],
-            "CABIN_TEMP_i2c":["TEMPADDR","I2C",0,"Cabin C","",4,"adc"]
+gaugeItems={#"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
+#            "ENGINE_LOAD":["04","OBD",0,"Engine Load","",3,"a"],
+#            "COOLANT_TEMP":["05","OBD",0,"Water C","",4,"a"],
+#            "FUEL_PRESSURE":["0A","OBD",0,"Fuel Pres","",9,"a"],
+#            "INTAKE_PRESSURE":["0B","OBD",0,"Intake Pres","",10,"a"],
+#            "RPM":["0C","OBD",0,"RPM","",11,"a"],
+#            "SPEED":["0D","OBD",0,"Speed","",12,"a"],
+#            "TIMING_ADVANCE":["0E","OBD",0,"Timing","",13,"a"],
+            "INTAKE_TEMP":["0F","OBD",0,"Intake C","",14,"a"]
+#            "MAF":["10","OBD",0,"MAF","",15,"a"],
+#            "THROTTLE_POS":["11","OBD",0,"Throttle","",15,"a"],
+#            "RUN_TIME":["1F","OBD",0,"Run Time","",30,"a"],
+#            "FUEL_LEVEL":["2F","OBD",0,"Fuel %","",14,"b"],
+#            "BAROMETRIC_PRESSURE":["33","OBD",0,"Out Pres","",18,"b"],
+#            "AMBIANT_AIR_TEMP":["46","OBD",0,"Air Temp","",5,"c"],
+#            "FUEL_TYPE":["51","OBD",0,"Fuel Type","",16,"c"],
+#            "FUEL_RATE":["5E","OBD",0,"Fuel Rate","",29,"c"],
+#            "OIL_TEMP":["5C","OBD",0,"Oil C","",27,"c"],
+#            "OIL_PRESSURE_ADC":["ADCPIN0","ADC",1,"Oil Pres","",0,"adc"],
+##            "BOOST_ADC":["ADCPIN1","ADC",1,"Boost","",1,"adc"],
+#            "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",1,"Block1 C","",2,"adc"],
+#            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",1,"Block2 C","",3,"adc"],
+#            "CABIN_TEMP_i2c":["TEMPADDR","I2C",0,"Cabin C","",4,"adc"]
             }
 
 
@@ -285,28 +253,32 @@ def menuloop(item,menu):
         doaction(item,menu)
     global newEncValue
     global oldEncValue
+    button_held = False
+    oldEncValue=0
     while True:
-        if ioe.get_interrupt():
-            newEncValue=ioe.read_rotary_encoder(1)
-            ioe.clear_interrupt()
+        
+       newEncValue=-encoder.position
 
-            if newEncValue>oldEncValue:
-                item-=2
-                oldEncValue=newEncValue
-            if newEncValue<oldEncValue:
-                item+=2
-                oldEncValue=newEncValue
+       if newEncValue>oldEncValue:
+           item-=2
+           oldEncValue=newEncValue
+       if newEncValue<oldEncValue:
+           item+=2
+           oldEncValue=newEncValue
             
-        if item == (len(menu)):
-            item=0
-        if item <0:
-            item=(len(menu))-2
+       if item == (len(menu)):
+           item=0
+       if item <0:
+           item=(len(menu))-2
         
-        menuDisplay(item,menu)
+       menuDisplay(item,menu)
         
-        buttonState=GPIO.input(SW)
-        if buttonState == False:
-            doaction(item,menu)
+       
+       if not button.value and not button_held:
+           button_held = True
+       if button.value and button_held:
+           button_held = False
+           doaction(item,menu)
 
 def doaction(item,menu):
     time.sleep(.333)
@@ -473,11 +445,11 @@ def firstBoot():
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
     time.sleep(1)
-    os.system('sudo rfcomm bind rfcomm0 '+btmac)
-    connectBT()
-    connectADC()
-    connectOBD()
-    OBDcleanup()
+#    os.system('sudo rfcomm bind rfcomm0 '+btmac)
+#    connectBT()
+#    connectADC()
+#    connectOBD()
+#    OBDcleanup()
 
 def connectBT():
     global BT
@@ -507,7 +479,7 @@ def connectADC():
     i=0
     while i<5:
         print("looping",i)
-        if i==4:
+        if i==1:
             print("ADC conected")
             ADC=1
             bootState['adc']=(i,"win")
@@ -534,6 +506,7 @@ def connectOBD():
             OBD=1
             bootState['obd']=(i,"win")
             highlightbootDisplay()
+            connection.close()
             return
         except:
             print(statusState)
@@ -548,24 +521,19 @@ def connectOBD():
 
 def OBDcleanup():
     global OBD
-    print("Starting menu")
-    print(gaugeItems)
-    print("----------------")
-    print("")
-    print("")
+    print(len(gaugeItems))
+    time.sleep(2)
     if OBD ==0:
         cleanupMenu()
-        print("new menu")
-        print(gaugeItems)
         return
     if OBD ==1:
         try:
             connection = obd.OBD()
-            pidsA=connection.query(obd.commands.PIDS_A)
-            pidsB=connection.query(obd.commands.PIDS_B)
-            pidsC=connection.query(obd.commands.PIDS_C)
-            
-            
+            pidsA=str(connection.query(obd.commands.PIDS_A))
+            pidsB=str(connection.query(obd.commands.PIDS_B))
+            pidsC=str(connection.query(obd.commands.PIDS_C))
+            connection.close()   
+
             countera=0
             for i in pidsA:
                 for key,value in gaugeItems.items():
@@ -574,29 +542,39 @@ def OBDcleanup():
                             value[2]=1
                 countera+=1
 
-
-            counterb=0
-            for i in pidsB:
-                for key,value in gaugeItems.items():
-                    if value[6]=='b':
-                        if value[5]==counterb:
-                            value[2]=1
+                counterb=0
+                for i in pidsB:
+                    for key,value in gaugeItems.items():
+                        if value[6]=='b':
+                            if value[5]==counterb:
+                                value[2]=1
                 counterb+=1
 
-            counterc=0
-            for i in pidsC:
-                for key,value in gaugeItems.items():
-                    if value[6]=='c':
-                        if value[5]==counterc:
-                            value[2]=1
-                counterc=counterc+1
+                counterc=0
+                for i in pidsC:
+                    for key,value in gaugeItems.items():
+                        if value[6]=='c':
+                            if value[5]==counterc:
+                                value[2]=1
+                    counterc=counterc+1
         
             cleanupMenu()
-            print("newmenu")
-            print(gaugeItems)
-        
+            print(len(gaugeItems))        
         except:
             print("failed cleanup")
+
+def obdTHREAD():
+    connection = obd.Async()
+    for key,value in gaugeItems.items():
+        cmd=obd.commands.guageItems[key]
+        if value[1]=="OBD":
+            value[4]=str(connection.watch(cmd))
+    connection.start()
+
+
+def alertTHREAD():
+    for key,value in gaugeItems.items():
+        print("--"+key+":"+str(value[4]))
 
 
 #start obd threads
@@ -619,12 +597,22 @@ def cleanupMenu():
 
 
 
-firstBoot()
-time.sleep(10)
 
-print("starting thread1")
+
+###
+#MAIN AREA
+###
+
+firstBoot()
+
 try:
     threading.Thread(target=menuloop, args=(0,topmenu)).start()
+    if OBD==1:
+        threading.Thread(target=obdTHREAD).start()
+#    if ADC=1:
+#        threading.Thread(target=adcTHREAD).start()
+    threading.Thread(target=alertTHREAD).start()
+
 except:
     print("failed threads")
 
