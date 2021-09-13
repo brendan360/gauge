@@ -8,13 +8,10 @@
 #********************
 #********************
 import board
-#import digitalio
 import socket
 import time
-#import _thread
 import threading
 import busio
-#from digitalio import DigitalInOut, Direction, Pull
 from PIL import Image, ImageDraw, ImageFont
 import fcntl
 import struct
@@ -24,7 +21,6 @@ import obd
 from obd import OBDStatus
 import sys
 import spidev as SPI
-#from RPi import GPIO
 sys.path.append("..")
 from lib import LCD_1inch28
 import colorsys
@@ -32,6 +28,12 @@ import signal
 import sys
 from adafruit_seesaw import seesaw, rotaryio, digitalio
 import subprocess as sp
+i2c = busio.I2C(board.SCL, board.SDA)
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
+ads = ADS.ADS1115(i2c)
+import adafruit_htu31d
+htu = adafruit_htu31d.HTU31D(i2c)
 
 
 
@@ -64,17 +66,6 @@ bootState={"bth":[0,"fail"],
            "obd":[0,"fail"]
            }
 
-
-#Monitor limits
-up_RPM_OBD =0
-up_OIL_OBD =0
-up_BOOST_ADC =0
-up_ITT_OBD = 0
-up_WATER_OBD =0
-up_BLOCK1_ADC =0
-up_BLOCK2_ADC =0
-up_OILP_ADC =0
-#--------------------------#
 
 
 ###
@@ -133,7 +124,7 @@ topmenu=["Gauges","gaugemenu","ECU","ecumenu","Config","configmenu","Multi 1","Q
 ecumenu=["Clear DTC","ecu_reset","Read DTC","ecu_read","Back","backtotop2"]
 configmenu=["IP","ipaddress","Reload","reinitialise","Reboot","reboot_pi","Back","backtotop3"]
 gaugemenu=["Back","backttop2"]
-#              obd name    PID, location, enabled or false##, Friendly Name,value,pid squence, pid array
+#              obd name    PID, location, enabled or false##, Friendly Name,value,pid squence, pid array,alertlow,alerthigh
 gaugeItems={#"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
 #            "ENGINE_LOAD":["04","OBD",0,"Engine Load","",3,"a"],
 #            "COOLANT_TEMP":["05","OBD",0,"Water C","",4,"a"],
@@ -142,7 +133,7 @@ gaugeItems={#"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
 #            "RPM":["0C","OBD",0,"RPM","",11,"a"],
 #            "SPEED":["0D","OBD",0,"Speed","",12,"a"],
 #            "TIMING_ADVANCE":["0E","OBD",0,"Timing","",13,"a"],
-            "INTAKE_TEMP":["0F","OBD",0,"Intake C","",14,"a"]
+#            "INTAKE_TEMP":["0F","OBD",0,"Intake C","",14,"a"]
 #            "MAF":["10","OBD",0,"MAF","",15,"a"],
 #            "THROTTLE_POS":["11","OBD",0,"Throttle","",15,"a"],
 #            "RUN_TIME":["1F","OBD",0,"Run Time","",30,"a"],
@@ -152,11 +143,11 @@ gaugeItems={#"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
 #            "FUEL_TYPE":["51","OBD",0,"Fuel Type","",16,"c"],
 #            "FUEL_RATE":["5E","OBD",0,"Fuel Rate","",29,"c"],
 #            "OIL_TEMP":["5C","OBD",0,"Oil C","",27,"c"],
-#            "OIL_PRESSURE_ADC":["ADCPIN0","ADC",1,"Oil Pres","",0,"adc"],
-##            "BOOST_ADC":["ADCPIN1","ADC",1,"Boost","",1,"adc"],
-#            "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",1,"Block1 C","",2,"adc"],
-#            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",1,"Block2 C","",3,"adc"],
-#            "CABIN_TEMP_i2c":["TEMPADDR","I2C",0,"Cabin C","",4,"adc"]
+            "OIL_PRESSURE_ADC":["ADCPIN0","ADC",1,"Oil Pres","0",0,"adc","na",100],
+##            "BOOST_ADC":["ADCPIN1","ADC",1,"Boost","",1,"adc","na","15"],
+            "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",1,"Block1 C","0",2,"adc","na",90],
+            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",1,"Block2 C","0",3,"adc","na",90],
+            "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin C","0",4,"adc","na","nai"]
             }
 
 
@@ -388,14 +379,13 @@ def reboot_pi():
     draw.text((60,30),"..........", font=font, fill="WHITE")
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
-    time.sleep(5) 
-    
+    button_held=False
     while tempcount <=10:
-       if not button.value and not button_held:
-           button_held = True
-       if button.value and button_held:
-           button_held = False
-           menuloop(4,topmenu)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            button_held = False
+            menuloop(4,configmenu)
         diedots="."*tempcount
         draw.text((60,30),diedots, font=font, fill=255)
         im_r=image.rotate(rotation)
@@ -431,6 +421,13 @@ def ipaddress():
     time.sleep(5)
     menuloop(0,configmenu)
 
+def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3984.0):
+    import math
+    steinhart = math.log(r / Ro) / beta      # log(R/Ro) / beta
+    steinhart += 1.0 / (To + 273.15)         # log(R/Ro) / beta + 1/To
+    steinhart = (1.0 / steinhart) - 273.15   # Invert, convert to C
+    return steinhart
+
 
 #********************
 #********************
@@ -451,7 +448,7 @@ def firstBoot():
 #    connectBT()
 #    connectADC()
 #    connectOBD()
-#    OBDcleanup()
+    OBDcleanup()
 
 def connectBT():
     global BT
@@ -575,12 +572,43 @@ def obdTHREAD():
 
 
 def alertTHREAD():
-    for key,value in gaugeItems.items():
-        print("--"+key+":"+str(value[4]))
+    while True:
+        if int(gaugeItems["BLOCK_TEMP1_ADC"][4]) >= 10:
+                print("ALERT--:block temp")
+
+def adcTHREAD():
+    old_min=1088
+    old_max=32767
+    new_min=0
+    new_max=150
+    while True:
+        temperature, relative_humidity = htu.measurements
+        gaugeItems["CABIN_TEMP_i2c"][4]=round(temperature,1)
+        chan1 = AnalogIn(ads, ADS.P0)   #block1
+        chan2 = AnalogIn(ads, ADS.P1)   #block2
+        chan3 = AnalogIn(ads, ADS.P2)   #oil Pres
+        adcoil=chan3.value
+        oilpsi=((adcoil - old_min)/(old_max-old_min))*(new_max-new_min)+new_min
+        oilpsi=round(oilpsi)
+
+        thermistor1 = chan1
+        R1 = 10000/ (41835/thermistor1.value - 1)
+        thermistor2 = chan2
+        gaugeItems["BLOCK_TEMP1_ADC"][4]=round(steinhart_temperature_C(R1))
+        R2 = 10000 / (41835/thermistor1.value - 1)
+        gaugeItems["BLOCK_TEMP2_ADC"][4]=round(steinhart_temperature_C(R2))
+
+#        print("--------------------------")
+#        print(gaugeItems["CABIN_TEMP_i2c"][4])
+#        print(gaugeItems["BLOCK_TEMP1_ADC"][4])
+#        print(gaugeItems["BLOCK_TEMP2_ADC"][4])
+        
+#        print("--------------------------")
+#        print()
+#        print()
 
 
 #start obd threads
-#start ADC threads
 #start display threads
 #start monitor and alert thread
 
@@ -609,10 +637,12 @@ firstBoot()
 
 try:
     threading.Thread(target=menuloop, args=(0,topmenu)).start()
-    if OBD==1:
-        threading.Thread(target=obdTHREAD).start()
+    threading.Thread(target=adcTHREAD).start()
+#    if OBD==1:
+#        threading.Thread(target=obdTHREAD).start()
 #    if ADC=1:
 #        threading.Thread(target=adcTHREAD).start()
+    time.sleep(5)
     threading.Thread(target=alertTHREAD).start()
 
 except:
