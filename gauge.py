@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+  
 #********************
 #********************
 #####################
@@ -56,8 +58,6 @@ address="/home/pi/gauge/"
 ###
 
 #Global variables
-
-
 ADC=0
 BT=0
 OBD=0
@@ -71,6 +71,7 @@ bootState={"bth":[0,"fail"],
 ###
 #DISPLAY SETUP
 ###
+
 #PIN CONFIG LCD
 RST=27
 DC=25
@@ -82,12 +83,6 @@ device = 0
 disp = LCD_1inch28.LCD_1inch28()
 rotation=0
 #--------------------------#
-seesaw = seesaw.Seesaw(board.I2C(), addr=0x36)
-seesaw.pin_mode(24, seesaw.INPUT_PULLUP)
-button = digitalio.DigitalIO(seesaw, 24)
-encoder = rotaryio.IncrementalEncoder(seesaw)
-seesaw_product = (seesaw.get_version() >> 16) & 0xFFFF
-
 
 
 ###
@@ -102,6 +97,16 @@ gfont = ImageFont.truetype(address+"arial.tff", 54)
 #--------------------------#
 
 
+###
+#Encoder setup
+###
+seesaw = seesaw.Seesaw(board.I2C(), addr=0x36)
+seesaw.pin_mode(24, seesaw.INPUT_PULLUP)
+button = digitalio.DigitalIO(seesaw, 24)
+encoder = rotaryio.IncrementalEncoder(seesaw)
+seesaw_product = (seesaw.get_version() >> 16) & 0xFFFF
+#--------------------------#
+
 
 ###
 #OBD setup
@@ -110,9 +115,7 @@ gfont = ImageFont.truetype(address+"arial.tff", 54)
 #BT info
 btmac="00:04:3E:4A:26:B0"
 btname="OBDLink LX"
-
-
-
+#--------------------------#
 
 
 
@@ -163,6 +166,123 @@ gaugeItems={#"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
 #********************
 #********************
 
+def connectBT():
+    global BT
+    print("connecting BT")
+    i=0
+    while i<5:
+        BTconnected=sp.getoutput('hcitool name '+btmac)
+        if btname == BTconnected:
+            print("BT conected")
+            BT=1
+            bootState['bth']=(i,"win")
+            highlightbootDisplay()
+            return
+        i=i+1
+        time.sleep(2)
+        bootState['bth']=(i,"fail")
+        highlightbootDisplay()
+    print("BT not avaliable")
+    BT=0
+
+def connectADC():
+#####
+###NEED TO FIX ADC ONCE NEW ADC ARRIVES
+###
+    global ADC
+    print("connecting ADC")
+    i=0
+    while i<5:
+        print("looping",i)
+        if i==1:
+            print("ADC conected")
+            ADC=1
+            bootState['adc']=(i,"win")
+            highlightbootDisplay()
+            return
+        i=i+1
+        time.sleep(2)
+        bootState['adc']=(i,"fail")
+        highlightbootDisplay()
+    print("ADC not avaliable")
+    ADC=0
+
+
+def connectOBD():
+    global OBD
+    print("connecting OBD")
+    i=0
+    statusState=""
+    while i<5:
+        try:
+            connection = obd.OBD()
+            statusState=connection.status()
+            print("OBD conected")
+            OBD=1
+            bootState['obd']=(i,"win")
+            highlightbootDisplay()
+            connection.close()
+            return
+        except:
+            print(statusState)
+            i=i+1
+            time.sleep(2)
+            bootState['obd']=(i,"fail")
+            highlightbootDisplay()
+    print("OBD not avaliable")
+    OBD=0
+
+
+
+#********************
+#********************
+#####################
+#                   #
+#running OBD/ADC    #
+#   Threads         #
+##################### 
+#********************
+#********************
+
+def obdTHREAD():
+    connection = obd.Async()
+    for key,value in gaugeItems.items():
+        cmd=obd.commands.guageItems[key]
+        if value[1]=="OBD":
+            value[4]=str(connection.watch(cmd))
+    connection.start()
+
+def adcTHREAD():
+    old_min=1088
+    old_max=32767
+    new_min=0
+    new_max=150
+    while True:
+        temperature, relative_humidity = htu.measurements
+        gaugeItems["CABIN_TEMP_i2c"][4]=round(temperature,1)
+        chan1 = AnalogIn(ads, ADS.P0)   #block1
+        chan2 = AnalogIn(ads, ADS.P1)   #block2
+        chan3 = AnalogIn(ads, ADS.P2)   #oil Pres
+        adcoil=chan3.value
+        oilpsi=((adcoil - old_min)/(old_max-old_min))*(new_max-new_min)+new_min
+        oilpsi=round(oilpsi)
+
+        thermistor1 = chan1
+        R1 = 10000/ (41134/thermistor1.value - 1)
+        thermistor2 = chan2
+        gaugeItems["BLOCK_TEMP1_ADC"][4]=round(steinhart_temperature_C(R1))
+        R2 = 10000 / (41134/thermistor1.value - 1)
+        gaugeItems["BLOCK_TEMP2_ADC"][4]=round(steinhart_temperature_C(R2))
+
+        print("--------------------------")
+        print(gaugeItems["CABIN_TEMP_i2c"][4])
+        print(gaugeItems["BLOCK_TEMP1_ADC"][4])
+        print(gaugeItems["BLOCK_TEMP2_ADC"][4])
+       
+        print("--------------------------")
+        print()
+        print()
+
 #start OBD connection wait for connection if non received mark as no obd and  change menu
 
 #start ADC thread and start saving global variables. if no data received mark as no ADC and change menu
@@ -181,9 +301,104 @@ gaugeItems={#"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
 #********************
 #********************
 
+
+
+def alertTHREAD():
+    while True:
+
+        for key,value in gaugeItems.items():
+            if value[8]=="na":
+                continue
+            elif int(value[4]) >= int(value[8]):
+                if value[9] <= 0: 
+                    print("Alert ",key," is going high")
+                    value[9]=10000000
+                else: 
+                    value[9]-=1
+
+
+
 #monitor global configs for reader values and if go over set limit alert via buzzer and swap screen to that monitor
 
 
+
+#********************
+#********************
+#####################
+#                   #
+#Display            #
+#   Threads         #
+##################### 
+#********************
+#********************
+
+
+    
+def clearDisplay():
+    disp.clear()
+
+def setupDisplay():
+    image = Image.new("RGB", (disp.width, disp.height), "BLACK")
+    draw = ImageDraw.Draw(image)
+    return image,draw
+
+def highlightDisplay(TEXT,hightext):
+    drawimage=setupDisplay()
+    image=drawimage[0]
+    draw=drawimage[1]
+    ##(accross screen),(upand down))(100,100 is centre)
+    draw.text((70,30),hightext, fill = "WHITE", font=font2)
+    draw.text((15,95),TEXT, fill = "WHITE", font =font)
+    im_r=image.rotate(rotation)
+    disp.ShowImage(im_r)
+
+def highlightbootDisplay():
+    drawimage=setupDisplay()
+    image=drawimage[0]
+    draw=drawimage[1]
+
+    if bootState['bth'][1]=="fail":
+        faildot="."*bootState['bth'][0]
+        draw.text((40,40),"BTH", fill = "WHITE", font=font)
+        draw.text((150,40),".....", fill = "WHITE", font=font)
+        draw.text((150,40),faildot, fill = "RED", font=font)
+        if bootState['bth'][0]==5:
+            draw.text((40,40),"BTH", fill = "RED", font=font)
+    else:
+        faildot="."*bootState['bth'][0]
+        draw.text((150,40),".....", fill = "WHITE", font=font)
+        draw.text((40,40),"BTH", fill = "GREEN", font=font)
+        draw.text((150,40),faildot, fill = "GREEN", font=font)
+
+    if bootState['adc'][1]=="fail":
+        faildot="."*bootState['adc'][0]
+        draw.text((40,93),"ADC", fill = "WHITE", font=font)
+        draw.text((150,93),".....", fill = "WHITE", font=font)
+        draw.text((150,93),faildot, fill = "RED", font=font)
+        if bootState['adc'][0]==5:
+            draw.text((40,93),"ADC", fill = "RED", font=font)
+    else:
+        faildot="."*bootState['adc'][0]
+        draw.text((40,93),"ADC", fill = "GREEN", font=font)
+        draw.text((150,93),".....", fill = "WHITE", font=font)
+        draw.text((150,93),faildot, fill = "GREEN", font=font)
+
+    if bootState['obd'][1]=="fail":
+        faildot="."*bootState['obd'][0]
+        draw.text((40,145),"OBD", fill = "WHITE", font=font)
+        draw.text((150,145),".....", fill = "WHITE", font=font)
+        draw.text((150,145),faildot, fill = "RED", font=font)
+        if bootState['obd'][0]==5:
+            draw.text((40,145),"OBD", fill = "RED", font=font)
+    else:
+        faildot="."*bootState['obd'][0]
+        draw.text((40,145),"OBD", fill = "GREEN", font=font)
+        draw.text((150,145),".....", fill = "WHITE", font=font)
+        draw.text((150,145),faildot, fill = "GREEN", font=font)
+
+
+    im_r=image.rotate(rotation)
+    disp.ShowImage(im_r)
 
 
 #********************
@@ -290,72 +505,6 @@ def backtotop2():
 def backtotop3():
     menuloop(4,topmenu)
 
-    
-def clearDisplay():
-    disp.clear()
-
-def setupDisplay():
-    image = Image.new("RGB", (disp.width, disp.height), "BLACK")
-    draw = ImageDraw.Draw(image)
-    return image,draw
-
-def highlightDisplay(TEXT,hightext):
-    drawimage=setupDisplay()
-    image=drawimage[0]
-    draw=drawimage[1]
-    ##(accross screen),(upand down))(100,100 is centre)
-    draw.text((70,30),hightext, fill = "WHITE", font=font2)
-    draw.text((15,95),TEXT, fill = "WHITE", font =font)
-    im_r=image.rotate(rotation)
-    disp.ShowImage(im_r)
-
-def highlightbootDisplay():
-    drawimage=setupDisplay()
-    image=drawimage[0]
-    draw=drawimage[1]
-
-    if bootState['bth'][1]=="fail":
-        faildot="."*bootState['bth'][0]
-        draw.text((40,40),"BTH", fill = "WHITE", font=font)
-        draw.text((150,40),".....", fill = "WHITE", font=font)
-        draw.text((150,40),faildot, fill = "RED", font=font)
-        if bootState['bth'][0]==5:
-            draw.text((40,40),"BTH", fill = "RED", font=font)
-    else:
-        faildot="."*bootState['bth'][0]
-        draw.text((150,40),".....", fill = "WHITE", font=font)
-        draw.text((40,40),"BTH", fill = "GREEN", font=font)
-        draw.text((150,40),faildot, fill = "GREEN", font=font)
-
-    if bootState['adc'][1]=="fail":
-        faildot="."*bootState['adc'][0]
-        draw.text((40,93),"ADC", fill = "WHITE", font=font)
-        draw.text((150,93),".....", fill = "WHITE", font=font)
-        draw.text((150,93),faildot, fill = "RED", font=font)
-        if bootState['adc'][0]==5:
-            draw.text((40,93),"ADC", fill = "RED", font=font)
-    else:
-        faildot="."*bootState['adc'][0]
-        draw.text((40,93),"ADC", fill = "GREEN", font=font)
-        draw.text((150,93),".....", fill = "WHITE", font=font)
-        draw.text((150,93),faildot, fill = "GREEN", font=font)
-
-    if bootState['obd'][1]=="fail":
-        faildot="."*bootState['obd'][0]
-        draw.text((40,145),"OBD", fill = "WHITE", font=font)
-        draw.text((150,145),".....", fill = "WHITE", font=font)
-        draw.text((150,145),faildot, fill = "RED", font=font)
-        if bootState['obd'][0]==5:
-            draw.text((40,145),"OBD", fill = "RED", font=font)
-    else:
-        faildot="."*bootState['obd'][0]
-        draw.text((40,145),"OBD", fill = "GREEN", font=font)
-        draw.text((150,145),".....", fill = "WHITE", font=font)
-        draw.text((150,145),faildot, fill = "GREEN", font=font)
-
-
-    im_r=image.rotate(rotation)
-    disp.ShowImage(im_r)
 
 #********************
 #********************
@@ -450,74 +599,6 @@ def firstBoot():
 #    connectOBD()
     OBDcleanup()
 
-def connectBT():
-    global BT
-    print("connecting BT")
-    i=0
-    while i<5:
-        BTconnected=sp.getoutput('hcitool name '+btmac)
-        if btname == BTconnected:
-            print("BT conected")
-            BT=1
-            bootState['bth']=(i,"win")
-            highlightbootDisplay()
-            return
-        i=i+1
-        time.sleep(2)
-        bootState['bth']=(i,"fail")
-        highlightbootDisplay()
-    print("BT not avaliable")
-    BT=0
-
-def connectADC():
-#####
-###NEED TO FIX ADC ONCE NEW ADC ARRIVES
-###
-    global ADC
-    print("connecting ADC")
-    i=0
-    while i<5:
-        print("looping",i)
-        if i==1:
-            print("ADC conected")
-            ADC=1
-            bootState['adc']=(i,"win")
-            highlightbootDisplay()
-            return
-        i=i+1
-        time.sleep(2)
-        bootState['adc']=(i,"fail")
-        highlightbootDisplay()
-    print("ADC not avaliable")
-    ADC=0
-
-def connectOBD():
-
-    global OBD
-    print("connecting OBD")
-    i=0
-    statusState=""
-    while i<5:
-        try:
-            connection = obd.OBD()
-            statusState=connection.status()
-            print("OBD conected")
-            OBD=1
-            bootState['obd']=(i,"win")
-            highlightbootDisplay()
-            connection.close()
-            return
-        except:
-            print(statusState)
-            i=i+1
-            time.sleep(2)
-            bootState['obd']=(i,"fail")
-            highlightbootDisplay()
-    print("OBD not avaliable")
-    OBD=0
-
-
-
 def OBDcleanup():
     global OBD
     print(len(gaugeItems))
@@ -561,58 +642,6 @@ def OBDcleanup():
         except:
             print("failed cleanup")
 
-def obdTHREAD():
-    connection = obd.Async()
-    for key,value in gaugeItems.items():
-        cmd=obd.commands.guageItems[key]
-        if value[1]=="OBD":
-            value[4]=str(connection.watch(cmd))
-    connection.start()
-
-
-def alertTHREAD():
-    while True:
-
-        for key,value in gaugeItems.items():
-            if value[8]=="na":
-                continue
-            elif int(value[4]) >= int(value[8]):
-                if value[9] <= 0: 
-                    print("Alert ",key," is going high")
-                    value[9]=10000000
-                else: 
-                    value[9]-=1
-
-def adcTHREAD():
-    old_min=1088
-    old_max=32767
-    new_min=0
-    new_max=150
-    while True:
-        temperature, relative_humidity = htu.measurements
-        gaugeItems["CABIN_TEMP_i2c"][4]=round(temperature,1)
-        chan1 = AnalogIn(ads, ADS.P0)   #block1
-        chan2 = AnalogIn(ads, ADS.P1)   #block2
-        chan3 = AnalogIn(ads, ADS.P2)   #oil Pres
-        adcoil=chan3.value
-        oilpsi=((adcoil - old_min)/(old_max-old_min))*(new_max-new_min)+new_min
-        oilpsi=round(oilpsi)
-
-        thermistor1 = chan1
-        R1 = 10000/ (41134/thermistor1.value - 1)
-        thermistor2 = chan2
-        gaugeItems["BLOCK_TEMP1_ADC"][4]=round(steinhart_temperature_C(R1))
-        R2 = 10000 / (41134/thermistor1.value - 1)
-        gaugeItems["BLOCK_TEMP2_ADC"][4]=round(steinhart_temperature_C(R2))
-
-        print("--------------------------")
-        print(gaugeItems["CABIN_TEMP_i2c"][4])
-        print(gaugeItems["BLOCK_TEMP1_ADC"][4])
-        print(gaugeItems["BLOCK_TEMP2_ADC"][4])
-       
-        print("--------------------------")
-        print()
-        print()
 
 
 #start obd threads
