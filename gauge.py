@@ -524,9 +524,21 @@ def backtotop3():
 #def BOOST_ADC():
         
 
-#def BLOCK_TEMP1_ADC():
-
-
+def BLOCK_TEMP1_ADC():
+    button_held=False
+    while True:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((53,95),str(gaugeItems["BLOCK_TEMP1_ADC"][4])+"°C",font=gfont, fill="WHITE")
+        draw.text((50,26),"Block 1", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            button_held = False
+            menuloop(0,gaugemenu)  
 #def BLOCK_TEMP2_ADC():
 
 
@@ -544,7 +556,7 @@ def CABIN_TEMP_i2c():
             button_held = True
         if button.value and button_held:
             button_held = False
-            doaction(0,gaugemenu)  
+            menuloop(0,gaugemenu)  
 
 
 
