@@ -147,9 +147,9 @@ gaugeItems={#"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
 #            "FUEL_RATE":["5E","OBD",0,"Fuel Rate","",29,"c"],
 #            "OIL_TEMP":["5C","OBD",0,"Oil C","",27,"c"],
             "OIL_PRESSURE_ADC":["ADCPIN0","ADC",1,"Oil Pres","0",0,"adc","na","100",0],
-##            "BOOST_ADC":["ADCPIN1","ADC",1,"Boost","",1,"adc","na","15",0],
+            "BOOST_ADC":["ADCPIN1","ADC",1,"Boost","0",0,"adc","na","15",0],
             "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",1,"Block1 C","0",2,"adc","na","90",0],
-            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",1,"Block2 C","0",3,"adc","na","20",0],
+            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",1,"Block2 C","0",3,"adc","na","90",0],
             "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin C","0",4,"adc","na","na",0]
             }
 
@@ -271,17 +271,17 @@ def adcTHREAD():
         R1 = 10000/ (41134/thermistor1.value - 1)
         thermistor2 = chan2
         gaugeItems["BLOCK_TEMP1_ADC"][4]=round(steinhart_temperature_C(R1))
-        R2 = 10000 / (41134/thermistor1.value - 1)
+        R2 = 10000 / (41134/thermistor2.value - 1)
         gaugeItems["BLOCK_TEMP2_ADC"][4]=round(steinhart_temperature_C(R2))
 
-        print("--------------------------")
-        print(gaugeItems["CABIN_TEMP_i2c"][4])
-        print(gaugeItems["BLOCK_TEMP1_ADC"][4])
-        print(gaugeItems["BLOCK_TEMP2_ADC"][4])
-       
-        print("--------------------------")
-        print()
-        print()
+#        print("--------------------------")
+#        print(gaugeItems["CABIN_TEMP_i2c"][4])
+#        print(gaugeItems["BLOCK_TEMP1_ADC"][4])
+#        print(gaugeItems["BLOCK_TEMP2_ADC"][4])
+#       
+#        print("--------------------------")
+#       print()
+#        print()
 
 #start OBD connection wait for connection if non received mark as no obd and  change menu
 
@@ -506,6 +506,49 @@ def backtotop3():
     menuloop(4,topmenu)
 
 
+
+
+#********************
+#********************
+#####################
+#                   #
+#Gauge functions    #
+#                   #
+##################### 
+#********************
+#********************
+
+#def OIL_PRESSURE_ADC():
+
+
+#def BOOST_ADC():
+        
+
+#def BLOCK_TEMP1_ADC():
+
+
+#def BLOCK_TEMP2_ADC():
+
+
+def CABIN_TEMP_i2c():
+    button_held=False
+    while True:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["CABIN_TEMP_i2c"][4])+"°C",font=gfont, fill="WHITE")
+        draw.text((60,26),"Inside", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            button_held = False
+            doaction(0,gaugemenu)  
+
+
+
+
 #********************
 #********************
 #####################
@@ -593,7 +636,7 @@ def firstBoot():
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
     time.sleep(1)
-#    os.system('sudo rfcomm bind rfcomm0 '+btmac)
+    os.system('sudo rfcomm bind rfcomm0 '+btmac)
 #    connectBT()
 #    connectADC()
 #    connectOBD()
