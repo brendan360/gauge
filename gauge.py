@@ -391,9 +391,11 @@ def reboot_pi():
     time.sleep(5) 
     
     while tempcount <=10:
-        buttonState=GPIO.input(SW)
-        if buttonState == False:
-            menuloop(4,topmenu)
+       if not button.value and not button_held:
+           button_held = True
+       if button.value and button_held:
+           button_held = False
+           menuloop(4,topmenu)
         diedots="."*tempcount
         draw.text((60,30),diedots, font=font, fill=255)
         im_r=image.rotate(rotation)
