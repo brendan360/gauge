@@ -518,11 +518,39 @@ def backtotop3():
 #********************
 #********************
 
-#def OIL_PRESSURE_ADC():
+def OIL_PRESSURE_ADC():
+    button_held=False
+    while True:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((53,95),str(gaugeItems["OIL_PRESSURE_ADC"][4])+"psi",font=gfont, fill="WHITE")
+        draw.text((50,26),"Block 1", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            button_held = False
+            menuloop(0,gaugemenu)  
 
 
-#def BOOST_ADC():
-        
+def BOOST_ADC():
+    button_held=False
+    while True:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((53,95),str(gaugeItems["BOOST_ADC"][4]),font=gfont, fill="WHITE")
+        draw.text((50,26),"Boost", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            button_held = False
+            menuloop(0,gaugemenu)  
+
 
 def BLOCK_TEMP1_ADC():
     button_held=False
