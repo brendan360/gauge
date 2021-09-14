@@ -33,7 +33,6 @@ import subprocess as sp
 i2c = busio.I2C(board.SCL, board.SDA)
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
-ads = ADS.ADS1115(i2c)
 import adafruit_htu31d
 htu = adafruit_htu31d.HTU31D(i2c)
 
@@ -53,6 +52,7 @@ htu = adafruit_htu31d.HTU31D(i2c)
 
 address="/home/pi/gauge/"
 
+ads=''
 ###
 #gauge value setup
 ###
@@ -146,11 +146,11 @@ gaugeItems={#"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
 #            "FUEL_TYPE":["51","OBD",0,"Fuel Type","",16,"c"],
 #            "FUEL_RATE":["5E","OBD",0,"Fuel Rate","",29,"c"],
 #            "OIL_TEMP":["5C","OBD",0,"Oil C","",27,"c"],
-            "OIL_PRESSURE_ADC":["ADCPIN0","ADC",1,"Oil Pres","0",0,"adc","na","100",0],
-            "BOOST_ADC":["ADCPIN1","ADC",1,"Boost","0",0,"adc","na","15",0],
-            "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",1,"Block1 C","0",2,"adc","na","90",0],
-            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",1,"Block2 C","0",3,"adc","na","90",0],
-            "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin C","0",4,"adc","na","na",0]
+            "OIL_PRESSURE_ADC":["ADCPIN0","ADC",0,"Oil Pres","0",0,"adc","na","100",0],
+            "BOOST_ADC":["ADCPIN1","ADC",0,"Boost","0",0,"adc","na","15",0],
+            "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",0,"Block1 C","0",2,"adc","na","90",0],
+            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",0,"Block2 C","0",3,"adc","na","90",0],
+            "CABIN_TEMP_i2c":["TEMPADDR","I2C",0,"Cabin C","0",4,"adc","na","na",0]
             }
 
 
@@ -190,23 +190,26 @@ def connectADC():
 ###NEED TO FIX ADC ONCE NEW ADC ARRIVES
 ###
     global ADC
+    global ads
     print("connecting ADC")
     i=0
     while i<5:
-        print("looping",i)
-        if i==1:
-            print("ADC conected")
+        try:
+            ads = ADS.ADS1115(i2c)
+            print("ADC connected")
             ADC=1
             bootState['adc']=(i,"win")
             highlightbootDisplay()
             return
-        i=i+1
-        time.sleep(2)
-        bootState['adc']=(i,"fail")
-        highlightbootDisplay()
-    print("ADC not avaliable")
+        except:
+            i+=1
+            bootState['adc']=(i,"fail")
+            highlightbootDisplay()
+            print("ADC",i)
+            time.sleep(2)
     ADC=0
-
+    print("ADC failed")
+    
 
 def connectOBD():
     global OBD
@@ -273,11 +276,12 @@ def adcTHREAD():
         gaugeItems["BLOCK_TEMP1_ADC"][4]=round(steinhart_temperature_C(R1))
         R2 = 10000 / (41134/thermistor2.value - 1)
         gaugeItems["BLOCK_TEMP2_ADC"][4]=round(steinhart_temperature_C(R2))
+        gaugeItems["OIL_PRESSURE_ADC"][4]=oilpsi 
 
 #        print("--------------------------")
 #        print(gaugeItems["CABIN_TEMP_i2c"][4])
 #        print(gaugeItems["BLOCK_TEMP1_ADC"][4])
-#        print(gaugeItems["BLOCK_TEMP2_ADC"][4])
+        print(gaugeItems["OIL_PRESSURE_ADC"][4])
 #       
 #        print("--------------------------")
 #       print()
@@ -304,6 +308,8 @@ def adcTHREAD():
 
 
 def alertTHREAD():
+    time.sleep(5)
+    print("startiong alert")
     while True:
 
         for key,value in gaugeItems.items():
@@ -524,8 +530,8 @@ def OIL_PRESSURE_ADC():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((53,95),str(gaugeItems["OIL_PRESSURE_ADC"][4])+"psi",font=gfont, fill="WHITE")
-        draw.text((50,26),"Block 1", font=font, fill="WHITE") 
+        draw.text((40,95),str(gaugeItems["OIL_PRESSURE_ADC"][4])+" psi",font=gfont, fill="WHITE")
+        draw.text((45,26),"Oil Pres", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
         if not button.value and not button_held:
@@ -601,8 +607,60 @@ def CABIN_TEMP_i2c():
             button_held = False
             menuloop(0,gaugemenu)  
 
+def QUAD_GAUGE():
+    watch_RPM=2000
+    watch_OIL=20
+    button_held=False
+    while True:      
+        
+        oilPSI=gaugeItems["OIL_PRESSURE_ADC"][4]
+        boost=gaugeItems["BOOST_ADC"][4]
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        if int(watch_RPM)>6000:
+            if (len(str(watch_RPM))==3):
+                draw.text((84,20),str(watch_RPM), font=font, fill="RED")
+            else:
+                draw.text((74,20),str(watch_RPM), font=font, fill="RED")
+        else:
+            if (len(str(watch_RPM))==3):
+                draw.text((84,20),str(watch_RPM), font=font, fill="WHITE")
+            else:
+                draw.text((74,20),str(watch_RPM), font=font, fill="WHITE")
+
+        draw.text((108,67),"RPM",font=font3,fill="RED")
+        draw.line([(0,84),(250, 84)], fill ="RED",width = 3)
+
+        draw.text((25,90),str(watch_OIL)+"°",font=font,fill="WHITE")
+        draw.text((30,137),"Oil Temp", font=font3,fill="RED")
+
+        draw.line([(120,84),(120,153)],fill="RED", width=3)
+
+        draw.text((130,90),str(oilPSI), font=font, fill="WHITE")
+        draw.text((199,110),"psi",font=font2, fill="WHITE")
+        draw.text((160,137),"Oil Pres", font=font3,fill="RED")
+
+        draw.line([(0,153),(240,153)],fill="RED", width=3)
+
+        draw.text((100,160),"BOOST",font=font3,fill="RED")
+
+        if (len(str(boost))==2):
+            draw.text((90,175),str(boost), font=gfont,fill="WHITE")
+        elif (len(str(boost))==3):
+            draw.text((80,175),str(boost), font=gfont, fill="WHITE")
+        else:
+            draw.text((105,175),str(boost), font=gfont, fill="WHITE")
+
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
 
 
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            button_held = False
+            menuloop(0,topmenu)
 
 #********************
 #********************
@@ -693,14 +751,25 @@ def firstBoot():
     time.sleep(1)
     os.system('sudo rfcomm bind rfcomm0 '+btmac)
 #    connectBT()
-#    connectADC()
+    connectADC()
 #    connectOBD()
     OBDcleanup()
 
 def OBDcleanup():
     global OBD
+    global ADC
     print(len(gaugeItems))
     time.sleep(2)
+    
+    if ADC ==0:
+        cleanupMenu()
+        return
+    if ADC ==1:
+        for key,value in gaugeItems.items():
+            if value[6] =="adc":
+                value[2]=1
+
+    
     if OBD ==0:
         cleanupMenu()
         return
@@ -767,16 +836,14 @@ def cleanupMenu():
 #MAIN AREA
 ###
 
-firstBoot()
 
+firstBoot()
 try:
     threading.Thread(target=menuloop, args=(0,topmenu)).start()
-    threading.Thread(target=adcTHREAD).start()
-#    if OBD==1:
-#        threading.Thread(target=obdTHREAD).start()
-#    if ADC=1:
-#        threading.Thread(target=adcTHREAD).start()
-    time.sleep(5)
+    if OBD==1:
+        threading.Thread(target=obdTHREAD).start()
+    if ADC==1:
+        threading.Thread(target=adcTHREAD).start()
     threading.Thread(target=alertTHREAD).start()
 
 except:
