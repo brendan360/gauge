@@ -28,7 +28,7 @@ from lib import LCD_1inch28
 import colorsys
 import signal
 import sys
-from adafruit_seesaw import seesaw, rotaryio, digitalio
+from adafruit_seesaw import seesaw, neopixel, rotaryio, digitalio
 import subprocess as sp
 i2c = busio.I2C(board.SCL, board.SDA)
 import adafruit_ads1x15.ads1115 as ADS
@@ -37,7 +37,10 @@ import adafruit_htu31d
 htu = adafruit_htu31d.HTU31D(i2c)
 
 
-
+try:
+    import _pixelbuf
+except ImportError:
+    import adafruit_pypixelbuf as _pixelbuf
 
 
 #********************
@@ -81,7 +84,7 @@ device = 0
 
 #Display
 disp = LCD_1inch28.LCD_1inch28()
-rotation=0
+rotation=180
 #--------------------------#
 
 
@@ -150,7 +153,7 @@ gaugeItems={#"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
             "BOOST_ADC":["ADCPIN1","ADC",0,"Boost","0",0,"adc","na","15",0],
             "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",0,"Block1 C","0",2,"adc","na","90",0],
             "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",0,"Block2 C","0",3,"adc","na","90",0],
-            "CABIN_TEMP_i2c":["TEMPADDR","I2C",0,"Cabin C","0",4,"adc","na","na",0]
+            "CABIN_TEMP_i2c":["TEMPADDR","I2C",0,"Cabin C","0",4,"adc","na","25",0]
             }
 
 
@@ -205,7 +208,6 @@ def connectADC():
             i+=1
             bootState['adc']=(i,"fail")
             highlightbootDisplay()
-            print("ADC",i)
             time.sleep(2)
     ADC=0
     print("ADC failed")
@@ -281,7 +283,7 @@ def adcTHREAD():
 #        print("--------------------------")
 #        print(gaugeItems["CABIN_TEMP_i2c"][4])
 #        print(gaugeItems["BLOCK_TEMP1_ADC"][4])
-        print(gaugeItems["OIL_PRESSURE_ADC"][4])
+#        print(gaugeItems["OIL_PRESSURE_ADC"][4])
 #       
 #        print("--------------------------")
 #       print()
@@ -305,7 +307,23 @@ def adcTHREAD():
 #********************
 #********************
 
+def flashLed():
+    
+    pixel = neopixel.NeoPixel(seesaw, 6, 1)
+    pixel.brightness = 0.5
+    i=0
+    while i <=10:
+        color = 0  # start at red
+        pixel.brightness = 0.9
+        pixel.fill(_pixelbuf.colorwheel(color))
+        time.sleep(.5)
+        pixel.brightness = 0.0
+        pixel.fill(_pixelbuf.colorwheel(color))
+        time.sleep(.5)
+        i+=1
 
+def flashScreen():
+    print("screen")
 
 def alertTHREAD():
     time.sleep(5)
@@ -316,9 +334,13 @@ def alertTHREAD():
             if value[8]=="na":
                 continue
             elif int(value[4]) >= int(value[8]):
-                if value[9] <= 0: 
+                if value[9] <= 0:
+                    threading.Thread(target=flashLed).start()
                     print("Alert ",key," is going high")
-                    value[9]=10000000
+                    value[9]=1000000
+                    time.sleep(2)
+                    threading.Thread(target=flashLed).wait()
+                   # eval(key +"()")
                 else: 
                     value[9]-=1
 
@@ -835,7 +857,6 @@ def cleanupMenu():
 ###
 #MAIN AREA
 ###
-
 
 firstBoot()
 try:
