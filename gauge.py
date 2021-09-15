@@ -53,8 +53,9 @@ except ImportError:
 #********************
 #********************
 
+lock = threading.Lock()
 address="/home/pi/gauge/"
-
+alertScreen=0
 ads=''
 ###
 #gauge value setup
@@ -106,7 +107,7 @@ gfont = ImageFont.truetype(address+"arial.tff", 54)
 seesaw = seesaw.Seesaw(board.I2C(), addr=0x36)
 seesaw.pin_mode(24, seesaw.INPUT_PULLUP)
 button = digitalio.DigitalIO(seesaw, 24)
-encoder = rotaryio.IncrementalEncoder(seesaw)
+#encoder = rotaryio.IncrementalEncoder(seesaw)
 seesaw_product = (seesaw.get_version() >> 16) & 0xFFFF
 #--------------------------#
 
@@ -153,7 +154,7 @@ gaugeItems={#"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
             "BOOST_ADC":["ADCPIN1","ADC",0,"Boost","0",0,"adc","na","15",0],
             "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",0,"Block1 C","0",2,"adc","na","90",0],
             "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",0,"Block2 C","0",3,"adc","na","90",0],
-            "CABIN_TEMP_i2c":["TEMPADDR","I2C",0,"Cabin C","0",4,"adc","na","25",0]
+            "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin C","0",4,"adc","na","25",0]
             }
 
 
@@ -209,7 +210,7 @@ def connectADC():
             bootState['adc']=(i,"fail")
             highlightbootDisplay()
             time.sleep(2)
-    ADC=0
+    ADC=1
     print("ADC failed")
     
 
@@ -327,6 +328,7 @@ def flashScreen():
 
 def alertTHREAD():
     time.sleep(5)
+    global alertScreen
     print("startiong alert")
     while True:
 
@@ -338,9 +340,10 @@ def alertTHREAD():
                     threading.Thread(target=flashLed).start()
                     print("Alert ",key," is going high")
                     value[9]=1000000
-                    time.sleep(2)
-                    threading.Thread(target=flashLed).wait()
-                   # eval(key +"()")
+                    time.sleep(5)
+                    lock.acquire()
+                    alertScreen=1
+                    eval(key +"()")
                 else: 
                     value[9]-=1
 
@@ -441,6 +444,7 @@ def highlightbootDisplay():
 
 #menu serup goes here and display of gauge screens
 def menuDisplay(currentMenu,menu):
+    encoder = rotaryio.IncrementalEncoder(seesaw)
     drawimage=setupDisplay()
     image=drawimage[0]
     draw=drawimage[1]
@@ -483,36 +487,38 @@ def menuDisplay(currentMenu,menu):
 
 
 def menuloop(item,menu):
-    def buttonPushed(item,menu):
-        doaction(item,menu)
+    encoder = rotaryio.IncrementalEncoder(seesaw)
+    seesaw.set_encoder_position(0)
     global newEncValue
     global oldEncValue
+    global alertScreen
     button_held = False
     oldEncValue=0
+    newEncValue=0
     while True:
-        
-       newEncValue=-encoder.position
-
-       if newEncValue>oldEncValue:
-           item-=2
-           oldEncValue=newEncValue
-       if newEncValue<oldEncValue:
-           item+=2
-           oldEncValue=newEncValue
+        if alertScreen==0:    
+           newEncValue=-encoder.position
+           print(newEncValue,"--------",oldEncValue)
+           if newEncValue>oldEncValue+1:
+               item-=2
+               oldEncValue=newEncValue
+           if newEncValue<oldEncValue-1:
+               item+=2
+               oldEncValue=newEncValue
             
-       if item == (len(menu)):
-           item=0
-       if item <0:
-           item=(len(menu))-2
+           if item == (len(menu)):
+               item=0
+           if item <0:
+               item=(len(menu))-2
         
-       menuDisplay(item,menu)
+           menuDisplay(item,menu)
         
-       
-       if not button.value and not button_held:
-           button_held = True
-       if button.value and button_held:
-           button_held = False
-           doaction(item,menu)
+           if not button.value and not button_held:
+               button_held = True
+           if button.value and button_held:
+               button_held = False
+               doaction(item,menu)
+    
 
 def doaction(item,menu):
     time.sleep(.333)
@@ -615,6 +621,7 @@ def BLOCK_TEMP2_ADC():
 
 def CABIN_TEMP_i2c():
     button_held=False
+    global alertScreen
     while True:
         drawimage=setupDisplay()
         image=drawimage[0]
@@ -626,8 +633,14 @@ def CABIN_TEMP_i2c():
         if not button.value and not button_held:
             button_held = True
         if button.value and button_held:
-            button_held = False
-            menuloop(0,gaugemenu)  
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(0,gaugemenu)
+                button_held=False
+            else:
+                button_held = False
+                menuloop(0,gaugemenu)  
+
 
 def QUAD_GAUGE():
     watch_RPM=2000
@@ -860,7 +873,7 @@ def cleanupMenu():
 
 firstBoot()
 try:
-    threading.Thread(target=menuloop, args=(0,topmenu)).start()
+#    threading.Thread(target=menuloop, args=(0,topmenu)).start()
     if OBD==1:
         threading.Thread(target=obdTHREAD).start()
     if ADC==1:
@@ -870,4 +883,4 @@ try:
 except:
     print("failed threads")
 
-
+menuloop(0,topmenu)
