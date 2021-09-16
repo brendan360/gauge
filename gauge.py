@@ -339,8 +339,8 @@ def alertTHREAD():
                 if value[9] <= 0:
                     threading.Thread(target=flashLed).start()
                     print("Alert ",key," is going high")
-                    value[9]=1000000
-                    time.sleep(5)
+                    value[9]=1000
+                    time.sleep(2)
                     lock.acquire()
                     alertScreen=1
                     eval(key +"()")
@@ -495,14 +495,13 @@ def menuloop(item,menu):
     button_held = False
     oldEncValue=0
     newEncValue=0
-    while True:
-        if alertScreen==0:    
+    while alertScreen ==0:
            newEncValue=-encoder.position
            print(newEncValue,"--------",oldEncValue)
-           if newEncValue>oldEncValue+1:
+           if newEncValue>oldEncValue:
                item-=2
                oldEncValue=newEncValue
-           if newEncValue<oldEncValue-1:
+           if newEncValue<oldEncValue:
                item+=2
                oldEncValue=newEncValue
             
@@ -554,7 +553,7 @@ def backtotop3():
 
 def OIL_PRESSURE_ADC():
     button_held=False
-    while True:
+    while alertScreen==0:
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
@@ -873,7 +872,7 @@ def cleanupMenu():
 
 firstBoot()
 try:
-#    threading.Thread(target=menuloop, args=(0,topmenu)).start()
+    threading.Thread(target=menuloop, args=(0,topmenu)).start()
     if OBD==1:
         threading.Thread(target=obdTHREAD).start()
     if ADC==1:
@@ -883,4 +882,3 @@ try:
 except:
     print("failed threads")
 
-menuloop(0,topmenu)
