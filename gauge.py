@@ -154,7 +154,7 @@ gaugeItems={"FUEL_STATUS":["03","OBD",0,"Fuel Status","0",2,"a","na","100",0],
             "BOOST_ADC":["ADCPIN1","ADC",0,"Boost","0",0,"adc","na","15",0],
             "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",0,"Block1 C","0",2,"adc","na","90",0],
             "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",0,"Block2 C","0",3,"adc","na","90",0],
-            "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin C","0",4,"adc","na","30",0]
+            "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin C","0",4,"adc","na","40",0]
             }
 
 
