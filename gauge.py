@@ -71,7 +71,7 @@ bootState={"bth":[0,"fail"],
            }
 
 
-
+fafbAlert="CABIN_TEMP_i2c"
 ###
 #DISPLAY SETUP
 ###
@@ -132,29 +132,29 @@ ecumenu=["Clear DTC","ecu_reset","Read DTC","ecu_read","Back","backtotop2"]
 configmenu=["IP","ipaddress","Reload","reinitialise","Reboot","reboot_pi","Back","backtotop3"]
 gaugemenu=["Back","backtotop2"]
 #              obd name    PID, location, enabled or false##, Friendly Name,value,pid squence, pid array,alertlow,alerthigh,alertcount
-gaugeItems={#"FUEL_STATUS":["03","OBD",0,"Fuel Status","",2,"a"],
-#            "ENGINE_LOAD":["04","OBD",0,"Engine Load","",3,"a"],
-#            "COOLANT_TEMP":["05","OBD",0,"Water C","",4,"a"],
-#            "FUEL_PRESSURE":["0A","OBD",0,"Fuel Pres","",9,"a"],
-#            "INTAKE_PRESSURE":["0B","OBD",0,"Intake Pres","",10,"a"],
-#            "RPM":["0C","OBD",0,"RPM","",11,"a"],
-#            "SPEED":["0D","OBD",0,"Speed","",12,"a"],
-#            "TIMING_ADVANCE":["0E","OBD",0,"Timing","",13,"a"],
-#            "INTAKE_TEMP":["0F","OBD",0,"Intake C","",14,"a"]
-#            "MAF":["10","OBD",0,"MAF","",15,"a"],
-#            "THROTTLE_POS":["11","OBD",0,"Throttle","",15,"a"],
-#            "RUN_TIME":["1F","OBD",0,"Run Time","",30,"a"],
-#            "FUEL_LEVEL":["2F","OBD",0,"Fuel %","",14,"b"],
-#            "BAROMETRIC_PRESSURE":["33","OBD",0,"Out Pres","",18,"b"],
-#            "AMBIANT_AIR_TEMP":["46","OBD",0,"Air Temp","",5,"c"],
-#            "FUEL_TYPE":["51","OBD",0,"Fuel Type","",16,"c"],
-#            "FUEL_RATE":["5E","OBD",0,"Fuel Rate","",29,"c"],
-#            "OIL_TEMP":["5C","OBD",0,"Oil C","",27,"c"],
+gaugeItems={"FUEL_STATUS":["03","OBD",0,"Fuel Status","0",2,"a","na","100",0],
+            "ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
+            "COOLANT_TEMP":["05","OBD",0,"Water C","0",4,"a","na","100",0],
+            "FUEL_PRESSURE":["0A","OBD",0,"Fuel Pres","0",9,"a","na","100",0],
+            "INTAKE_PRESSURE":["0B","OBD",0,"Intake Pres","0",10,"a","na","100",0],
+            "RPM":["0C","OBD",0,"RPM","0",11,"a","na","100",0],
+            "SPEED":["0D","OBD",0,"Speed","0",12,"a","na","100",0],
+            "TIMING_ADVANCE":["0E","OBD",0,"Timing","0",13,"a","na","100",0],
+            "INTAKE_TEMP":["0F","OBD",0,"Intake C","0",14,"a","na","100",0],
+            "MAF":["10","OBD",0,"MAF","0",15,"a","na","100",0],
+            "THROTTLE_POS":["11","OBD",0,"Throttle","0",15,"a","na","100",0],
+            "RUN_TIME":["1F","OBD",0,"Run Time","0",30,"a","na","100",0],
+            "FUEL_LEVEL":["2F","OBD",0,"Fuel %","0",14,"b","na","100",0],
+            "BAROMETRIC_PRESSURE":["33","OBD",0,"Out Pres","0",18,"b","na","100",0],
+            "AMBIANT_AIR_TEMP":["46","OBD",0,"Air Temp","0",5,"c","na","100",0],
+            "FUEL_TYPE":["51","OBD",0,"Fuel Type","0",16,"c","na","100",0],
+            "FUEL_RATE":["5E","OBD",0,"Fuel Rate","0",29,"c","na","100",0],
+            "OIL_TEMP":["5C","OBD",0,"Oil C","0",27,"c","na","100",0],
             "OIL_PRESSURE_ADC":["ADCPIN0","ADC",0,"Oil Pres","0",0,"adc","na","100",0],
             "BOOST_ADC":["ADCPIN1","ADC",0,"Boost","0",0,"adc","na","15",0],
             "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",0,"Block1 C","0",2,"adc","na","90",0],
             "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",0,"Block2 C","0",3,"adc","na","90",0],
-            "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin C","0",4,"adc","na","25",0]
+            "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin C","0",4,"adc","na","30",0]
             }
 
 
@@ -221,7 +221,7 @@ def connectOBD():
     statusState=""
     while i<5:
         try:
-            connection = obd.OBD()
+            connection = obd.OBD(fast=False, timeout=30)
             statusState=connection.status()
             print("OBD conected")
             OBD=1
@@ -251,12 +251,13 @@ def connectOBD():
 #********************
 
 def obdTHREAD():
-    connection = obd.Async()
+    print("tryuing so hard to obd")
+    connection = obd.OBD()
     for key,value in gaugeItems.items():
         cmd=obd.commands.guageItems[key]
         if value[1]=="OBD":
-            value[4]=str(connection.watch(cmd))
-    connection.start()
+            value[4]=str(connection.query(cmd))
+            print(key,":",value[4])
 
 def adcTHREAD():
     old_min=1088
@@ -323,8 +324,24 @@ def flashLed():
         time.sleep(.5)
         i+=1
 
-def flashScreen():
-    print("screen")
+def fafbALERTING():
+    global alertScreen
+    print("fafb")
+    fafb=1
+    while fafb <=5:
+        image=Image.open(address+'fafb.jpg')
+        time.sleep(.5)
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        image=Image.open(address+'fafb2.jpg')
+        time.sleep(.5)
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        fafb+=1
+        
+    alertScreen =0
+    menuloop(0,gaugemenu)
+
 
 def alertTHREAD():
     time.sleep(5)
@@ -333,6 +350,15 @@ def alertTHREAD():
     while True:
 
         for key,value in gaugeItems.items():
+            if key == fafbAlert:
+                if int(value[4]) > 28:
+                    if value[9] <= 0:
+                        value[9]=1000
+                        time.sleep(2)
+                        alertScreen=1
+                        fafbALERTING()
+                    else: 
+                        value[9]-=1
             if value[8]=="na":
                 continue
             elif int(value[4]) >= int(value[8]):
@@ -341,7 +367,7 @@ def alertTHREAD():
                     print("Alert ",key," is going high")
                     value[9]=1000
                     time.sleep(2)
-                    lock.acquire()
+                  #  lock.acquire()
                     alertScreen=1
                     eval(key +"()")
                 else: 
@@ -497,7 +523,7 @@ def menuloop(item,menu):
     newEncValue=0
     while alertScreen ==0:
            newEncValue=-encoder.position
-           print(newEncValue,"--------",oldEncValue)
+          # print(newEncValue,"--------",oldEncValue)
            if newEncValue>oldEncValue:
                item-=2
                oldEncValue=newEncValue
@@ -780,8 +806,23 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3984.0):
 def firstBoot():
     disp.Init()
     image=Image.open(address+'logo.jpg')
+    time.sleep(1)
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
+    
+#    fafb=1
+#    while fafb <=5:
+#        image=Image.open(address+'fafb.jpg')
+#        time.sleep(.5)
+#        im_r=image.rotate(rotation)
+#        disp.ShowImage(im_r)
+#        image=Image.open(address+'fafb2.jpg')
+#        time.sleep(.5)
+#        im_r=image.rotate(rotation)
+#        disp.ShowImage(im_r)
+#        fafb+=1
+    
+    
     time.sleep(1)
     os.system('sudo rfcomm bind rfcomm0 '+btmac)
 #    connectBT()
