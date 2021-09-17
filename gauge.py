@@ -351,9 +351,9 @@ def alertTHREAD():
 
         for key,value in gaugeItems.items():
             if key == fafbAlert:
-                if int(value[4]) > 28:
+                if int(value[4]) > 25:
                     if value[9] <= 0:
-                        value[9]=1000
+                        value[9]=100
                         time.sleep(2)
                         alertScreen=1
                         fafbALERTING()
@@ -365,7 +365,7 @@ def alertTHREAD():
                 if value[9] <= 0:
                     threading.Thread(target=flashLed).start()
                     print("Alert ",key," is going high")
-                    value[9]=1000
+                    value[9]=9000
                     time.sleep(2)
                   #  lock.acquire()
                     alertScreen=1
@@ -523,11 +523,11 @@ def menuloop(item,menu):
     newEncValue=0
     while alertScreen ==0:
            newEncValue=-encoder.position
-          # print(newEncValue,"--------",oldEncValue)
-           if newEncValue>oldEncValue:
+           if newEncValue > oldEncValue and 5000 >= newEncValue:
                item-=2
                oldEncValue=newEncValue
-           if newEncValue<oldEncValue:
+          
+           if newEncValue < oldEncValue and -5000 <= newEncValue:
                item+=2
                oldEncValue=newEncValue
             
@@ -535,7 +535,7 @@ def menuloop(item,menu):
                item=0
            if item <0:
                item=(len(menu))-2
-        
+
            menuDisplay(item,menu)
         
            if not button.value and not button_held:
@@ -880,10 +880,8 @@ def OBDcleanup():
                                 value[2]=1
                     counterc=counterc+1
             cleanupMenu()
-            print(len(gaugeItems))        
         except:
             print("failed cleanup")
-
 
 
 #start obd threads
@@ -903,7 +901,7 @@ def cleanupMenu():
         gaugemenu.insert(0,value[3])
         gaugemenu.insert(1,key)
 
-
+    print(len(gaugemenu))
 
 
 
