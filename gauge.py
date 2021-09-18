@@ -291,11 +291,6 @@ def adcTHREAD():
 #       print()
 #        print()
 
-#start OBD connection wait for connection if non received mark as no obd and  change menu
-
-#start ADC thread and start saving global variables. if no data received mark as no ADC and change menu
-
-#obd check for valid pids and update gauge status if avaliable
 
 
 
@@ -338,7 +333,6 @@ def fafbALERTING():
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
         fafb+=1
-        
     alertScreen =0
     menuloop(0,gaugemenu)
 
@@ -351,14 +345,15 @@ def alertTHREAD():
 
         for key,value in gaugeItems.items():
             if key == fafbAlert:
-                if int(value[4]) > 25:
-                    if value[9] <= 0:
-                        value[9]=100
+                if int(value[4]) > 20:
+                    if value[9] == 0:
+                        value[9]=1000000
                         time.sleep(2)
                         alertScreen=1
-                        fafbALERTING()
+                        threading.Thread(target=fafbALERTING).start()
                     else: 
                         value[9]-=1
+
             if value[8]=="na":
                 continue
             elif int(value[4]) >= int(value[8]):
@@ -522,27 +517,27 @@ def menuloop(item,menu):
     oldEncValue=0
     newEncValue=0
     while alertScreen ==0:
-           newEncValue=-encoder.position
-           if newEncValue > oldEncValue and 5000 >= newEncValue:
-               item-=2
-               oldEncValue=newEncValue
+       newEncValue=-encoder.position
+       if newEncValue > oldEncValue and 5000 >= newEncValue:
+           item-=2
+           oldEncValue=newEncValue
           
-           if newEncValue < oldEncValue and -5000 <= newEncValue:
-               item+=2
-               oldEncValue=newEncValue
-            
-           if item == (len(menu)):
-               item=0
-           if item <0:
-               item=(len(menu))-2
+       if newEncValue < oldEncValue and -5000 <= newEncValue:
+           item+=2
+           oldEncValue=newEncValue
+          
+       if item == (len(menu)):
+           item=0
+       if item <0:
+           item=(len(menu))-2
 
-           menuDisplay(item,menu)
+       menuDisplay(item,menu)
         
-           if not button.value and not button_held:
-               button_held = True
-           if button.value and button_held:
-               button_held = False
-               doaction(item,menu)
+       if not button.value and not button_held:
+           button_held = True
+       if button.value and button_held:
+           button_held = False
+           doaction(item,menu)
     
 
 def doaction(item,menu):
@@ -809,26 +804,13 @@ def firstBoot():
     time.sleep(1)
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
-    
-#    fafb=1
-#    while fafb <=5:
-#        image=Image.open(address+'fafb.jpg')
-#        time.sleep(.5)
-#        im_r=image.rotate(rotation)
-#        disp.ShowImage(im_r)
-#        image=Image.open(address+'fafb2.jpg')
-#        time.sleep(.5)
-#        im_r=image.rotate(rotation)
-#        disp.ShowImage(im_r)
-#        fafb+=1
-    
-    
-    time.sleep(1)
+      
     os.system('sudo rfcomm bind rfcomm0 '+btmac)
 #    connectBT()
     connectADC()
 #    connectOBD()
     OBDcleanup()
+
 
 def OBDcleanup():
     global OBD
