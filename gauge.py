@@ -65,6 +65,8 @@ ads=''
 ADC=0
 BT=0
 OBD=0
+breadCrumb=[0,"topmenu"]
+ingauge =0
 bootState={"bth":[0,"fail"],
            "adc":[0,"fail"],
            "obd":[0,"fail"]
@@ -321,6 +323,8 @@ def flashLed():
 
 def fafbALERTING():
     global alertScreen
+    global ingauge
+    global breadCrumb
     print("fafb")
     fafb=1
     while fafb <=5:
@@ -334,8 +338,11 @@ def fafbALERTING():
         disp.ShowImage(im_r)
         fafb+=1
     alertScreen =0
-    menuloop(0,gaugemenu)
-
+    if ingauge == 0:  
+        menuloop(breadCrumb[0],breadCrumb[1])
+    if ingauge == 1:
+        doaction(breadCrumb[0],breadCrumb[1])  
+    
 
 def alertTHREAD():
     time.sleep(5)
@@ -347,7 +354,7 @@ def alertTHREAD():
             if key == fafbAlert:
                 if int(value[4]) > 20:
                     if value[9] == 0:
-                        value[9]=9000000
+                        value[9]=1000000
                         time.sleep(2)
                         alertScreen=1
                         threading.Thread(target=fafbALERTING).start()
@@ -510,13 +517,15 @@ def menuDisplay(currentMenu,menu):
 def menuloop(item,menu):
     encoder = rotaryio.IncrementalEncoder(seesaw)
     seesaw.set_encoder_position(0)
-    global newEncValue
-    global oldEncValue
+    global ingauge
     global alertScreen
+    global breadCrumb
     button_held = False
     oldEncValue=0
     newEncValue=0
+    ingauge =0
     while alertScreen ==0:
+       
        newEncValue=-encoder.position
        if newEncValue > oldEncValue and 5000 >= newEncValue:
            item-=2
@@ -532,15 +541,19 @@ def menuloop(item,menu):
            item=(len(menu))-2
 
        menuDisplay(item,menu)
+       breadCrumb=(item,menu)
         
        if not button.value and not button_held:
            button_held = True
        if button.value and button_held:
            button_held = False
            doaction(item,menu)
+           
     
 
 def doaction(item,menu):
+    global ingauge
+    ingauge=1
     time.sleep(.333)
     if (menu[item]=="Gauges"):
         menuloop(0,gaugemenu)
@@ -611,11 +624,11 @@ def BOOST_ADC():
         if button.value and button_held:
             if alertScreen ==1:
                 alertScreen =0
-                menuloop(0,gaugemenu)
+                menuloop(breadCrumb[0],breadCrumb[1])
                 button_held=False
             else:
                 button_held = False
-                menuloop(0,gaugemenu)  
+                menuloop(breadCrumb[0],breadCrumb[1])  
 
 
 def BLOCK_TEMP1_ADC():
@@ -634,11 +647,11 @@ def BLOCK_TEMP1_ADC():
         if button.value and button_held:
             if alertScreen ==1:
                 alertScreen =0
-                menuloop(0,gaugemenu)
+                menuloop(breadCrumb[0],breadCrumb[1])
                 button_held=False
             else:
                 button_held = False
-                menuloop(0,gaugemenu) 
+                menuloop(breadCrumb[0],breadCrumb[1]) 
 
 
 def BLOCK_TEMP2_ADC():
@@ -657,11 +670,13 @@ def BLOCK_TEMP2_ADC():
         if button.value and button_held:
             if alertScreen ==1:
                 alertScreen =0
-                menuloop(0,gaugemenu)
+                menuloop(breadCrumb[0],breadCrumb[1])
                 button_held=False
             else:
                 button_held = False
-                menuloop(0,gaugemenu)
+                menuloop(breadCrumb[0],breadCrumb[1])
+                
+                
 def CABIN_TEMP_i2c():
     button_held=False
     global alertScreen
@@ -678,11 +693,11 @@ def CABIN_TEMP_i2c():
         if button.value and button_held:
             if alertScreen ==1:
                 alertScreen =0
-                menuloop(0,gaugemenu)
+                menuloop(breadCrumb[0],breadCrumb[1])
                 button_held=False
             else:
                 button_held = False
-                menuloop(0,gaugemenu)  
+                menuloop(breadCrumb[0],breadCrumb[1])  
 
 
 def QUAD_GAUGE():
@@ -740,11 +755,11 @@ def QUAD_GAUGE():
         if button.value and button_held:
             if alertScreen ==1:
                 alertScreen =0
-                menuloop(0,gaugemenu)
+                menuloop(breadCrumb[0],breadCrumb[1])
                 button_held=False
             else:
                 button_held = False
-                menuloop(0,gaugemenu)
+                menuloop(breadCrumb[0],breadCrumb[1])
 
 #********************
 #********************
