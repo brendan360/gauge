@@ -53,7 +53,6 @@ except ImportError:
 #********************
 #********************
 
-lock = threading.Lock()
 address="/home/pi/gauge/"
 alertScreen=0
 ads=''
@@ -73,7 +72,8 @@ bootState={"bth":[0,"fail"],
            }
 
 
-fafbAlert="CABIN_TEMP_i2c"
+fafbAlert="SPEED"
+fafbTrigger=105
 ###
 #DISPLAY SETUP
 ###
@@ -321,6 +321,36 @@ def flashLed():
         time.sleep(.5)
         i+=1
 
+def shiftALERTING():
+    global alertScreen
+    global ingauge
+    global breadCrumb
+
+    pixel = neopixel.NeoPixel(seesaw, 6, 1)
+    pixel.brightness = 0.5
+    i=1
+    while i <=2:
+        color = 128  # start at red
+        pixel.brightness = 0.9
+        pixel.fill(_pixelbuf.colorwheel(color))
+        time.sleep(.1)
+        pixel.brightness = 0.0
+        pixel.fill(_pixelbuf.colorwheel(color))
+        time.sleep(.1)
+        i+=1
+
+#def shiftALERT():
+    
+#    pixel = neopixel.NeoPixel(seesaw, 6, 1)
+#    color = 0 # start at red
+#    if gaugeItems["CABIN_TEMP_i2c"][4] >= 27:
+#        print("shift alert above 27")
+#        pixel.brightness = 0.9
+#        pixel.fill(_pixelbuf.colorwheel(color))
+#    else:
+#        pixel.brightness=0
+#        pixel.fill(_pixelbuf.colorwheel(color))
+
 def fafbALERTING():
     global alertScreen
     global ingauge
@@ -352,24 +382,34 @@ def alertTHREAD():
 
         for key,value in gaugeItems.items():
             if key == fafbAlert:
-                if int(value[4]) > 20:
+                if round(int(value[4]))== fafbTrigger:
                     if value[9] == 0:
-                        value[9]=9000000
+                        value[9]=900000
                         time.sleep(2)
                         alertScreen=1
                         threading.Thread(target=fafbALERTING).start()
                     else: 
                         value[9]-=1
 
+            if key == "CABIN_TEMP_i2c":
+                if round(int(value[4])) >= 25:
+                    if value[9] == 0:
+                        value[9]=100000
+                        threading.Thread(target=shiftALERTING).start()
+                    else: 
+                        value[9]-=1
+        #        if round(int(value[4])) >= 27:
+        #            threading.Thread(target=shiftALERT).start()
+
             if value[8]=="na":
                 continue
+
             elif int(value[4]) >= int(value[8]):
                 if value[9] <= 0:
                     threading.Thread(target=flashLed).start()
                     print("Alert ",key," is going high")
                     value[9]=9000
                     time.sleep(2)
-                  #  lock.acquire()
                     alertScreen=1
                     eval(key +"()")
                 else: 
