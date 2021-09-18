@@ -394,7 +394,7 @@ def alertTHREAD():
             if key == "CABIN_TEMP_i2c":
                 if round(int(value[4])) >= 25:
                     if value[9] == 0:
-                        value[9]=100000
+                        value[9]=85500
                         threading.Thread(target=shiftALERTING).start()
                     else: 
                         value[9]-=1
