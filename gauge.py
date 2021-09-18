@@ -598,7 +598,7 @@ def OIL_PRESSURE_ADC():
 def BOOST_ADC():
     button_held=False
     global alertScreen
-    hile alertScreen==0:
+    while alertScreen==0:
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
@@ -621,7 +621,7 @@ def BOOST_ADC():
 def BLOCK_TEMP1_ADC():
     button_held=False
     global alertScreen
-    hile alertScreen==0:
+    while alertScreen==0:
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
@@ -644,7 +644,7 @@ def BLOCK_TEMP1_ADC():
 def BLOCK_TEMP2_ADC():
     button_held=False
     global alertScreen
-    hile alertScreen==0:
+    while alertScreen==0:
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
@@ -665,7 +665,7 @@ def BLOCK_TEMP2_ADC():
 def CABIN_TEMP_i2c():
     button_held=False
     global alertScreen
-    hile alertScreen==0:
+    while alertScreen==0:
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
@@ -690,7 +690,7 @@ def QUAD_GAUGE():
     watch_OIL=20
     button_held=False
     global alertScreen
-    hile alertScreen==0:     
+    while alertScreen==0:     
         
         oilPSI=gaugeItems["OIL_PRESSURE_ADC"][4]
         boost=gaugeItems["BOOST_ADC"][4]
