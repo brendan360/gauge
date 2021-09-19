@@ -66,6 +66,7 @@ BT=0
 OBD=0
 breadCrumb=[0,"topmenu"]
 ingauge =0
+rpmHIGH=0
 bootState={"bth":[0,"fail"],
            "adc":[0,"fail"],
            "obd":[0,"fail"]
@@ -277,20 +278,20 @@ def adcTHREAD():
         oilpsi=round(oilpsi)
 
         thermistor1 = chan1
-        R1 = 10000/ (41134/thermistor1.value - 1)
+        R1 = 10000/ (40634/thermistor1.value - 1)
         thermistor2 = chan2
         gaugeItems["BLOCK_TEMP1_ADC"][4]=round(steinhart_temperature_C(R1))
-        R2 = 10000 / (41134/thermistor2.value - 1)
+        R2 = 10000 / (40634/thermistor2.value - 1)
         gaugeItems["BLOCK_TEMP2_ADC"][4]=round(steinhart_temperature_C(R2))
         gaugeItems["OIL_PRESSURE_ADC"][4]=oilpsi 
 
 #        print("--------------------------")
 #        print(gaugeItems["CABIN_TEMP_i2c"][4])
 #        print(gaugeItems["BLOCK_TEMP1_ADC"][4])
-#        print(gaugeItems["OIL_PRESSURE_ADC"][4])
-#       
+#        print(gaugeItems["BLOCK_TEMP2_ADC"][4])
+       
 #        print("--------------------------")
-#       print()
+#        print()
 #        print()
 
 
@@ -339,18 +340,6 @@ def shiftALERTING():
         time.sleep(.1)
         i+=1
 
-#def shiftALERT():
-    
-#    pixel = neopixel.NeoPixel(seesaw, 6, 1)
-#    color = 0 # start at red
-#    if gaugeItems["CABIN_TEMP_i2c"][4] >= 27:
-#        print("shift alert above 27")
-#        pixel.brightness = 0.9
-#        pixel.fill(_pixelbuf.colorwheel(color))
-#    else:
-#        pixel.brightness=0
-#        pixel.fill(_pixelbuf.colorwheel(color))
-
 def fafbALERTING():
     global alertScreen
     global ingauge
@@ -391,15 +380,13 @@ def alertTHREAD():
                     else: 
                         value[9]-=1
 
-            if key == "CABIN_TEMP_i2c":
-                if round(int(value[4])) >= 25:
+            if key == "RPM":
+                if round(int(value[4])) >= 5500 and round(int(value[4])) < 6500:
                     if value[9] == 0:
                         value[9]=85500
                         threading.Thread(target=shiftALERTING).start()
                     else: 
                         value[9]-=1
-        #        if round(int(value[4])) >= 27:
-        #            threading.Thread(target=shiftALERT).start()
 
             if value[8]=="na":
                 continue
