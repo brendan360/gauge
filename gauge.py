@@ -37,6 +37,7 @@ import adafruit_htu31d
 htu = adafruit_htu31d.HTU31D(i2c)
 
 
+
 try:
     import _pixelbuf
 except ImportError:
