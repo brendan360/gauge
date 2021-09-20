@@ -554,14 +554,15 @@ def menuloop(item,menu):
            item=0
        if item <0:
            item=(len(menu))-2
-
-       menuDisplay(item,menu)
        breadCrumb=(item,menu)
+       menuDisplay(item,menu)
+
         
        if not button.value and not button_held:
            button_held = True
        if button.value and button_held:
            button_held = False
+           breadCrumb=(item,menu)
            doaction(item,menu)
            
 
@@ -609,7 +610,7 @@ def ENGINE_LOAD():
         image=drawimage[0]
         draw=drawimage[1]
         draw.text((42,90),str(gaugeItems["ENGINE_LOAD"][4]),font=gfont, fill="WHITE")
-        draw.text((60,26),"", font=font, fill="WHITE") 
+        draw.text((60,26),"Load", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
         if not button.value and not button_held:
@@ -630,7 +631,7 @@ def COOLANT_TEMP():
         image=drawimage[0]
         draw=drawimage[1]
         draw.text((42,90),str(gaugeItems["COOLANT_TEMP"][4])+"°C",font=gfont, fill="WHITE")
-        draw.text((60,26),"Water °C", font=font, fill="WHITE") 
+        draw.text((60,26),"Water", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
         if not button.value and not button_held:
@@ -756,7 +757,7 @@ def INTAKE_TEMP():
         image=drawimage[0]
         draw=drawimage[1]
         draw.text((42,90),str(gaugeItems["INTAKE_TEMP"][4])+"°C",font=gfont, fill="WHITE")
-        draw.text((60,26),"Intake °C", font=font, fill="WHITE") 
+        draw.text((60,26),"Intake", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
         if not button.value and not button_held:
@@ -882,7 +883,7 @@ def AMBIANT_AIR_TEMP():
         image=drawimage[0]
         draw=drawimage[1]
         draw.text((42,90),str(gaugeItems["AMBIANT_AIR_TEMP"][4])+"°C",font=gfont, fill="WHITE")
-        draw.text((60,26),"Outside °C", font=font, fill="WHITE") 
+        draw.text((60,26),"Outside", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
         if not button.value and not button_held:
@@ -925,7 +926,7 @@ def OIL_TEMP():
         image=drawimage[0]
         draw=drawimage[1]
         draw.text((42,90),str(gaugeItems["OIL_TEMP"][4])+"°C",font=gfont, fill="WHITE")
-        draw.text((60,26),"Oil °C", font=font, fill="WHITE") 
+        draw.text((60,26),"Oil", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
         if not button.value and not button_held:
@@ -958,11 +959,13 @@ def OIL_PRESSURE_ADC():
         if button.value and button_held:
             if alertScreen ==1:
                 alertScreen =0
-                menuloop(0,gaugemenu)
+                
+                menuloop(breadCrumb[0],breadCrumb[1]) 
                 button_held=False
             else:
                 button_held = False
-                menuloop(0,gaugemenu) 
+                menuloop(breadCrumb[0],breadCrumb[1]) 
+                button_held=False
 
 
 def BOOST_ADC():
@@ -996,7 +999,7 @@ def BLOCK_TEMP1_ADC():
         image=drawimage[0]
         draw=drawimage[1]
         draw.text((53,95),str(gaugeItems["BLOCK_TEMP1_ADC"][4])+"°C",font=gfont, fill="WHITE")
-        draw.text((50,26),"Block °C", font=font, fill="WHITE") 
+        draw.text((50,26),"Block", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
         if not button.value and not button_held:
@@ -1019,7 +1022,7 @@ def BLOCK_TEMP2_ADC():
         image=drawimage[0]
         draw=drawimage[1]
         draw.text((53,95),str(gaugeItems["BLOCK_TEMP2_ADC"][4])+"°C",font=gfont, fill="WHITE")
-        draw.text((50,26),"Heads °C", font=font, fill="WHITE") 
+        draw.text((50,26),"Heads", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
         if not button.value and not button_held:
@@ -1042,7 +1045,7 @@ def CABIN_TEMP_i2c():
         image=drawimage[0]
         draw=drawimage[1]
         draw.text((42,90),str(gaugeItems["CABIN_TEMP_i2c"][4])+"°C",font=gfont, fill="WHITE")
-        draw.text((60,26),"Inside °C", font=font, fill="WHITE") 
+        draw.text((60,26),"Inside", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
         if not button.value and not button_held:
@@ -1264,10 +1267,9 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3984.0):
 def firstBoot():
     disp.Init()
     image=Image.open(address+'logo.jpg')
-    time.sleep(1)
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
-      
+    time.sleep(3)  
     os.system('sudo rfcomm bind rfcomm0 '+btmac)
 #    connectBT()
     connectADC()
