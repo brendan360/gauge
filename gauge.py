@@ -1,5 +1,6 @@
 #!/usr/bin/python3
   
+  
 #********************
 #********************
 #####################
@@ -43,6 +44,7 @@ try:
     import _pixelbuf
 except ImportError:
     import adafruit_pypixelbuf as _pixelbuf
+
 
 
 #********************
@@ -112,7 +114,6 @@ gfont = ImageFont.truetype(address+"arial.tff", 54)
 seesaw = seesaw.Seesaw(board.I2C(), addr=0x36)
 seesaw.pin_mode(24, seesaw.INPUT_PULLUP)
 button = digitalio.DigitalIO(seesaw, 24)
-#encoder = rotaryio.IncrementalEncoder(seesaw)
 seesaw_product = (seesaw.get_version() >> 16) & 0xFFFF
 #--------------------------#
 
@@ -216,7 +217,6 @@ def connectADC():
     ADC=1
     print("ADC failed")
     
-
 def connectOBD():
     global OBD
     print("connecting OBD")
@@ -352,7 +352,6 @@ def fafbALERTING():
     if ingauge == 1:
         doaction(breadCrumb[0],breadCrumb[1])  
     
-
 def alertTHREAD():
     time.sleep(5)
     global alertScreen
@@ -391,10 +390,6 @@ def alertTHREAD():
                     eval(key +"()")
                 else: 
                     value[9]-=1
-
-
-
-#monitor global configs for reader values and if go over set limit alert via buzzer and swap screen to that monitor
 
 
 
@@ -475,6 +470,7 @@ def highlightbootDisplay():
     disp.ShowImage(im_r)
 
 
+
 #********************
 #********************
 #####################
@@ -485,7 +481,6 @@ def highlightbootDisplay():
 #********************
 #********************
 
-#menu serup goes here and display of gauge screens
 def menuDisplay(currentMenu,menu):
     encoder = rotaryio.IncrementalEncoder(seesaw)
     drawimage=setupDisplay()
@@ -528,7 +523,6 @@ def menuDisplay(currentMenu,menu):
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
 
-
 def menuloop(item,menu):
     encoder = rotaryio.IncrementalEncoder(seesaw)
     seesaw.set_encoder_position(0)
@@ -564,7 +558,6 @@ def menuloop(item,menu):
            button_held = False
            breadCrumb=(item,menu)
            doaction(item,menu)
-           
 
 def doaction(item,menu):
     global ingauge
@@ -589,7 +582,6 @@ def backtotop3():
 
 
 
-
 #********************
 #********************
 #####################
@@ -600,8 +592,6 @@ def backtotop3():
 #********************
 #********************
 
-
-      
 def ENGINE_LOAD():
     button_held=False
     global alertScreen
@@ -623,6 +613,7 @@ def ENGINE_LOAD():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
+
 def COOLANT_TEMP():
     button_held=False
     global alertScreen
@@ -644,6 +635,7 @@ def COOLANT_TEMP():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
+
 def FUEL_PRESSURE():
     button_held=False
     global alertScreen
@@ -665,6 +657,7 @@ def FUEL_PRESSURE():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
+
 def INTAKE_PRESSURE():
     button_held=False
     global alertScreen
@@ -686,6 +679,7 @@ def INTAKE_PRESSURE():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
+
 def RPM():
     button_held=False
     global alertScreen
@@ -707,6 +701,7 @@ def RPM():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
+
 def SPEED():
     button_held=False
     global alertScreen
@@ -728,6 +723,7 @@ def SPEED():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
+
 def TIMING_ADVANCE():
     button_held=False
     global alertScreen
@@ -749,6 +745,7 @@ def TIMING_ADVANCE():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
+
 def INTAKE_TEMP():
     button_held=False
     global alertScreen
@@ -770,6 +767,7 @@ def INTAKE_TEMP():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
+
 def MAF():
     button_held=False
     global alertScreen
@@ -791,6 +789,7 @@ def MAF():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
+
 def THROTTLE_POS():
     button_held=False
     global alertScreen
@@ -812,6 +811,7 @@ def THROTTLE_POS():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
+
 def RUN_TIME():
     button_held=False
     global alertScreen
@@ -833,6 +833,7 @@ def RUN_TIME():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
+
 def FUEL_LEVEL():
     button_held=False
     global alertScreen
@@ -854,6 +855,7 @@ def FUEL_LEVEL():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
+
 def BAROMETRIC_PRESSURE():
     button_held=False
     global alertScreen
@@ -875,6 +877,7 @@ def BAROMETRIC_PRESSURE():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
+
 def AMBIANT_AIR_TEMP():
     button_held=False
     global alertScreen
@@ -918,6 +921,7 @@ def FUEL_RATE():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
+
 def OIL_TEMP():
     button_held=False
     global alertScreen
@@ -939,9 +943,6 @@ def OIL_TEMP():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1]) 
-
-
-
 
 def OIL_PRESSURE_ADC():
     button_held=False
@@ -967,7 +968,6 @@ def OIL_PRESSURE_ADC():
                 menuloop(breadCrumb[0],breadCrumb[1]) 
                 button_held=False
 
-
 def BOOST_ADC():
     button_held=False
     global alertScreen
@@ -989,7 +989,6 @@ def BOOST_ADC():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
-
 
 def BLOCK_TEMP1_ADC():
     button_held=False
@@ -1013,7 +1012,6 @@ def BLOCK_TEMP1_ADC():
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1]) 
 
-
 def BLOCK_TEMP2_ADC():
     button_held=False
     global alertScreen
@@ -1036,7 +1034,6 @@ def BLOCK_TEMP2_ADC():
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])
  
-
 def CABIN_TEMP_i2c():
     button_held=False
     global alertScreen
@@ -1059,8 +1056,68 @@ def CABIN_TEMP_i2c():
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])  
 
-
 def QUAD_GAUGE():
+    watch_RPM=2000  #### need to check for obd and fill value if no obd
+    watch_OIL=20    #### need to check for obd and fill value if no obd
+    button_held=False
+    global alertScreen
+    while alertScreen==0:     
+        
+        oilPSI=gaugeItems["OIL_PRESSURE_ADC"][4]
+        boost=gaugeItems["BOOST_ADC"][4]
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        if int(watch_RPM)>6000:
+            if (len(str(watch_RPM))==3):
+                draw.text((84,20),str(watch_RPM), font=font, fill="RED")
+            else:
+                draw.text((74,20),str(watch_RPM), font=font, fill="RED")
+        else:
+            if (len(str(watch_RPM))==3):
+                draw.text((84,20),str(watch_RPM), font=font, fill="WHITE")
+            else:
+                draw.text((74,20),str(watch_RPM), font=font, fill="WHITE")
+
+        draw.text((108,67),"RPM",font=font3,fill="RED")
+        draw.line([(0,84),(250, 84)], fill ="RED",width = 3)
+
+        draw.text((25,90),str(watch_OIL)+"°",font=font,fill="WHITE")
+        draw.text((30,137),"Oil Temp", font=font3,fill="RED")
+
+        draw.line([(120,84),(120,153)],fill="RED", width=3)
+
+        draw.text((130,90),str(oilPSI), font=font, fill="WHITE")
+        draw.text((199,110),"psi",font=font2, fill="WHITE")
+        draw.text((160,137),"Oil Pres", font=font3,fill="RED")
+
+        draw.line([(0,153),(240,153)],fill="RED", width=3)
+
+        draw.text((100,160),"BOOST",font=font3,fill="RED")
+
+        if (len(str(boost))==2):
+            draw.text((90,175),str(boost), font=gfont,fill="WHITE")
+        elif (len(str(boost))==3):
+            draw.text((80,175),str(boost), font=gfont, fill="WHITE")
+        else:
+            draw.text((105,175),str(boost), font=gfont, fill="WHITE")
+
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+
+
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])
+
+def TEMP_GAUGE():  #### need to change this whole thing up
     watch_RPM=2000
     watch_OIL=20
     button_held=False
@@ -1122,66 +1179,6 @@ def QUAD_GAUGE():
                 menuloop(breadCrumb[0],breadCrumb[1])
 
 
-def TEMP_GAUGE():
-    watch_RPM=2000
-    watch_OIL=20
-    button_held=False
-    global alertScreen
-    while alertScreen==0:     
-        
-        oilPSI=gaugeItems["OIL_PRESSURE_ADC"][4]
-        boost=gaugeItems["BOOST_ADC"][4]
-        drawimage=setupDisplay()
-        image=drawimage[0]
-        draw=drawimage[1]
-        if int(watch_RPM)>6000:
-            if (len(str(watch_RPM))==3):
-                draw.text((84,20),str(watch_RPM), font=font, fill="RED")
-            else:
-                draw.text((74,20),str(watch_RPM), font=font, fill="RED")
-        else:
-            if (len(str(watch_RPM))==3):
-                draw.text((84,20),str(watch_RPM), font=font, fill="WHITE")
-            else:
-                draw.text((74,20),str(watch_RPM), font=font, fill="WHITE")
-
-        draw.text((108,67),"RPM",font=font3,fill="RED")
-        draw.line([(0,84),(250, 84)], fill ="RED",width = 3)
-
-        draw.text((25,90),str(watch_OIL)+"°",font=font,fill="WHITE")
-        draw.text((30,137),"Oil Temp", font=font3,fill="RED")
-
-        draw.line([(120,84),(120,153)],fill="RED", width=3)
-
-        draw.text((130,90),str(oilPSI), font=font, fill="WHITE")
-        draw.text((199,110),"psi",font=font2, fill="WHITE")
-        draw.text((160,137),"Oil Pres", font=font3,fill="RED")
-
-        draw.line([(0,153),(240,153)],fill="RED", width=3)
-
-        draw.text((100,160),"BOOST",font=font3,fill="RED")
-
-        if (len(str(boost))==2):
-            draw.text((90,175),str(boost), font=gfont,fill="WHITE")
-        elif (len(str(boost))==3):
-            draw.text((80,175),str(boost), font=gfont, fill="WHITE")
-        else:
-            draw.text((105,175),str(boost), font=gfont, fill="WHITE")
-
-        im_r=image.rotate(rotation)
-        disp.ShowImage(im_r)
-
-
-        if not button.value and not button_held:
-            button_held = True
-        if button.value and button_held:
-            if alertScreen ==1:
-                alertScreen =0
-                menuloop(breadCrumb[0],breadCrumb[1])
-                button_held=False
-            else:
-                button_held = False
-                menuloop(breadCrumb[0],breadCrumb[1])
 
 #********************
 #********************
@@ -1193,8 +1190,6 @@ def TEMP_GAUGE():
 #********************
 #********************
 
-#non gauge items go here such as reset reboot ip address
-#DTC read and reset also setup in here
 def reboot_pi():
     drawimage=setupDisplay()
     image=drawimage[0]
@@ -1255,6 +1250,7 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3984.0):
     return steinhart
 
 
+
 #********************
 #********************
 #####################
@@ -1264,6 +1260,7 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3984.0):
 ##################### 
 #********************
 #********************
+
 def firstBoot():
     disp.Init()
     image=Image.open(address+'logo.jpg')
@@ -1275,7 +1272,6 @@ def firstBoot():
     connectADC()
 #    connectOBD()
     OBDcleanup()
-
 
 def OBDcleanup():
     global OBD
@@ -1330,11 +1326,6 @@ def OBDcleanup():
         except:
             print("failed cleanup")
 
-
-#start obd threads
-#start display threads
-#start monitor and alert thread
-
 def cleanupMenu():
     inactiveItems=[]
     for key, value in gaugeItems.items():
@@ -1352,9 +1343,15 @@ def cleanupMenu():
 
 
 
-###
-#MAIN AREA
-###
+#********************
+#********************
+#####################
+#                   #
+#MAIN AREA          #
+#                   #
+##################### 
+#********************
+#********************
 
 firstBoot()
 try:
