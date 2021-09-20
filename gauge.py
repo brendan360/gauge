@@ -130,14 +130,13 @@ btname="OBDLink LX"
 #menu setup
 ###
 
-topmenu=["Gauges","gaugemenu","ECU","ecumenu","Config","configmenu","Multi 1","QUAD_GAUGE","","backtotop1"]
+topmenu=["Gauges","gaugemenu","ECU","ecumenu","Config","configmenu","Multi 1","QUAD_GAUGE","Temp Multi","TEMP_GAUGE"]
 ecumenu=["Clear DTC","ecu_reset","Read DTC","ecu_read","Back","backtotop2"]
 configmenu=["IP","ipaddress","Reload","reinitialise","Reboot","reboot_pi","Back","backtotop3"]
 gaugemenu=["Back","backtotop2"]
 #              obd name    PID, location, enabled or false##, Friendly Name,value,pid squence, pid array,alertlow,alerthigh,alertcount
-gaugeItems={"FUEL_STATUS":["03","OBD",0,"Fuel Status","0",2,"a","na","100",0],
-            "ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
-            "COOLANT_TEMP":["05","OBD",0,"Water C","0",4,"a","na","100",0],
+gaugeItems={"ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
+            "COOLANT_TEMP":["05","OBD",0,"Water °C","0",4,"a","na","100",0],
             "FUEL_PRESSURE":["0A","OBD",0,"Fuel Pres","0",9,"a","na","100",0],
             "INTAKE_PRESSURE":["0B","OBD",0,"Intake Pres","0",10,"a","na","100",0],
             "RPM":["0C","OBD",0,"RPM","0",11,"a","na","100",0],
@@ -148,16 +147,15 @@ gaugeItems={"FUEL_STATUS":["03","OBD",0,"Fuel Status","0",2,"a","na","100",0],
             "THROTTLE_POS":["11","OBD",0,"Throttle","0",15,"a","na","100",0],
             "RUN_TIME":["1F","OBD",0,"Run Time","0",30,"a","na","100",0],
             "FUEL_LEVEL":["2F","OBD",0,"Fuel %","0",14,"b","na","100",0],
-            "BAROMETRIC_PRESSURE":["33","OBD",0,"Out Pres","0",18,"b","na","100",0],
-            "AMBIANT_AIR_TEMP":["46","OBD",0,"Air Temp","0",5,"c","na","100",0],
-            "FUEL_TYPE":["51","OBD",0,"Fuel Type","0",16,"c","na","100",0],
+            "BAROMETRIC_PRESSURE":["33","OBD",0,"Air Pres","0",18,"b","na","100",0],
+            "AMBIANT_AIR_TEMP":["46","OBD",0,"Air °C","0",5,"c","na","100",0],
             "FUEL_RATE":["5E","OBD",0,"Fuel Rate","0",29,"c","na","100",0],
             "OIL_TEMP":["5C","OBD",0,"Oil C","0",27,"c","na","100",0],
             "OIL_PRESSURE_ADC":["ADCPIN0","ADC",0,"Oil Pres","0",0,"adc","na","100",0],
             "BOOST_ADC":["ADCPIN1","ADC",0,"Boost","0",0,"adc","na","15",0],
-            "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",0,"Block1 C","0",2,"adc","na","90",0],
-            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",0,"Block2 C","0",3,"adc","na","90",0],
-            "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin C","0",4,"adc","na","40",0]
+            "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",0,"Block °C","0",2,"adc","na","90",0],
+            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",0,"Head °C","0",3,"adc","na","90",0],
+            "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin °C","0",4,"adc","na","40",0]
             }
 
 
@@ -284,16 +282,6 @@ def adcTHREAD():
         R2 = 10000 / (40634/thermistor2.value - 1)
         gaugeItems["BLOCK_TEMP2_ADC"][4]=round(steinhart_temperature_C(R2))
         gaugeItems["OIL_PRESSURE_ADC"][4]=oilpsi 
-
-#        print("--------------------------")
-#        print(gaugeItems["CABIN_TEMP_i2c"][4])
-#        print(gaugeItems["BLOCK_TEMP1_ADC"][4])
-#        print(gaugeItems["BLOCK_TEMP2_ADC"][4])
-       
-#        print("--------------------------")
-#        print()
-#        print()
-
 
 
 
@@ -576,7 +564,6 @@ def menuloop(item,menu):
            button_held = False
            doaction(item,menu)
            
-    
 
 def doaction(item,menu):
     global ingauge
@@ -611,6 +598,349 @@ def backtotop3():
 ##################### 
 #********************
 #********************
+
+
+      
+def ENGINE_LOAD():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["ENGINE_LOAD"][4]),font=gfont, fill="WHITE")
+        draw.text((60,26),"", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+def COOLANT_TEMP():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["COOLANT_TEMP"][4])+"°C",font=gfont, fill="WHITE")
+        draw.text((60,26),"Water °C", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+def FUEL_PRESSURE():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["FUEL_PRESSURE"][4]),font=gfont, fill="WHITE")
+        draw.text((60,26),"Fuel Pres", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+def INTAKE_PRESSURE():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["INTAKE_PRESSURE"][4]),font=gfont, fill="WHITE")
+        draw.text((60,26),"Intake", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+def RPM():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["RPM"][4]),font=gfont, fill="WHITE")
+        draw.text((60,26),"RPM", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+def SPEED():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["SPEED"][4])+"Km",font=gfont, fill="WHITE")
+        draw.text((60,26),"Speed", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+def TIMING_ADVANCE():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["TIMING_ADVANCE"][4])+"°",font=gfont, fill="WHITE")
+        draw.text((60,26),"Timing", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+def INTAKE_TEMP():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["INTAKE_TEMP"][4])+"°C",font=gfont, fill="WHITE")
+        draw.text((60,26),"Intake °C", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+def MAF():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["MAF"][4]),font=gfont, fill="WHITE")
+        draw.text((60,26),"MAF", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+def THROTTLE_POS():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["THROTTLE_POS"][4])+"%",font=gfont, fill="WHITE")
+        draw.text((60,26),"Throttle", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+def RUN_TIME():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems[" RUN_TIME"][4]),font=gfont, fill="WHITE")
+        draw.text((60,26),"Running", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+def FUEL_LEVEL():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["FUEL_LEVEL"][4])+"%",font=gfont, fill="WHITE")
+        draw.text((60,26),"Fuel", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+def BAROMETRIC_PRESSURE():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["BAROMETRIC_PRESSURE"][4]),font=gfont, fill="WHITE")
+        draw.text((60,26),"Pressure", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+def AMBIANT_AIR_TEMP():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["AMBIANT_AIR_TEMP"][4])+"°C",font=gfont, fill="WHITE")
+        draw.text((60,26),"Outside °C", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+
+def FUEL_RATE():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["FUEL_RATE"][4]),font=gfont, fill="WHITE")
+        draw.text((60,26),"Fuel Rate", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+def OIL_TEMP():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["OIL_TEMP"][4])+"°C",font=gfont, fill="WHITE")
+        draw.text((60,26),"Oil °C", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1]) 
+
+
+
 
 def OIL_PRESSURE_ADC():
     button_held=False
@@ -666,7 +996,7 @@ def BLOCK_TEMP1_ADC():
         image=drawimage[0]
         draw=drawimage[1]
         draw.text((53,95),str(gaugeItems["BLOCK_TEMP1_ADC"][4])+"°C",font=gfont, fill="WHITE")
-        draw.text((50,26),"Block 1", font=font, fill="WHITE") 
+        draw.text((50,26),"Block °C", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
         if not button.value and not button_held:
@@ -689,7 +1019,7 @@ def BLOCK_TEMP2_ADC():
         image=drawimage[0]
         draw=drawimage[1]
         draw.text((53,95),str(gaugeItems["BLOCK_TEMP2_ADC"][4])+"°C",font=gfont, fill="WHITE")
-        draw.text((50,26),"Block 2", font=font, fill="WHITE") 
+        draw.text((50,26),"Heads °C", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
         if not button.value and not button_held:
@@ -702,8 +1032,8 @@ def BLOCK_TEMP2_ADC():
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])
-                
-                
+ 
+
 def CABIN_TEMP_i2c():
     button_held=False
     global alertScreen
@@ -712,7 +1042,7 @@ def CABIN_TEMP_i2c():
         image=drawimage[0]
         draw=drawimage[1]
         draw.text((42,90),str(gaugeItems["CABIN_TEMP_i2c"][4])+"°C",font=gfont, fill="WHITE")
-        draw.text((60,26),"Inside", font=font, fill="WHITE") 
+        draw.text((60,26),"Inside °C", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
         if not button.value and not button_held:
@@ -728,6 +1058,68 @@ def CABIN_TEMP_i2c():
 
 
 def QUAD_GAUGE():
+    watch_RPM=2000
+    watch_OIL=20
+    button_held=False
+    global alertScreen
+    while alertScreen==0:     
+        
+        oilPSI=gaugeItems["OIL_PRESSURE_ADC"][4]
+        boost=gaugeItems["BOOST_ADC"][4]
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        if int(watch_RPM)>6000:
+            if (len(str(watch_RPM))==3):
+                draw.text((84,20),str(watch_RPM), font=font, fill="RED")
+            else:
+                draw.text((74,20),str(watch_RPM), font=font, fill="RED")
+        else:
+            if (len(str(watch_RPM))==3):
+                draw.text((84,20),str(watch_RPM), font=font, fill="WHITE")
+            else:
+                draw.text((74,20),str(watch_RPM), font=font, fill="WHITE")
+
+        draw.text((108,67),"RPM",font=font3,fill="RED")
+        draw.line([(0,84),(250, 84)], fill ="RED",width = 3)
+
+        draw.text((25,90),str(watch_OIL)+"°",font=font,fill="WHITE")
+        draw.text((30,137),"Oil Temp", font=font3,fill="RED")
+
+        draw.line([(120,84),(120,153)],fill="RED", width=3)
+
+        draw.text((130,90),str(oilPSI), font=font, fill="WHITE")
+        draw.text((199,110),"psi",font=font2, fill="WHITE")
+        draw.text((160,137),"Oil Pres", font=font3,fill="RED")
+
+        draw.line([(0,153),(240,153)],fill="RED", width=3)
+
+        draw.text((100,160),"BOOST",font=font3,fill="RED")
+
+        if (len(str(boost))==2):
+            draw.text((90,175),str(boost), font=gfont,fill="WHITE")
+        elif (len(str(boost))==3):
+            draw.text((80,175),str(boost), font=gfont, fill="WHITE")
+        else:
+            draw.text((105,175),str(boost), font=gfont, fill="WHITE")
+
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+
+
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])
+
+
+def TEMP_GAUGE():
     watch_RPM=2000
     watch_OIL=20
     button_held=False
