@@ -56,16 +56,15 @@ except ImportError:
 ##################### 
 #********************
 #********************
+ 
 
-address="/home/pi/gauge/"
-alertScreen=0
-ads=''
 ###
 #gauge value setup
 ###
 
 #Global variables
-ADC=0
+
+
 BT=0
 OBD=0
 breadCrumb=[0,"topmenu"]
@@ -75,7 +74,9 @@ bootState={"bth":[0,"fail"],
            "adc":[0,"fail"],
            "obd":[0,"fail"]
            }
-
+address="/home/pi/gauge/"
+alertScreen=0
+ads=''
 
 fafbAlert="SPEED"
 fafbTrigger=105
@@ -197,7 +198,6 @@ def connectADC():
 #####
 ###NEED TO FIX ADC ONCE NEW ADC ARRIVES
 ###
-    global ADC
     global ads
     print("connecting ADC")
     i=0
@@ -205,7 +205,7 @@ def connectADC():
         try:
             ads = ADS.ADS1115(i2c)
             print("ADC connected")
-            ADC=1
+             bootState["adc"][0]=1
             bootState['adc']=(i,"win")
             highlightbootDisplay()
             return
@@ -214,7 +214,7 @@ def connectADC():
             bootState['adc']=(i,"fail")
             highlightbootDisplay()
             time.sleep(2)
-    ADC=1
+     bootState["adc"][0]=1
     print("ADC failed")
     
 def connectOBD():
@@ -1275,14 +1275,13 @@ def firstBoot():
 
 def OBDcleanup():
     global OBD
-    global ADC
     print(len(gaugeItems))
     time.sleep(2)
     
-    if ADC ==0:
+    if bootState["adc"][0] ==0:
         cleanupMenu()
         return
-    if ADC ==1:
+    if bootState["adc"][0] ==1:
         for key,value in gaugeItems.items():
             if value[6] =="adc":
                 value[2]=1
@@ -1358,7 +1357,7 @@ try:
     threading.Thread(target=menuloop, args=(0,topmenu)).start()
     if OBD==1:
         threading.Thread(target=obdTHREAD).start()
-    if ADC==1:
+    if bootState["adc"][0]==1:
         threading.Thread(target=adcTHREAD).start()
     threading.Thread(target=alertTHREAD).start()
 
