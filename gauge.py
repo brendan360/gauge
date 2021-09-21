@@ -65,8 +65,8 @@ except ImportError:
 #Global variables
 
 
-BT=0
-OBD=0
+
+
 breadCrumb=[0,"topmenu"]
 ingauge =0
 rpmHIGH=0
@@ -182,17 +182,17 @@ def connectBT():
     while i<5:
         BTconnected=sp.getoutput('hcitool name '+btmac)
         if btname == BTconnected:
-            print("BT conected")
-            BT=1
-            bootState['bth']=(i,"win")
+            print("BT connected")
+            bootState['bth']=(i,"win",1)
             highlightbootDisplay()
             return
         i=i+1
         time.sleep(2)
-        bootState['bth']=(i,"fail")
+        bootState['bth']=(i,"fail",0)
         highlightbootDisplay()
     print("BT not avaliable")
-    BT=0
+    bootState["bt"][2]=0
+
 
 def connectADC():
 #####
@@ -214,11 +214,10 @@ def connectADC():
             bootState['adc']=(i,"fail",0)
             highlightbootDisplay()
             time.sleep(2)
-    bootState["adc"][2]=1
+    bootState["adc"][2]=0
     print("ADC failed")
     
 def connectOBD():
-    global OBD
     print("connecting OBD")
     i=0
     statusState=""
@@ -227,8 +226,7 @@ def connectOBD():
             connection = obd.OBD(fast=False, timeout=30)
             statusState=connection.status()
             print("OBD conected")
-            OBD=1
-            bootState['obd']=(i,"win")
+            bootState['obd']=(i,"win",1)
             highlightbootDisplay()
             connection.close()
             return
@@ -236,10 +234,10 @@ def connectOBD():
             print(statusState)
             i=i+1
             time.sleep(2)
-            bootState['obd']=(i,"fail")
+            bootState['obd']=(i,"fail",0)
             highlightbootDisplay()
     print("OBD not avaliable")
-    OBD=0
+    bootState["obd"][2]=0
 
 
 
@@ -355,7 +353,7 @@ def fafbALERTING():
 def alertTHREAD():
     time.sleep(5)
     global alertScreen
-    print("startiong alert")
+    print("starting alert thread")
     while True:
 
         for key,value in gaugeItems.items():
@@ -1274,10 +1272,9 @@ def firstBoot():
     OBDcleanup()
 
 def OBDcleanup():
-    global OBD
-    print(len(gaugeItems))
+
+    print("Initial Gauge Items: ",len(gaugeItems))
     time.sleep(2)
-    print("bootstate",bootState["adc"][2])
     if bootState["adc"][2]==0:
         cleanupMenu()
         return
@@ -1287,10 +1284,10 @@ def OBDcleanup():
                 value[2]=1
 
     
-    if OBD ==0:
+    if bootState["obd"][2]==0:
         cleanupMenu()
         return
-    if OBD ==1:
+    if bootState["obd"][2]==1:
         try:
             connection = obd.OBD()
             pidsA=str(connection.query(obd.commands.PIDS_A))
@@ -1338,7 +1335,7 @@ def cleanupMenu():
         gaugemenu.insert(0,value[3])
         gaugemenu.insert(1,key)
 
-    print(len(gaugemenu))
+    print("Final Gauge Items: ",len(gaugemenu))
 
 
 
@@ -1355,12 +1352,12 @@ def cleanupMenu():
 firstBoot()
 try:
     threading.Thread(target=menuloop, args=(0,topmenu)).start()
-    if OBD==1:
+    if bootState["obd"][2]==1:
         threading.Thread(target=obdTHREAD).start()
     if bootState["adc"][2]==1:
         threading.Thread(target=adcTHREAD).start()
     threading.Thread(target=alertTHREAD).start()
 
 except:
-    print("failed threads")
+    print("failed starting threads")
 
