@@ -70,9 +70,9 @@ OBD=0
 breadCrumb=[0,"topmenu"]
 ingauge =0
 rpmHIGH=0
-bootState={"bth":[0,"fail"],
+bootState={"bth":[0,"fail",0],
            "adc":[0,"fail",0],
-           "obd":[0,"fail"]
+           "obd":[0,"fail",0]
            }
 address="/home/pi/gauge/"
 alertScreen=0
@@ -205,13 +205,13 @@ def connectADC():
         try:
             ads = ADS.ADS1115(i2c)
             print("ADC connected")
-            bootState["adc"][2]=1
-            bootState['adc']=(i,"win")
+            bootState['adc']=(i,"win",1)
             highlightbootDisplay()
+            print("bootState",bootState["adc"])
             return
         except:
             i+=1
-            bootState['adc']=(i,"fail")
+            bootState['adc']=(i,"fail",0)
             highlightbootDisplay()
             time.sleep(2)
     bootState["adc"][2]=1
@@ -1277,8 +1277,8 @@ def OBDcleanup():
     global OBD
     print(len(gaugeItems))
     time.sleep(2)
-    
-    if bootState["adc"][2] ==0:
+    print("bootstate",bootState["adc"][2])
+    if bootState["adc"][2]==0:
         cleanupMenu()
         return
     if bootState["adc"][2] ==1:
