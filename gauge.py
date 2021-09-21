@@ -177,12 +177,12 @@ gaugeItems={"ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
 
 def connectBT():
     global BT
-    print("connecting BT")
+    print("Connecting BT")
     i=0
     while i<5:
         BTconnected=sp.getoutput('hcitool name '+btmac)
         if btname == BTconnected:
-            print("BT connected")
+            print("     BT connected")
             bootState['bth']=(i,"win",1)
             highlightbootDisplay()
             return
@@ -190,7 +190,7 @@ def connectBT():
         time.sleep(2)
         bootState['bth']=(i,"fail",0)
         highlightbootDisplay()
-    print("BT not avaliable")
+    print("     BT not avaliable")
     bootState["bt"][2]=0
 
 
@@ -199,12 +199,12 @@ def connectADC():
 ###NEED TO FIX ADC ONCE NEW ADC ARRIVES
 ###
     global ads
-    print("connecting ADC")
+    print("Connecting ADC")
     i=0
     while i<5:
         try:
             ads = ADS.ADS1115(i2c)
-            print("ADC connected")
+            print("     ADC connected")
             bootState['adc']=(i,"win",1)
             highlightbootDisplay()
             print("bootState",bootState["adc"])
@@ -215,17 +215,17 @@ def connectADC():
             highlightbootDisplay()
             time.sleep(2)
     bootState["adc"][2]=0
-    print("ADC failed")
+    print("     ADC failed")
     
 def connectOBD():
-    print("connecting OBD")
+    print("Connecting OBD")
     i=0
     statusState=""
     while i<5:
         try:
             connection = obd.OBD(fast=False, timeout=30)
             statusState=connection.status()
-            print("OBD conected")
+            print("     OBD conected")
             bootState['obd']=(i,"win",1)
             highlightbootDisplay()
             connection.close()
@@ -236,7 +236,7 @@ def connectOBD():
             time.sleep(2)
             bootState['obd']=(i,"fail",0)
             highlightbootDisplay()
-    print("OBD not avaliable")
+    print("     OBD not avaliable")
     bootState["obd"][2]=0
 
 
@@ -252,7 +252,6 @@ def connectOBD():
 #********************
 
 def obdTHREAD():
-    print("tryuing so hard to obd")
     connection = obd.OBD()
     for key,value in gaugeItems.items():
         cmd=obd.commands.guageItems[key]
@@ -332,7 +331,6 @@ def fafbALERTING():
     global alertScreen
     global ingauge
     global breadCrumb
-    print("fafb")
     fafb=1
     while fafb <=5:
         image=Image.open(address+'fafb.jpg')
