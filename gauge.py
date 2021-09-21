@@ -71,7 +71,7 @@ breadCrumb=[0,"topmenu"]
 ingauge =0
 rpmHIGH=0
 bootState={"bth":[0,"fail"],
-           "adc":[0,"fail"],
+           "adc":[0,"fail",0],
            "obd":[0,"fail"]
            }
 address="/home/pi/gauge/"
@@ -205,7 +205,7 @@ def connectADC():
         try:
             ads = ADS.ADS1115(i2c)
             print("ADC connected")
-             bootState["adc"][0]=1
+            bootState["adc"][2]=1
             bootState['adc']=(i,"win")
             highlightbootDisplay()
             return
@@ -214,7 +214,7 @@ def connectADC():
             bootState['adc']=(i,"fail")
             highlightbootDisplay()
             time.sleep(2)
-     bootState["adc"][0]=1
+    bootState["adc"][2]=1
     print("ADC failed")
     
 def connectOBD():
@@ -1278,10 +1278,10 @@ def OBDcleanup():
     print(len(gaugeItems))
     time.sleep(2)
     
-    if bootState["adc"][0] ==0:
+    if bootState["adc"][2] ==0:
         cleanupMenu()
         return
-    if bootState["adc"][0] ==1:
+    if bootState["adc"][2] ==1:
         for key,value in gaugeItems.items():
             if value[6] =="adc":
                 value[2]=1
@@ -1357,7 +1357,7 @@ try:
     threading.Thread(target=menuloop, args=(0,topmenu)).start()
     if OBD==1:
         threading.Thread(target=obdTHREAD).start()
-    if bootState["adc"][0]==1:
+    if bootState["adc"][2]==1:
         threading.Thread(target=adcTHREAD).start()
     threading.Thread(target=alertTHREAD).start()
 
