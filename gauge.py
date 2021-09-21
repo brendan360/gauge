@@ -207,7 +207,6 @@ def connectADC():
             print("     ADC connected")
             bootState['adc']=(i,"win",1)
             highlightbootDisplay()
-            print("bootState",bootState["adc"])
             return
         except:
             i+=1
