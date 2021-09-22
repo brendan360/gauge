@@ -1138,12 +1138,12 @@ def TEMP_GAUGE():  #### need to change this whole thing up ... Head temp, block 
         draw.text((108,67),"Oil Temp",font=font3,fill="RED")
         draw.line([(0,84),(250, 84)], fill ="RED",width = 3)
 
-        draw.text((25,90),str(["BLOCK_TEMP2_ADC"][4])+"°",font=font,fill="WHITE")
+        draw.text((25,90),str(gaugeItems["BLOCK_TEMP2_ADC"][4])+"°",font=font,fill="WHITE")
         draw.text((30,137),"Head Temp", font=font3,fill="RED")
 
         draw.line([(120,84),(120,153)],fill="RED", width=3)
 
-        draw.text((130,90)str(["BLOCK_TEMP1_ADC"][4]), font=font, fill="WHITE")
+        draw.text((130,90),str(gaugeItems["BLOCK_TEMP1_ADC"][4])+"°", font=font, fill="WHITE")
         draw.text((199,110),"psi",font=font2, fill="WHITE")
         draw.text((160,137),"Block Temp", font=font3,fill="RED")
 
