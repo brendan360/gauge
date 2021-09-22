@@ -1125,15 +1125,15 @@ def TEMP_GAUGE():  #### need to change this whole thing up ... Head temp, block 
         image=drawimage[0]
         draw=drawimage[1]
         if int(watch_RPM)>6000:
-            if (len(str(watch_RPM))==3):
+            if (len(str(watch_RPM))==2):
+                draw.text((94,20),str(watch_OIL), font=font, fill="RED")
+            else:
                 draw.text((84,20),str(watch_OIL), font=font, fill="RED")
-            else:
-                draw.text((74,20),str(watch_OIL), font=font, fill="RED")
         else:
-            if (len(str(watch_RPM))==3):
-                draw.text((84,20),str(watch_OIL), font=font, fill="WHITE")
+            if (len(str(watch_RPM))==2):
+                draw.text((94,20),str(watch_OIL), font=font, fill="WHITE")
             else:
-                draw.text((74,20),str(watch_OIL), font=font, fill="WHITE")
+                draw.text((84,20),str(watch_OIL), font=font, fill="WHITE")
 
         draw.text((100,67),"Oil Temp",font=font3,fill="RED")
         draw.line([(0,84),(250, 84)], fill ="RED",width = 3)
@@ -1143,7 +1143,7 @@ def TEMP_GAUGE():  #### need to change this whole thing up ... Head temp, block 
 
         draw.line([(120,84),(120,153)],fill="RED", width=3)
 
-        draw.text((140,90),str(gaugeItems["BLOCK_TEMP1_ADC"][4])+"°", font=font, fill="WHITE")
+        draw.text((150,90),str(gaugeItems["BLOCK_TEMP1_ADC"][4])+"°", font=font, fill="WHITE")
         draw.text((160,137),"Block Temp", font=font3,fill="RED")
 
         draw.line([(0,153),(240,153)],fill="RED", width=3)
