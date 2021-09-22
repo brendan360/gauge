@@ -1112,7 +1112,7 @@ def QUAD_GAUGE():
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])
 
-def TEMP_GAUGE():  #### need to change this whole thing up
+def TEMP_GAUGE():  #### need to change this whole thing up ... Head temp, block temp, oil temp, coolant temp
     watch_RPM=2000
     watch_OIL=20
     button_held=False
