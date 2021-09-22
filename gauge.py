@@ -1124,13 +1124,13 @@ def TEMP_GAUGE():  #### need to change this whole thing up ... Head temp, block 
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        if int(watch_RPM)>6000:
-            if (len(str(watch_RPM))==2):
+        if int(watch_OIL)>99:
+            if (len(str(watch_OIL))==2):
                 draw.text((105,20),str(watch_OIL), font=font, fill="RED")
             else:
                 draw.text((84,20),str(watch_OIL), font=font, fill="RED")
         else:
-            if (len(str(watch_RPM))==2):
+            if (len(str(watch_OIL))==2):
                 draw.text((105,20),str(watch_OIL), font=font, fill="WHITE")
             else:
                 draw.text((84,20),str(watch_OIL), font=font, fill="WHITE")
