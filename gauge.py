@@ -265,7 +265,7 @@ def adcTHREAD():
     new_max=150
     while True:
         temperature, relative_humidity = htu.measurements
-        gaugeItems["CABIN_TEMP_i2c"][4]=round(temperature,1)
+        gaugeItems["CABIN_TEMP_i2c"][4]=round(temperature)
         chan1 = AnalogIn(ads, ADS.P0)   #block1
         chan2 = AnalogIn(ads, ADS.P1)   #block2
         chan3 = AnalogIn(ads, ADS.P2)   #oil Pres
@@ -1036,8 +1036,8 @@ def CABIN_TEMP_i2c():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["CABIN_TEMP_i2c"][4])+"°C",font=gfont, fill="WHITE")
-        draw.text((60,26),"Inside", font=font, fill="WHITE") 
+        draw.text((57,90),str(gaugeItems["CABIN_TEMP_i2c"][4])+"°C",font=gfont, fill="WHITE")
+        draw.text((64,26),"Inside", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
         if not button.value and not button_held:
