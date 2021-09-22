@@ -1126,30 +1126,30 @@ def TEMP_GAUGE():  #### need to change this whole thing up ... Head temp, block 
         draw=drawimage[1]
         if int(watch_RPM)>6000:
             if (len(str(watch_RPM))==3):
-                draw.text((84,20),str(watch_RPM), font=font, fill="RED")
+                draw.text((84,20),str(watch_OIL), font=font, fill="RED")
             else:
-                draw.text((74,20),str(watch_RPM), font=font, fill="RED")
+                draw.text((74,20),str(watch_OIL), font=font, fill="RED")
         else:
             if (len(str(watch_RPM))==3):
-                draw.text((84,20),str(watch_RPM), font=font, fill="WHITE")
+                draw.text((84,20),str(watch_OIL), font=font, fill="WHITE")
             else:
-                draw.text((74,20),str(watch_RPM), font=font, fill="WHITE")
+                draw.text((74,20),str(watch_OIL), font=font, fill="WHITE")
 
-        draw.text((108,67),"RPM",font=font3,fill="RED")
+        draw.text((108,67),"Oil Temp",font=font3,fill="RED")
         draw.line([(0,84),(250, 84)], fill ="RED",width = 3)
 
-        draw.text((25,90),str(watch_OIL)+"°",font=font,fill="WHITE")
-        draw.text((30,137),"Oil Temp", font=font3,fill="RED")
+        draw.text((25,90),str(["BLOCK_TEMP2_ADC"][4])+"°",font=font,fill="WHITE")
+        draw.text((30,137),"Head Temp", font=font3,fill="RED")
 
         draw.line([(120,84),(120,153)],fill="RED", width=3)
 
-        draw.text((130,90),str(oilPSI), font=font, fill="WHITE")
+        draw.text((130,90)str(["BLOCK_TEMP1_ADC"][4]), font=font, fill="WHITE")
         draw.text((199,110),"psi",font=font2, fill="WHITE")
-        draw.text((160,137),"Oil Pres", font=font3,fill="RED")
+        draw.text((160,137),"Block Temp", font=font3,fill="RED")
 
         draw.line([(0,153),(240,153)],fill="RED", width=3)
 
-        draw.text((100,160),"BOOST",font=font3,fill="RED")
+        draw.text((100,160),"Water Temp",font=font3,fill="RED")
 
         if (len(str(boost))==2):
             draw.text((90,175),str(boost), font=gfont,fill="WHITE")
