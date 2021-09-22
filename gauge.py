@@ -1135,7 +1135,7 @@ def TEMP_GAUGE():  #### need to change this whole thing up ... Head temp, block 
             else:
                 draw.text((74,20),str(watch_OIL), font=font, fill="WHITE")
 
-        draw.text((108,67),"Oil Temp",font=font3,fill="RED")
+        draw.text((100,67),"Oil Temp",font=font3,fill="RED")
         draw.line([(0,84),(250, 84)], fill ="RED",width = 3)
 
         draw.text((25,90),str(gaugeItems["BLOCK_TEMP2_ADC"][4])+"°",font=font,fill="WHITE")
@@ -1143,13 +1143,12 @@ def TEMP_GAUGE():  #### need to change this whole thing up ... Head temp, block 
 
         draw.line([(120,84),(120,153)],fill="RED", width=3)
 
-        draw.text((130,90),str(gaugeItems["BLOCK_TEMP1_ADC"][4])+"°", font=font, fill="WHITE")
-        draw.text((199,110),"psi",font=font2, fill="WHITE")
+        draw.text((140,90),str(gaugeItems["BLOCK_TEMP1_ADC"][4])+"°", font=font, fill="WHITE")
         draw.text((160,137),"Block Temp", font=font3,fill="RED")
 
         draw.line([(0,153),(240,153)],fill="RED", width=3)
 
-        draw.text((100,160),"Water Temp",font=font3,fill="RED")
+        draw.text(95,160),"Water Temp",font=font3,fill="RED")
 
         if (len(str(boost))==2):
             draw.text((90,175),str(boost), font=gfont,fill="WHITE")
