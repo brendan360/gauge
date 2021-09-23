@@ -263,15 +263,34 @@ def adcTHREAD():
     old_max=32767
     new_min=0
     new_max=150
+    
+    bold_min=0
+    bold_max=32767
+    bnew_min=-15
+    bnew_max=30
+    
     while True:
         temperature, relative_humidity = htu.measurements
         gaugeItems["CABIN_TEMP_i2c"][4]=round(temperature)
         chan1 = AnalogIn(ads, ADS.P0)   #block1
         chan2 = AnalogIn(ads, ADS.P1)   #block2
         chan3 = AnalogIn(ads, ADS.P2)   #oil Pres
+        chan4 = AnalogIn(ads, ADS.P3)  #boost
+
         adcoil=chan3.value
         oilpsi=((adcoil - old_min)/(old_max-old_min))*(new_max-new_min)+new_min
         oilpsi=round(oilpsi)
+        
+        print()
+        print()
+        print("-----------------")
+        print("boost RAW:",chan4.value)
+        adcboost=chan4.value
+        boostpsi=((adcboost - bold_min)/(bold_max-bold_min))*(bnew_max-bnew_min)+bnew_min
+        boostpsi=round(boostpsi)
+        print("boost calc:",boostpsi)
+        print("-----------------")
+        time.sleep(.5)
 
         thermistor1 = chan1
         R1 = 10000/ (40634/thermistor1.value - 1)
@@ -281,6 +300,7 @@ def adcTHREAD():
         gaugeItems["BLOCK_TEMP2_ADC"][4]=round(steinhart_temperature_C(R2))
         gaugeItems["OIL_PRESSURE_ADC"][4]=oilpsi 
 
+        gaugeItems["BOOST_ADC"][4]=boostpsi 
 
 
 #********************
@@ -1057,7 +1077,13 @@ def QUAD_GAUGE():
     button_held=False
     global alertScreen
     while alertScreen==0:     
-        
+        try:
+            RPM=gaugeItems["RPM"][4]
+            oilTemp=gaugeItems["OIL_TEMP"][4]
+        except KeyError:
+            RPM=0
+            oilTemp=0
+
         oilPSI=gaugeItems["OIL_PRESSURE_ADC"][4]
         boost=gaugeItems["BOOST_ADC"][4]
         drawimage=setupDisplay()
@@ -1065,19 +1091,19 @@ def QUAD_GAUGE():
         draw=drawimage[1]
         if int(watch_RPM)>6000:
             if (len(str(watch_RPM))==3):
-                draw.text((84,20),str(watch_RPM), font=font, fill="RED")
+                draw.text((84,20),str(RPM), font=font, fill="RED")
             else:
-                draw.text((74,20),str(watch_RPM), font=font, fill="RED")
+                draw.text((74,20),str(_RPM), font=font, fill="RED")
         else:
             if (len(str(watch_RPM))==3):
-                draw.text((84,20),str(watch_RPM), font=font, fill="WHITE")
+                draw.text((84,20),str(RPM), font=font, fill="WHITE")
             else:
-                draw.text((74,20),str(watch_RPM), font=font, fill="WHITE")
+                draw.text((74,20),str(RPM), font=font, fill="WHITE")
 
         draw.text((108,67),"RPM",font=font3,fill="RED")
         draw.line([(0,84),(250, 84)], fill ="RED",width = 3)
 
-        draw.text((25,90),str(watch_OIL)+"°",font=font,fill="WHITE")
+        draw.text((25,90),str(oilTemp)+"°",font=font,fill="WHITE")
         draw.text((30,137),"Oil Temp", font=font3,fill="RED")
 
         draw.line([(120,84),(120,153)],fill="RED", width=3)
@@ -1114,11 +1140,12 @@ def QUAD_GAUGE():
 
 def TEMP_GAUGE():  #### need to change this whole thing up ... Head temp, block temp, oil temp, coolant temp
     watch_RPM=2000
-    watch_OIL=20
+    watch_OIL=gaugeItems["CABIN_TEMP_i2c"][4]
     button_held=False
     global alertScreen
     while alertScreen==0:     
         
+        watch_OIL=gaugeItems["CABIN_TEMP_i2c"][4]
         oilPSI=gaugeItems["OIL_PRESSURE_ADC"][4]
         boost=gaugeItems["BOOST_ADC"][4]
         drawimage=setupDisplay()
