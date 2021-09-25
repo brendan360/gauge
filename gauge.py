@@ -266,8 +266,8 @@ def adcTHREAD():
     
     bold_min=0
     bold_max=32767
-    bnew_min=-15
-    bnew_max=30
+    bnew_min=0
+    bnew_max=34
     
     while True:
         temperature, relative_humidity = htu.measurements
@@ -287,7 +287,7 @@ def adcTHREAD():
         print("boost RAW:",chan4.value)
         adcboost=chan4.value
         boostpsi=((adcboost - bold_min)/(bold_max-bold_min))*(bnew_max-bnew_min)+bnew_min
-        boostpsi=round(boostpsi)
+        boostpsi=round(boostpsi -14,1)
         print("boost calc:",boostpsi)
         print("-----------------")
         time.sleep(.5)
@@ -1139,8 +1139,6 @@ def QUAD_GAUGE():
                 menuloop(breadCrumb[0],breadCrumb[1])
 
 def TEMP_GAUGE():  #### need to change this whole thing up ... Head temp, block temp, oil temp, coolant temp
-    watch_RPM=2000
-    watch_OIL=gaugeItems["CABIN_TEMP_i2c"][4]
     button_held=False
     global alertScreen
     while alertScreen==0:     
