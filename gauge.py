@@ -287,7 +287,7 @@ def adcTHREAD():
         print("boost RAW:",chan4.value)
         adcboost=chan4.value
         boostpsi=((adcboost - bold_min)/(bold_max-bold_min))*(bnew_max-bnew_min)+bnew_min
-        boostpsi=round(boostpsi -14,1)
+        boostpsi=round(boostpsi -13.6,1)
         print("boost calc:",boostpsi)
         print("-----------------")
         time.sleep(.5)
