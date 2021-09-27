@@ -230,17 +230,19 @@ def connectOBD():
                 highlightbootDisplay()
                 connection.close()
                 return
-            
+            else:
+                print(statusState)
+                i=i+1
+                time.sleep(2)
+                bootState['obd']=(i,"fail",0)
+                highlightbootDisplay()
+                continue
         except:
-            print(statusState)
             i=i+1
             time.sleep(2)
             bootState['obd']=(i,"fail",0)
             highlightbootDisplay()
-            break
-
     print("     OBD not avaliable")
-    bootState["obd"][2]=0
 
 
 
@@ -1290,7 +1292,7 @@ def firstBoot():
 
 def OBDcleanup():
 
-    print("Initial Gauge Items: ",len(gaugeItems))
+    print("Initial Gauge Items: ",len(gaugeItems)/2)
     time.sleep(2)
     if bootState["adc"][2]==0:
         cleanupMenu()
@@ -1354,7 +1356,7 @@ def cleanupMenu():
         gaugemenu.insert(0,value[3])
         gaugemenu.insert(1,key)
 
-    print("Final Gauge Items: ",len(gaugemenu))
+    print("Final Gauge Items: ",len(gaugemenu)/2)
 
 
 
