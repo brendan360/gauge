@@ -237,6 +237,11 @@ def connectOBD():
             time.sleep(2)
             bootState['obd']=(i,"fail",0)
             highlightbootDisplay()
+    print(statusState)
+    i=i+1
+    time.sleep(2)
+    bootState['obd']=(i,"fail",0)
+    highlightbootDisplay()
     print("     OBD not avaliable")
     bootState["obd"][2]=0
 
