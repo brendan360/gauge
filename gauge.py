@@ -222,11 +222,12 @@ def connectOBD():
             connection = obd.OBD(baudrate=115200,fast=False, timeout=30)
             statusState=connection.status()
             print("     OBD conected")
-            print(statusState):wq
-            
-            bootState['obd']=(i,"win",1)
-            highlightbootDisplay()
-            connection.close()
+            if statusState == "OBD_CONNECTED":
+                bootState['obd']=(i,"win",1)
+                highlightbootDisplay()
+                connection.close()
+            else:
+                bootState['obd']=(i,"fail",0)  
             return
         except:
             print(statusState)
