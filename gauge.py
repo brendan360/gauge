@@ -1,6 +1,6 @@
 #!/usr/bin/python3
   
-  
+### if obd becomes unbresponice use screen /dev/rfcomm0 and run these commands ATL1, ATH1, ATS1, ATAL  
 #********************
 #********************
 #####################
@@ -222,7 +222,7 @@ def connectOBD():
     statusState=""
     while i<5:
         try:
-            connection = obd.OBD(fast=False, timeout=30)
+            connection = obd.OBD(baudrate=115200,fast=False, timeout=30)
             statusState=connection.status()
             print("     OBD conected")
             bootState['obd']=(i,"win",1)
@@ -251,9 +251,9 @@ def connectOBD():
 #********************
 
 def obdTHREAD():
-    connection = obd.OBD()
+    connection = obd.OBD(baudrate=115200)
     for key,value in gaugeItems.items():
-        cmd=obd.commands.guageItems[key]
+        cmd="obd.commands.",key
         if value[1]=="OBD":
             value[4]=str(connection.query(cmd))
             print(key,":",value[4])
@@ -281,17 +281,10 @@ def adcTHREAD():
         oilpsi=((adcoil - old_min)/(old_max-old_min))*(new_max-new_min)+new_min
         oilpsi=round(oilpsi)
         
-        print()
-        print()
-        print("-----------------")
-        print("boost RAW:",chan4.value)
         adcboost=chan4.value
         boostpsi=((adcboost - bold_min)/(bold_max-bold_min))*(bnew_max-bnew_min)+bnew_min
         boostpsi=round(boostpsi -13.6,1)
-        print("boost calc:",boostpsi)
-        print("-----------------")
-        time.sleep(.5)
-
+        time.sleep(.2)
         thermistor1 = chan1
         R1 = 10000/ (40634/thermistor1.value - 1)
         thermistor2 = chan2
@@ -1286,9 +1279,9 @@ def firstBoot():
     disp.ShowImage(im_r)
     time.sleep(3)  
     os.system('sudo rfcomm bind rfcomm0 '+btmac)
-#    connectBT()
+    connectBT()
     connectADC()
-#    connectOBD()
+    connectOBD()
     OBDcleanup()
 
 def OBDcleanup():
@@ -1309,7 +1302,8 @@ def OBDcleanup():
         return
     if bootState["obd"][2]==1:
         try:
-            connection = obd.OBD()
+            
+            connection = obd.OBD(baudrate=115200,fast=False, timeout=50)
             pidsA=str(connection.query(obd.commands.PIDS_A))
             pidsB=str(connection.query(obd.commands.PIDS_B))
             pidsC=str(connection.query(obd.commands.PIDS_C))
@@ -1341,6 +1335,7 @@ def OBDcleanup():
             cleanupMenu()
         except:
             print("failed cleanup")
+            bootState["obd"][2]=0
 
 def cleanupMenu():
     inactiveItems=[]
@@ -1376,7 +1371,7 @@ try:
         threading.Thread(target=obdTHREAD).start()
     if bootState["adc"][2]==1:
         threading.Thread(target=adcTHREAD).start()
-    threading.Thread(target=alertTHREAD).start()
+#    threading.Thread(target=alertTHREAD).start()
 
 except:
     print("failed starting threads")
