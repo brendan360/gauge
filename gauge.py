@@ -191,13 +191,10 @@ def connectBT():
         bootState['bth']=(i,"fail",0)
         highlightbootDisplay()
     print("     BT not avaliable")
-    bootState["bt"][2]=0
+    bootState["bth"][2]=0
 
 
 def connectADC():
-#####
-###NEED TO FIX ADC ONCE NEW ADC ARRIVES
-###
     global ads
     print("Connecting ADC")
     i=0
