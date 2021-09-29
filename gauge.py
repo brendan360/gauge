@@ -239,7 +239,7 @@ def obdTHREAD():
     for key,value in gaugeItems.items():
         if value[1]=="OBD":
             
-            obdcmd=obd.commands.str(key)
+            obdcmd="obd.commands."+str(key)
             print(obdcmd)
             value[4]=str(connection.query(obdcmd))
             print(key,":",value[4])
