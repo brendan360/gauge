@@ -232,13 +232,14 @@ def connectOBD():
 #********************
 
 def obdTHREAD():
-    connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
-    print(connection.query(obd.commands.RPM))
+    while True:
+        connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
+        print(connection.query(obd.commands.RPM))
  #   for key,value in gaugeItems.items():
  #       if value[1]=="OBD":
  #           value[4]=str(connection.query(obd.commands.RPM))
  #           print(key,":",value[4])
-    connection.close()
+        connection.close()
 
 def adcTHREAD():
     old_min=1088
