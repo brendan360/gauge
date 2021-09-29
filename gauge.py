@@ -194,11 +194,10 @@ def connectOBD():
     statusState=""
     while i<5:
         try:
-            connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600 )
+            connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
             statusState=connection.status()
             print("------------")
             print(statusState)
-            print("------------")
             if statusState == "Car Connected":
                 print("     OBD conected")
                 bootState['obd']=(i,"win",1)
@@ -206,7 +205,6 @@ def connectOBD():
                 connection.close()
                 return
             else:
-                print(statusState)
                 i=i+1
                 time.sleep(2)
                 bootState['obd']=(i,"fail",0)
@@ -236,12 +234,12 @@ def obdTHREAD():
     connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
  #   while True:
   #      print(connection.query(obd.commands.RPM))
-    for key,value in gaugeItems.items():
-        if value[1]=="OBD":
-            obdcmd=odd.commands+"."+key
+    for i in gaugeItems.keys():
+        if gaugeItems[i][1]=="OBD":
+            obdcmd=odd.commands+"."+i
             print(obdcmd)
             value[4]=str(connection.query(obdcmd))
-            print(key,":",value[4])
+            print(key,":",gaugeItems[i][4])
     connection.close()
 
 def adcTHREAD():
