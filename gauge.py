@@ -1313,7 +1313,7 @@ def cleanupMenu():
     for key,value in gaugeItems.items():
         gaugemenu.insert(0,value[3])
         gaugemenu.insert(1,key)
-    print("Final Gauge Items: ",(len(gaugemenu)-2)/2)
+    print("Final Gauge Items: ",round((len(gaugemenu)-2)/2))
 
 
 
