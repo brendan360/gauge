@@ -64,14 +64,13 @@ except ImportError:
 
 #Global variables
 
-
+obdConnection="/dev/ttyS0"
 
 
 breadCrumb=[0,"topmenu"]
 ingauge =0
 rpmHIGH=0
-bootState={"bth":[0,"fail",0],
-           "adc":[0,"fail",0],
+bootState={"adc":[0,"fail",0],
            "obd":[0,"fail",0]
            }
 address="/home/pi/gauge/"
@@ -123,11 +122,6 @@ seesaw_product = (seesaw.get_version() >> 16) & 0xFFFF
 #OBD setup
 ###
 
-#BT info
-btmac="00:04:3E:4A:26:B0"
-btname="OBDLink LX"
-#--------------------------#
-
 
 
 ###
@@ -175,25 +169,6 @@ gaugeItems={"ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
 #********************
 #********************
 
-def connectBT():
-    global BT
-    print("Connecting BT")
-    i=0
-    while i<5:
-        BTconnected=sp.getoutput('hcitool name '+btmac)
-        if btname == BTconnected:
-            print("     BT connected")
-            bootState['bth']=(i,"win",1)
-            highlightbootDisplay()
-            return
-        i=i+1
-        time.sleep(2)
-        bootState['bth']=(i,"fail",0)
-        highlightbootDisplay()
-    print("     BT not avaliable")
-    bootState['bth']=(5,"fail",0)
-
-
 def connectADC():
     global ads
     print("Connecting ADC")
@@ -219,7 +194,7 @@ def connectOBD():
     statusState=""
     while i<5:
         try:
-            connection = obd.OBD(baudrate=115200,fast=False, timeout=30)
+            connection = obd.OBD("obdConnection")
             statusState=connection.status()
             print("------------")
             print(statusState)
@@ -439,19 +414,6 @@ def highlightbootDisplay():
     drawimage=setupDisplay()
     image=drawimage[0]
     draw=drawimage[1]
-
-    if bootState['bth'][1]=="fail":
-        faildot="."*bootState['bth'][0]
-        draw.text((40,40),"BTH", fill = "WHITE", font=font)
-        draw.text((150,40),".....", fill = "WHITE", font=font)
-        draw.text((150,40),faildot, fill = "RED", font=font)
-        if bootState['bth'][0]==5:
-            draw.text((40,40),"BTH", fill = "RED", font=font)
-    else:
-        faildot="."*bootState['bth'][0]
-        draw.text((150,40),".....", fill = "WHITE", font=font)
-        draw.text((40,40),"BTH", fill = "GREEN", font=font)
-        draw.text((150,40),faildot, fill = "GREEN", font=font)
 
     if bootState['adc'][1]=="fail":
         faildot="."*bootState['adc'][0]
@@ -1285,7 +1247,6 @@ def firstBoot():
     disp.ShowImage(im_r)
     time.sleep(3)  
     os.system('sudo rfcomm bind rfcomm0 '+btmac)
-    connectBT()
     connectADC()
     connectOBD()
     OBDcleanup()
