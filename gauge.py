@@ -199,7 +199,7 @@ def connectOBD():
             print("------------")
             print(statusState)
             print("------------")
-            if statusState == "OBD_CONNECTED":
+            if statusState == "Car Connected":
                 print("     OBD conected")
                 bootState['obd']=(i,"win",1)
                 highlightbootDisplay()
@@ -217,7 +217,7 @@ def connectOBD():
             time.sleep(2)
             bootState['obd']=(i,"fail",0)
             highlightbootDisplay()
-    print("     OBD not avaliable")
+
 
 
 
