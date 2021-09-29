@@ -194,7 +194,7 @@ def connectOBD():
     statusState=""
     while i<5:
         try:
-            connection = obd.OBD(obdConnection, check_voltage=False)
+            connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600 )
             statusState=connection.status()
             print("------------")
             print(statusState)
@@ -232,7 +232,7 @@ def connectOBD():
 #********************
 
 def obdTHREAD():
-    connection = obd.OBD(obdConnection, check_voltage=False)
+    connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
     for key,value in gaugeItems.items():
         cmd="obd.commands.",key
         if value[1]=="OBD":
@@ -1267,7 +1267,7 @@ def OBDcleanup():
     if bootState["obd"][2]==1:
         try:
             
-            connection = obd.OBD(obdConnection, check_voltage=False)
+            connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
             pidsA=str(connection.query(obd.commands.PIDS_A))
             pidsB=str(connection.query(obd.commands.PIDS_B))
             pidsC=str(connection.query(obd.commands.PIDS_C))
