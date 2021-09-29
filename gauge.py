@@ -1200,7 +1200,7 @@ def reinitialise():
     firstBoot()
 
 def resetComm():
-
+    print("")
     
 def getIpAddress():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
