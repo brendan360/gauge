@@ -134,8 +134,8 @@ configmenu=["IP","ipaddress","Reload","reinitialise","Reboot","reboot_pi","Back"
 gaugemenu=["Back","backtotop2"]
 #              obd name    PID, location, enabled or false##, Friendly Name,value,pid squence, pid array,alertlow,alerthigh,alertcount
 gaugeItems={"ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
-            "COOLANT_TEMP":["05","OBD",0,"Water °C","0",4,"a","na","100",0],
-            "FUEL_PRESSURE":["0A","OBD",0,"Fuel Pres","0",9,"a","na","100",0],
+#            "COOLANT_TEMP":["05","OBD",0,"Water °C","0",4,"a","na","100",0],
+#            "FUEL_PRESSURE":["0A","OBD",0,"Fuel Pres","0",9,"a","na","100",0],
             "INTAKE_PRESSURE":["0B","OBD",0,"Intake Pres","0",10,"a","na","100",0],
             "RPM":["0C","OBD",0,"RPM","0",11,"a","na","100",0],
             "SPEED":["0D","OBD",0,"Speed","0",12,"a","na","100",0],
@@ -147,7 +147,7 @@ gaugeItems={"ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
             "FUEL_LEVEL":["2F","OBD",0,"Fuel %","0",14,"b","na","100",0],
             "BAROMETRIC_PRESSURE":["33","OBD",0,"Air Pres","0",18,"b","na","100",0],
             "AMBIANT_AIR_TEMP":["46","OBD",0,"Air °C","0",5,"c","na","100",0],
-            "FUEL_RATE":["5E","OBD",0,"Fuel Rate","0",29,"c","na","100",0],
+#            "FUEL_RATE":["5E","OBD",0,"Fuel Rate","0",29,"c","na","100",0],
             "OIL_TEMP":["5C","OBD",0,"Oil C","0",27,"c","na","100",0],
             "OIL_PRESSURE_ADC":["ADCPIN0","ADC",0,"Oil Pres","0",0,"adc","na","100",0],
             "BOOST_ADC":["ADCPIN1","ADC",0,"Boost","0",0,"adc","na","15",0],
@@ -230,16 +230,18 @@ def connectOBD():
 #********************
 
 def obdTHREAD():
-    
+  
     connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
- #   while True:
-  #      print(connection.query(obd.commands.RPM))
-    for i in gaugeItems.keys():
-        if gaugeItems[i][1]=="OBD":
-            obdcmd=odd.commands+"."+i
-            print(obdcmd)
-            value[4]=str(connection.query(obdcmd))
-            print(key,":",gaugeItems[i][4])
+    while True:
+        print(connection.query(obd.commands.RPM))
+        for i in gaugeItems.keys():
+            if gaugeItems[i][1]=="OBD":
+               # obdCmd='obd.commands.'+'SPEED'
+                #print(obdCmd)
+                #gaugeItems[i][4]=str(connection.query(obdCmd).value)
+                cmd= "gaugeItems[i][4]=str(connection.query(obd.commands."+str(i)+").value)"
+                exec(cmd)
+                print(i,":",gaugeItems[i][4])
     connection.close()
 
 def adcTHREAD():
