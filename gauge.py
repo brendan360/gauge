@@ -235,10 +235,17 @@ def obdTHREAD():
     while True:
         print(connection.query(obd.commands.RPM))
         for i in gaugeItems.keys():
-            if gaugeItems[i][1]=="OBD":
-                cmd= "gaugeItems[i][4]=str(connection.query(obd.commands."+str(i)+").value)"
-                exec(cmd)
-                print(i,":",gaugeItems[i][4])
+         #   if gaugeItems[i][1]=="OBD":
+            
+        cmd=obd.commands.guageItems[i]
+        if guageItems[i][1]=="OBD":
+            guageItems[i][4]=str(connection.query(cmd))
+            print(key,":",value[4])   
+            
+            
+           #     cmd= "gaugeItems[i][4]=str(connection.query(obd.commands."+str(i)+").value)"
+           #     exec(cmd)
+           #     print(i,":",gaugeItems[i][4])
     connection.close()
 
 def adcTHREAD():
