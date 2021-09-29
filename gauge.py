@@ -1200,9 +1200,7 @@ def reinitialise():
     firstBoot()
 
 def resetComm():
-    os.system('sudo rfcomm release all')
-    time.sleep(5)
-    os.system('sudo rfcomm bind rfcomm0 00:04:3E:4A:26:B0')
+
     
 def getIpAddress():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -1246,7 +1244,6 @@ def firstBoot():
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
     time.sleep(3)  
-    os.system('sudo rfcomm bind rfcomm0 '+btmac)
     connectADC()
     connectOBD()
     OBDcleanup()
