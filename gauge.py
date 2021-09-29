@@ -1299,10 +1299,10 @@ def OBDcleanup():
                             if value[5]==counterc:
                                 value[2]=1
                     counterc=counterc+1
-            cleanupMenu()
         except:
             print("failed cleanup")
             bootState["obd"][2]=0
+            cleanupMenu()
     cleanupMenu()
 
 def cleanupMenu():
