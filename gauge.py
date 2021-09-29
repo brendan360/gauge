@@ -1303,6 +1303,7 @@ def OBDcleanup():
         except:
             print("failed cleanup")
             bootState["obd"][2]=0
+    cleanupMenu()
 
 def cleanupMenu():
     inactiveItems=[]
