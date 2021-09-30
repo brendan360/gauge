@@ -238,10 +238,6 @@ def obdTHREAD():
             if gaugeItems[i][1]=="OBD":
                 cmd= "gaugeItems[i][4]=str(connection.query(obd.commands."+str(i)+").value)"
                 exec(cmd)
-<<<<<<< HEAD
-                print(i,":",gaugeItems[i][4])
-=======
->>>>>>> 8a301d62f9b87832971bb6ece82ebfb26962b109
     connection.close()
 
 def adcTHREAD():
@@ -1344,4 +1340,3 @@ try:
 
 except:
     print("failed starting threads")
-
