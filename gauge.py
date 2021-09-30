@@ -238,6 +238,7 @@ def obdTHREAD():
             if gaugeItems[i][1]=="OBD":
                 cmd= "gaugeItems[i][4]=str(connection.query(obd.commands."+str(i)+").value)"
                 exec(cmd)
+
     connection.close()
 
 def adcTHREAD():
@@ -1135,8 +1136,6 @@ def TEMP_GAUGE():  #### need to change this whole thing up ... Head temp, block 
 
         draw.line([(0,153),(240,153)],fill="RED", width=3)
         draw.text((95,160),"Water Temp",font=font3,fill="RED")
-
-        draw.text((100,160),"BOOST",font=font3,fill="RED")
 
         if (len(str(boost))==2):
             draw.text((90,175),str(boost), font=gfont,fill="WHITE")
