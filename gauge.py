@@ -577,7 +577,7 @@ def ENGINE_LOAD():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["ENGINE_LOAD"][4]),font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["ENGINE_LOAD"][4].magnitude),font=gfont, fill="WHITE")
         draw.text((60,26),"Load", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -599,7 +599,7 @@ def COOLANT_TEMP():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["COOLANT_TEMP"][4])+"°C",font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["COOLANT_TEMP"][4].magnitude)+"°C",font=gfont, fill="WHITE")
         draw.text((60,26),"Water", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -621,7 +621,7 @@ def FUEL_PRESSURE():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["FUEL_PRESSURE"][4]),font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["FUEL_PRESSURE"][4].magnitude),font=gfont, fill="WHITE")
         draw.text((60,26),"Fuel Pres", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -643,7 +643,7 @@ def INTAKE_PRESSURE():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["INTAKE_PRESSURE"][4]),font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["INTAKE_PRESSURE"][4].magnitude),font=gfont, fill="WHITE")
         draw.text((60,26),"Intake", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -665,7 +665,7 @@ def RPM():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["RPM"][4]),font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["RPM"][4].magnitude),font=gfont, fill="WHITE")
         draw.text((60,26),"RPM", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -687,7 +687,7 @@ def SPEED():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["SPEED"][4])+"Km",font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["SPEED"][4].magnitude)+"Km",font=gfont, fill="WHITE")
         draw.text((60,26),"Speed", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -709,7 +709,7 @@ def TIMING_ADVANCE():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["TIMING_ADVANCE"][4])+"°",font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["TIMING_ADVANCE"][4].magnitude)+"°",font=gfont, fill="WHITE")
         draw.text((60,26),"Timing", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -731,7 +731,7 @@ def INTAKE_TEMP():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["INTAKE_TEMP"][4])+"°C",font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["INTAKE_TEMP"][4].magnitude)+"°C",font=gfont, fill="WHITE")
         draw.text((60,26),"Intake", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -753,7 +753,7 @@ def MAF():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["MAF"][4]),font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["MAF"][4].magnitude),font=gfont, fill="WHITE")
         draw.text((60,26),"MAF", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -775,7 +775,7 @@ def THROTTLE_POS():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["THROTTLE_POS"][4])+"%",font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["THROTTLE_POS"][4].magnitude)+"%",font=gfont, fill="WHITE")
         draw.text((60,26),"Throttle", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -797,7 +797,7 @@ def RUN_TIME():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems[" RUN_TIME"][4]),font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems[" RUN_TIME"][4].magnitude),font=gfont, fill="WHITE")
         draw.text((60,26),"Running", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -819,7 +819,7 @@ def FUEL_LEVEL():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["FUEL_LEVEL"][4])+"%",font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["FUEL_LEVEL"][4].magnitude)+"%",font=gfont, fill="WHITE")
         draw.text((60,26),"Fuel", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -841,7 +841,7 @@ def BAROMETRIC_PRESSURE():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["BAROMETRIC_PRESSURE"][4]),font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["BAROMETRIC_PRESSURE"][4].magnitude),font=gfont, fill="WHITE")
         draw.text((60,26),"Pressure", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -863,7 +863,7 @@ def AMBIANT_AIR_TEMP():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["AMBIANT_AIR_TEMP"][4])+"°C",font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["AMBIANT_AIR_TEMP"][4].magnitude)+"°C",font=gfont, fill="WHITE")
         draw.text((60,26),"Outside", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -885,7 +885,7 @@ def FUEL_RATE():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["FUEL_RATE"][4]),font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["FUEL_RATE"][4].magnitude),font=gfont, fill="WHITE")
         draw.text((60,26),"Fuel Rate", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -907,7 +907,7 @@ def OIL_TEMP():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems["OIL_TEMP"][4])+"°C",font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["OIL_TEMP"][4].magnitudes)+"°C",font=gfont, fill="WHITE")
         draw.text((60,26),"Oil", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
