@@ -5,7 +5,7 @@ sudo apt-get update
 
 sudo apt-get -y upgrade
 
-sudo apt-get -y install git python3 python3-pip wiringpi python-pil python-numpy RPi.GPIO python3-numpy
+sudo apt-get -y install git python3 python3-pip wiringpi python-pil python-numpy RPi.GPIO python3-numpy libopenjp2-7-dev vim
 
 
 
