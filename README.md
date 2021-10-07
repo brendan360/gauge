@@ -5,7 +5,7 @@ sudo apt-get update
 
 sudo apt-get -y upgrade
 
-sudo apt-get -y install git python3 python3-pip wiringpi python-pil python-numpy RPi.GPIO python3-numpy libopenjp2-7-dev vim
+sudo apt-get -y install git python3 python3-pip wiringpi python-pil python-numpy RPi.GPIO python3-numpy libopenjp2-7-dev vim i2c-tools python-smbus
 
 
 
@@ -26,7 +26,8 @@ sudo make check
 
 sudo make install
 
-sudo pip3 install adafruit-circuitpython-seesaw Adafruit-Blinka adafruit-circuitpython-htu31d pillow
+sudo pip3 install adafruit-circuitpython-seesaw Adafruit-Blinka adafruit-circuitpython-htu31d pillow obd Adafruit_Libraries adafruit-circuitpython-ads1x15
+
 
 cd ~
 
