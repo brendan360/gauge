@@ -19,7 +19,7 @@ from PIL import Image, ImageDraw, ImageFont
 import fcntl
 import struct
 import os
-import bluetooth
+#import bluetooth
 import obd
 from obd import OBDStatus
 import sys
@@ -30,7 +30,7 @@ import colorsys
 import signal
 import sys
 from adafruit_seesaw import seesaw, neopixel, rotaryio, digitalio
-import subprocess as sp
+#import subprocess as sp
 i2c = busio.I2C(board.SCL, board.SDA)
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
