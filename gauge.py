@@ -275,16 +275,15 @@ def adcTHREAD():
         
         adcboost=chan4.value
         boostpsi=((adcboost - bold_min)/(bold_max-bold_min))*(bnew_max-bnew_min)+bnew_min
-        boostpsi=round(boostpsi - (gaugeItems["ALTITUDE_i2c"][4] * 0.0145038),1)
+        boostpsi=round((boostpsi - (gaugeItems["ALTITUDE_i2c"][4] * 0.0145038)),1)
         time.sleep(.2)
         thermistor1 = chan1
         R1 = 10000/ (40634/thermistor1.value - 1)
         thermistor2 = chan2
-        gaugeItems["BLOCK_TEMP1_ADC"][4]=round(steinhart_temperature_C(R1))
         R2 = 10000 / (40634/thermistor2.value - 1)
+        gaugeItems["BLOCK_TEMP1_ADC"][4]=round(steinhart_temperature_C(R1))
         gaugeItems["BLOCK_TEMP2_ADC"][4]=round(steinhart_temperature_C(R2))
         gaugeItems["OIL_PRESSURE_ADC"][4]=oilpsi 
-
         gaugeItems["BOOST_ADC"][4]=boostpsi 
 
 
@@ -1050,7 +1049,7 @@ def ALTITUDE_i2c():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((57,90),str(gaugeItems["ALTITUDE_i2c"][4])+"°C",font=gfont, fill="WHITE")
+        draw.text((57,90),str(gaugeItems["ALTITUDE_i2c"][4])+"m",font=gfont, fill="WHITE")
         draw.text((64,26),"Altitude", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
