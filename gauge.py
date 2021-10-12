@@ -14,12 +14,12 @@ import board
 import socket
 import time
 import threading
-import busio
+#####import busio
 from PIL import Image, ImageDraw, ImageFont
 import fcntl
 import struct
 import os
-#import bluetooth
+#####import bluetooth
 import obd
 from obd import OBDStatus
 import sys
@@ -30,12 +30,16 @@ import colorsys
 import signal
 import sys
 from adafruit_seesaw import seesaw, neopixel, rotaryio, digitalio
-#import subprocess as sp
-i2c = busio.I2C(board.SCL, board.SDA)
+#####import subprocess as sp
+#####i2c = busio.I2C(board.SCL, board.SDA)
+#####htu = adafruit_htu31d.HTU31D(i2c)
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 import adafruit_htu31d
-htu = adafruit_htu31d.HTU31D(i2c)
+from adafruit_bme280 import basic as adafruit_bme280
+i2c = board.I2C()  # uses board.SCL and board.SDA
+bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
+
 
 
 
@@ -66,6 +70,7 @@ except ImportError:
 
 obdConnection="/dev/ttyS0"
 
+bme280.sea_level_pressure = 1013.25
 
 breadCrumb=[0,"topmenu"]
 ingauge =0
@@ -154,6 +159,7 @@ gaugeItems={"ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
             "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",0,"Block °C","0",2,"adc","na","90",0],
             "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",0,"Head °C","0",3,"adc","na","90",0],
             "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin °C","0",4,"adc","na","40",0]
+            "ALTITUDE_i2c":["ALTADDR","I2C",1,"ALTITUDE","0",4,"adc","na","40",0]
             }
 
 
@@ -253,8 +259,11 @@ def adcTHREAD():
     bnew_max=34
     
     while True:
-        temperature, relative_humidity = htu.measurements
+        temperature=bme280.temperature
+        relative_humidity = bme280.relative_humidity
+        altitude= bme280.altitude
         gaugeItems["CABIN_TEMP_i2c"][4]=round(temperature)
+        gaugeItems["ALTITUDE_i2c"][4]=round(altitude)
         chan1 = AnalogIn(ads, ADS.P0)   #block1
         chan2 = AnalogIn(ads, ADS.P1)   #block2
         chan3 = AnalogIn(ads, ADS.P2)   #oil Pres
@@ -266,7 +275,7 @@ def adcTHREAD():
         
         adcboost=chan4.value
         boostpsi=((adcboost - bold_min)/(bold_max-bold_min))*(bnew_max-bnew_min)+bnew_min
-        boostpsi=round(boostpsi -13.6,1)
+        boostpsi=round(boostpsi - (gaugeItems["ALTITUDE_i2c"][4] * 0.0145038),1)
         time.sleep(.2)
         thermistor1 = chan1
         R1 = 10000/ (40634/thermistor1.value - 1)
@@ -1021,6 +1030,28 @@ def CABIN_TEMP_i2c():
         draw=drawimage[1]
         draw.text((57,90),str(gaugeItems["CABIN_TEMP_i2c"][4])+"°C",font=gfont, fill="WHITE")
         draw.text((64,26),"Inside", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+                
+def ALTITUDE_i2c():
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((57,90),str(gaugeItems["ALTITUDE_i2c_i2c"][4])+"°C",font=gfont, fill="WHITE")
+        draw.text((64,26),"Altitude", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
         if not button.value and not button_held:
