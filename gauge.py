@@ -191,7 +191,7 @@ def connectADC():
             bootState['adc']=(i,"fail",0)
             highlightbootDisplay()
             time.sleep(2)
-    bootState["adc"][2]=0
+    bootState['adc']=(i,"fail",0)
     print("     ADC failed")
     
 def connectOBD():
