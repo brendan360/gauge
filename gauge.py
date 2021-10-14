@@ -270,10 +270,18 @@ def adcTHREAD():
         chan4 = AnalogIn(ads, ADS.P3)  #boost
 
         adcoil=chan3.value
+        adcboost=chan4.value
+        
+        print ("----------------")
+        print(chan1.value)
+        print(chan2.value)
+        print(chan3.value)
+        print(chan4.value)
+        print ("----------------")
         oilpsi=((adcoil - old_min)/(old_max-old_min))*(new_max-new_min)+new_min
         oilpsi=round(oilpsi)
         
-        adcboost=chan4.value
+        
         boostpsi=((adcboost - bold_min)/(bold_max-bold_min))*(bnew_max-bnew_min)+bnew_min
         boostpsi=round((boostpsi - (gaugeItems["ALTITUDE_i2c"][4] * 0.0145038)),1)
         time.sleep(.2)
