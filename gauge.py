@@ -223,7 +223,6 @@ def connectELM():
             bootState['elm']=(i,"fail",0)
             highlightbootDisplay()
 
-   
 def connectOBD():
     print("Connecting OBD")
     i=0
@@ -1177,7 +1176,7 @@ def QUAD_GAUGE():
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1])
 
-def TEMP_GAUGE():  #### need to change this whole thing up ... Head temp, block temp, oil temp, coolant temp
+def TEMP_GAUGE():  
     button_held=False
     global alertScreen
     while alertScreen==0:     
@@ -1304,7 +1303,11 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3984.0):
     steinhart = (1.0 / steinhart) - 273.15   # Invert, convert to C
     return steinhart
 
+def ecu_read():
+    print("doing ECU read")
 
+def ecu_reset():
+    print("doing ECU reset")
 
 #********************
 #********************
