@@ -473,16 +473,16 @@ def highlightbootDisplay():
         
     if bootState['elm'][1]=="fail":
         faildot="."*bootState['elm'][0]
-        draw.text((40,145),"ELM", fill = "WHITE", font=font)
-        draw.text((150,145),".....", fill = "WHITE", font=font)
-        draw.text((150,145),faildot, fill = "RED", font=font)
+        draw.text((40,93),"ELM", fill = "WHITE", font=font)
+        draw.text((150,93),".....", fill = "WHITE", font=font)
+        draw.text((150,93),faildot, fill = "RED", font=font)
         if bootState['elm'][0]==5:
-            draw.text((40,145),"ELM", fill = "RED", font=font)
+            draw.text((40,93),"ELM", fill = "RED", font=font)
     else:
         faildot="."*bootState['elm'][0]
-        draw.text((40,145),"ELM", fill = "GREEN", font=font)
-        draw.text((150,145),".....", fill = "WHITE", font=font)
-        draw.text((150,145),faildot, fill = "GREEN", font=font)
+        draw.text((40,93),"ELM", fill = "GREEN", font=font)
+        draw.text((150,93),".....", fill = "WHITE", font=font)
+        draw.text((150,93),faildot, fill = "GREEN", font=font)
         
         
     if bootState['obd'][1]=="fail":
