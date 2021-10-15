@@ -205,7 +205,7 @@ def connectELM():
             statusState=connection.status()
             print("------------")
             print(statusState)
-            if statusState == "ELM Connected":
+            if statusState == "ELM Connected" or statusState == "Car Connected":
                 print("     ELM conected")
                 bootState['elm']=(i,"win",1)
                 highlightbootDisplay()
