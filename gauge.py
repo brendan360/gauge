@@ -1,6 +1,7 @@
 #!/usr/bin/python3
   
 ### if obd becomes unbresponice use screen /dev/rfcomm0 and run these commands ATL1, ATH1, ATS1, ATAL  
+
 #********************
 #********************
 #####################
@@ -65,7 +66,7 @@ except ImportError:
 
 obdConnection="/dev/ttyS0"
 
-bme280.sea_level_pressure = 1013.25
+bme280.sea_level_pressure = 1001.5
 
 breadCrumb=[0,"topmenu"]
 ingauge =0
