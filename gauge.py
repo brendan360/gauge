@@ -14,12 +14,10 @@ import board
 import socket
 import time
 import threading
-#####import busio
 from PIL import Image, ImageDraw, ImageFont
 import fcntl
 import struct
 import os
-#####import bluetooth
 import obd
 from obd import OBDStatus
 import sys
@@ -30,14 +28,11 @@ import colorsys
 import signal
 import sys
 from adafruit_seesaw import seesaw, neopixel, rotaryio, digitalio
-#####import subprocess as sp
-#####i2c = busio.I2C(board.SCL, board.SDA)
-#####htu = adafruit_htu31d.HTU31D(i2c)
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 import adafruit_htu31d
 from adafruit_bme280 import basic as adafruit_bme280
-i2c = board.I2C()  # uses board.SCL and board.SDA
+i2c = board.I2C() 
 bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
 
 
