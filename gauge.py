@@ -498,7 +498,6 @@ def highlightbootDisplay():
         draw.text((150,145),".....", fill = "WHITE", font=font)
         draw.text((150,145),faildot, fill = "GREEN", font=font)
 
-
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
 
