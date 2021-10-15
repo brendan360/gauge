@@ -203,8 +203,6 @@ def connectELM():
         try:
             connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
             statusState=connection.status()
-            print("------------")
-            print(statusState)
             if statusState == "ELM Connected" or statusState == "Car Connected":
                 print("     ELM conected")
                 bootState['elm']=(i,"win",1)
@@ -231,8 +229,6 @@ def connectOBD():
         try:
             connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
             statusState=connection.status()
-            print("------------")
-            print(statusState)
             if statusState == "Car Connected":
                 print("     OBD conected")
                 bootState['obd']=(i,"win",1)
@@ -272,7 +268,7 @@ def obdTHREAD():
         for i in gaugeItems.keys():
             if gaugeItems[i][1]=="OBD":
                 cmd= "gaugeItems[i][4]=str(connection.query(obd.commands."+str(i)+"))"
-                print(gaugeItems[i][4].value)
+                print(gaugeItems[i][4].value.magnitude)
                 exec(cmd)
 
     connection.close()
