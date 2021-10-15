@@ -271,13 +271,7 @@ def adcTHREAD():
 
         adcoil=chan3.value
         adcboost=chan4.value
-        
-        print ("----------------")
-        print(chan1.value)
-        print(chan2.value)
-        print(chan3.value)
-        print(chan4.value)
-        print ("----------------")
+
         oilpsi=((adcoil - old_min)/(old_max-old_min))*(new_max-new_min)+new_min
         oilpsi=round(oilpsi)
         
