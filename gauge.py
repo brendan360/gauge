@@ -76,6 +76,7 @@ breadCrumb=[0,"topmenu"]
 ingauge =0
 rpmHIGH=0
 bootState={"adc":[0,"fail",0],
+           "elm":[0,"fail",0],
            "obd":[0,"fail",0]
            }
 address="/home/pi/gauge/"
@@ -193,7 +194,36 @@ def connectADC():
             time.sleep(2)
     bootState['adc']=(i,"fail",0)
     print("     ADC failed")
-    
+
+def connectELM():
+    print("Connecting ELM")
+    i=0
+    statusState=""
+    while i<5:
+        try:
+            connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
+            statusState=connection.status()
+            print("------------")
+            print(statusState)
+            if statusState == "ELM Connected":
+                print("     ELM conected")
+                bootState['elm']=(i,"win",1)
+                highlightbootDisplay()
+                connection.close()
+                return
+            else:
+                i=i+1
+                time.sleep(2)
+                bootState['elm']=(i,"fail",0)
+                highlightbootDisplay()
+                continue
+        except:
+            i=i+1
+            time.sleep(2)
+            bootState['elm']=(i,"fail",0)
+            highlightbootDisplay()
+
+   
 def connectOBD():
     print("Connecting OBD")
     i=0
@@ -429,17 +459,32 @@ def highlightbootDisplay():
 
     if bootState['adc'][1]=="fail":
         faildot="."*bootState['adc'][0]
-        draw.text((40,93),"ADC", fill = "WHITE", font=font)
-        draw.text((150,93),".....", fill = "WHITE", font=font)
-        draw.text((150,93),faildot, fill = "RED", font=font)
+        draw.text((40,40),"ADC", fill = "WHITE", font=font)
+        draw.text((150,40),".....", fill = "WHITE", font=font)
+        draw.text((150,40),faildot, fill = "RED", font=font)
         if bootState['adc'][0]==5:
-            draw.text((40,93),"ADC", fill = "RED", font=font)
+            draw.text((40,40),"ADC", fill = "RED", font=font)
     else:
         faildot="."*bootState['adc'][0]
-        draw.text((40,93),"ADC", fill = "GREEN", font=font)
-        draw.text((150,93),".....", fill = "WHITE", font=font)
-        draw.text((150,93),faildot, fill = "GREEN", font=font)
-
+        draw.text((40,40),"ADC", fill = "GREEN", font=font)
+        draw.text((150,40),".....", fill = "WHITE", font=font)
+        draw.text((150,40),faildot, fill = "GREEN", font=font)
+        
+        
+    if bootState['elm'][1]=="fail":
+        faildot="."*bootState['elm'][0]
+        draw.text((40,145),"ELM", fill = "WHITE", font=font)
+        draw.text((150,145),".....", fill = "WHITE", font=font)
+        draw.text((150,145),faildot, fill = "RED", font=font)
+        if bootState['elm'][0]==5:
+            draw.text((40,145),"ELM", fill = "RED", font=font)
+    else:
+        faildot="."*bootState['elm'][0]
+        draw.text((40,145),"ELM", fill = "GREEN", font=font)
+        draw.text((150,145),".....", fill = "WHITE", font=font)
+        draw.text((150,145),faildot, fill = "GREEN", font=font)
+        
+        
     if bootState['obd'][1]=="fail":
         faildot="."*bootState['obd'][0]
         draw.text((40,145),"OBD", fill = "WHITE", font=font)
