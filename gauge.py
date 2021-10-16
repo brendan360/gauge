@@ -341,7 +341,7 @@ def flashLed():
             time.sleep(.5)
             i+=1
     else:
-            while i <=10:
+        while i <=10:
             color = 0  # start at red
             pixel.brightness = 0.9
             pixel.fill(_pixelbuf.colorwheel(color))
