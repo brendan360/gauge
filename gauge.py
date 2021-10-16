@@ -247,7 +247,6 @@ def connectOBD():
 #********************
 
 def obdTHREAD():
-  
     connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
     while True:
         try:
@@ -285,17 +284,16 @@ def adcTHREAD():
         altitude= bme280.altitude
         gaugeItems["CABIN_TEMP_i2c"][4]=round(temperature)
         gaugeItems["ALTITUDE_i2c"][4]=round(altitude)
-        chan1 = AnalogIn(ads, ADS.P0)   #block1
-        chan2 = AnalogIn(ads, ADS.P1)   #block2
-        chan3 = AnalogIn(ads, ADS.P2)   #oil Pres
-        chan4 = AnalogIn(ads, ADS.P3)  #boost
+        chan1 = AnalogIn(ads, ADS.P2)  #oil pres
+        chan2 = AnalogIn(ads, ADS.P3)  #booost
+        chan3 = AnalogIn(ads, ADS.P0)  #block 1
+        chan4 = AnalogIn(ads, ADS.P1)  #block 2
 
         adcoil=chan3.value
         adcboost=chan4.value
 
         oilpsi=((adcoil - old_min)/(old_max-old_min))*(new_max-new_min)+new_min
         oilpsi=round(oilpsi)
-        
         
         boostpsi=((adcboost - bold_min)/(bold_max-bold_min))*(bnew_max-bnew_min)+bnew_min
         boostpsi=round((boostpsi - (gaugeItems["ALTITUDE_i2c"][4] * 0.0145038)),1)
