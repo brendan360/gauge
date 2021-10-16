@@ -324,7 +324,6 @@ def adcTHREAD():
 
 def flashLed():
     global buzzerMute
-    
     pixel = neopixel.NeoPixel(seesaw, 6, 1)
     pixel.brightness = 0.5
     i=0
@@ -418,8 +417,8 @@ def alertTHREAD():
             if value[8]=="na":
                 continue
 
-            elif int(value[4]) >= int(value[8]):
-                if value[9] <= 0:
+            elif value[9] <= 0:
+                if int(value[4]) >= int(value[8]):
                     threading.Thread(target=flashLed).start()
                     print("Alert ",key," is going high")
                     value[9]=4500000
