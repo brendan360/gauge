@@ -265,6 +265,7 @@ def obdTHREAD():
             firstBoot()
             
             
+            
     connection.close()
 
 def adcTHREAD():
