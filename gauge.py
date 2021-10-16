@@ -323,7 +323,7 @@ def adcTHREAD():
 #********************
 
 def flashLed():
-    lobal buzzerMute
+    global buzzerMute
     
     pixel = neopixel.NeoPixel(seesaw, 6, 1)
     pixel.brightness = 0.5
