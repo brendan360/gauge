@@ -260,7 +260,7 @@ def obdTHREAD():
                     print(gaugeItems[i][3])
                     print("none")
                 else:
-                    print(str(print(gaugeItems[i][3]),"===",gaugeItems[i][4].value.magnitude))
+                    print(str(gaugeItems[i][3]),"===",str(gaugeItems[i][4].value.magnitude))
 
     connection.close()
 
