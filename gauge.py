@@ -250,19 +250,23 @@ def obdTHREAD():
   
     connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
     while True:
-        print(connection.query(obd.commands.RPM))
-        for i in gaugeItems.keys():
-            if gaugeItems[i][1]=="OBD":
-                cmd= "gaugeItems[i][4]=connection.query(obd.commands."+str(i)+")"
-                exec(cmd)
-                if gaugeItems[i][4].value == None:
-                    print("****")
-                    print(gaugeItems[i][3])
-                    print("none")
-                else:
-                    
-                    gaugeItems[i][4]=str(gaugeItems[i][4].value.magnitude)
-                    print(str(gaugeItems[i][4]))
+        try:
+            for i in gaugeItems.keys():
+                if gaugeItems[i][1]=="OBD":
+                    cmd= "gaugeItems[i][4]=connection.query(obd.commands."+str(i)+")"
+                    exec(cmd)
+                    if gaugeItems[i][4].value == None:
+                        print("****")
+                        print(gaugeItems[i][3])
+                        print("none")
+                    else:
+                        gaugeItems[i][4]=str(gaugeItems[i][4].value.magnitude)
+                        print(gaugeItems[i][4])
+        except:
+            print("FailedOBD restarting")
+            firstBoot()
+            
+            
     connection.close()
 
 def adcTHREAD():
