@@ -400,7 +400,7 @@ def alertTHREAD():
             if key == fafbAlert:
                 if round(int(value[4]))== fafbTrigger:
                     if value[9] == 0:
-                        value[9]=2000000
+                        value[9]=4500000
                         time.sleep(2)
                         alertScreen=1
                         threading.Thread(target=fafbALERTING).start()
@@ -422,7 +422,7 @@ def alertTHREAD():
                 if value[9] <= 0:
                     threading.Thread(target=flashLed).start()
                     print("Alert ",key," is going high")
-                    value[9]=2000000
+                    value[9]=4500000
                     alertScreen=1
                     eval(key +"()")
                 else: 
