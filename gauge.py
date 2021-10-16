@@ -1319,11 +1319,11 @@ def firstBoot():
     connectELM()
     connectOBD()
     OBDcleanup()
+    print(gaugemenu)
 
 def OBDcleanup():
 
     print("Initial Gauge Items: ",len(gaugeItems))
-    time.sleep(2)
     if bootState["adc"][2]==0:
         cleanupMenu()
         return
@@ -1407,7 +1407,7 @@ try:
         threading.Thread(target=obdTHREAD).start()
     if bootState["adc"][2]==1:
         threading.Thread(target=adcTHREAD).start()
-#    threading.Thread(target=alertTHREAD).start()
+    threading.Thread(target=alertTHREAD).start()
 
 except:
     print("failed starting threads")
