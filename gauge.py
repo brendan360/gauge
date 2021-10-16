@@ -121,7 +121,7 @@ seesaw_product = (seesaw.get_version() >> 16) & 0xFFFF
 ###
 #buzzer setup
 ####
-Buzzer Pin = 21
+BuzzerPin = 21
 GPIO.setwarnings(False)
 GPIO.setnide(GPIO.BCM)
 GPIO.setup(BuzzerPin,GPIO.OUT, initial=GPIO.LOW)
