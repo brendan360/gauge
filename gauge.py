@@ -1325,7 +1325,7 @@ def OBDcleanup():
         for key,value in gaugeItems.items():
             if value[6] =="adc":
                 value[2]=1
-    if bootState["obd][2] ==1:
+    if bootState["obd"][2] ==1:
         for key,value in gaugeItems.items():
             if value[6] =="obd":
                 value[2]=1
