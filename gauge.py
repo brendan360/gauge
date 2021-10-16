@@ -410,7 +410,7 @@ def alertTHREAD():
             if key == "RPM":
                 if round(int(value[4])) >= 5500 and round(int(value[4])) < 6500:
                     if value[9] == 0:
-                        value[9]=85500
+                        value[9]=105500
                         threading.Thread(target=shiftALERTING).start()
                     else: 
                         value[9]-=1
@@ -422,7 +422,7 @@ def alertTHREAD():
                 if value[9] <= 0:
                     threading.Thread(target=flashLed).start()
                     print("Alert ",key," is going high")
-                    value[9]=5000000
+                    value[9]=2000000
                     alertScreen=1
                     eval(key +"()")
                 else: 
