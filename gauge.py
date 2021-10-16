@@ -259,7 +259,7 @@ def obdTHREAD():
                         print(gaugeItems[i][3])
                         print("none")
                     else:
-                        gaugeItems[i][4]=str(gaugeItems[i][4].value.magnitude)
+                        gaugeItems[i][4]=str(round(gaugeItems[i][4].value.magnitude))
         except:
             print("FailedOBD restarting")
             firstBoot()
@@ -401,7 +401,7 @@ def alertTHREAD():
             if value[8]=="na":
                 continue
 
-            elif int(round(value[4])) >= int(value[8]):
+            elif int(value[4]) >= int(value[8]):
                 if value[9] <= 0:
                     threading.Thread(target=flashLed).start()
                     print("Alert ",key," is going high")
