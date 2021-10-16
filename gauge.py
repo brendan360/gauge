@@ -129,7 +129,7 @@ gaugemenu=["Back","backtotop2"]
 #              obd name    PID, location, enabled or false##, Friendly Name,value,pid squence, pid array,alertlow,alerthigh,alertcount
 gaugeItems={"ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
  #           "COOLANT_TEMP":["05","OBD",0,"Water °C","0",4,"a","na","100",0],
-            "FUEL_PRESSURE":["0A","OBD",0,"Fuel Pres","0",9,"a","na","100",0],
+ #           "FUEL_PRESSURE":["0A","OBD",0,"Fuel Pres","0",9,"a","na","100",0],
             "INTAKE_PRESSURE":["0B","OBD",0,"Intake Pres","0",10,"a","na","100",0],
             "RPM":["0C","OBD",0,"RPM","0",11,"a","na","100",0],
             "SPEED":["0D","OBD",0,"Speed","0",12,"a","na","100",0],
@@ -260,8 +260,9 @@ def obdTHREAD():
                     print(gaugeItems[i][3])
                     print("none")
                 else:
-                    print(str(gaugeItems[i][3]),"===",str(gaugeItems[i][4].value.magnitude))
-
+                    
+                    gaugeItems[i][4]=str(gaugeItems[i][4].value.magnitude)
+                    print(str(gaugeItems[i][4]))
     connection.close()
 
 def adcTHREAD():
