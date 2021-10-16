@@ -836,7 +836,7 @@ def RUN_TIME():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((42,90),str(gaugeItems[" RUN_TIME"][4]),font=gfont, fill="WHITE")
+        draw.text((42,90),str(gaugeItems["RUN_TIME"][4]),font=gfont, fill="WHITE")
         draw.text((60,26),"Running", font=font, fill="WHITE") 
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
