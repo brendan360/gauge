@@ -261,7 +261,6 @@ def obdTHREAD():
                         print("none")
                     else:
                         gaugeItems[i][4]=str(gaugeItems[i][4].value.magnitude)
-                        print(gaugeItems[i][4])
         except:
             print("FailedOBD restarting")
             firstBoot()
