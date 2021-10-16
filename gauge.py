@@ -1330,7 +1330,7 @@ def OBDcleanup():
     if bootState["obd"][2]==0:
         cleanupMenu()
         return
-   cleanupMenu()
+    cleanupMenu()
 
 def cleanupMenu():
     inactiveItems=[]
