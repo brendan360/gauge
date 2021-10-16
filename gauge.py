@@ -256,6 +256,7 @@ def obdTHREAD():
                 cmd= "gaugeItems[i][4]=connection.query(obd.commands."+str(i)+")"
                 exec(cmd)
                 if gaugeItems[i][4].value == None:
+                    print(gaugeItems[i][0]
                     print("none")
                 else:
                     print(str(gaugeItems[i][4].value.magnitude))
