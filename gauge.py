@@ -1066,6 +1066,7 @@ def BLOCK_TEMP2_ADC():
     if button.value and button_held:
         if alertScreen ==1:
             alertScreen =0
+            print("trying to exit")
             menuloop(breadCrumb[0],breadCrumb[1])
             button_held=False
         else:
