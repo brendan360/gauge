@@ -1053,24 +1053,24 @@ def BLOCK_TEMP1_ADC():
 def BLOCK_TEMP2_ADC():
     button_held=False
     global alertScreen
-    while alertScreen==0:
-        drawimage=setupDisplay()
-        image=drawimage[0]
-        draw=drawimage[1]
-        draw.text((53,95),str(gaugeItems["BLOCK_TEMP2_ADC"][4])+"°C",font=gfont, fill="WHITE")
-        draw.text((50,26),"Heads", font=font, fill="WHITE") 
-        im_r=image.rotate(rotation)
-        disp.ShowImage(im_r)
-        if not button.value and not button_held:
-            button_held = True
-        if button.value and button_held:
-            if alertScreen ==1:
-                alertScreen =0
-                menuloop(breadCrumb[0],breadCrumb[1])
-                button_held=False
-            else:
-                button_held = False
-                menuloop(breadCrumb[0],breadCrumb[1])
+    #while alertScreen==0:
+    drawimage=setupDisplay()
+    image=drawimage[0]
+    draw=drawimage[1]
+    draw.text((53,95),str(gaugeItems["BLOCK_TEMP2_ADC"][4])+"°C",font=gfont, fill="WHITE")
+    draw.text((50,26),"Heads", font=font, fill="WHITE") 
+    im_r=image.rotate(rotation)
+    disp.ShowImage(im_r)
+    if not button.value and not button_held:
+        button_held = True
+    if button.value and button_held:
+        if alertScreen ==1:
+            alertScreen =0
+            menuloop(breadCrumb[0],breadCrumb[1])
+            button_held=False
+        else:
+            button_held = False
+            menuloop(breadCrumb[0],breadCrumb[1])
  
 def CABIN_TEMP_i2c():
     button_held=False
