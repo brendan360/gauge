@@ -255,12 +255,12 @@ def obdTHREAD():
             if gaugeItems[i][1]=="OBD":
                 cmd= "gaugeItems[i][4]=connection.query(obd.commands."+str(i)+")"
                 exec(cmd)
-                if gaugeItems[i][4].value == "none":
+                if gaugeItems[i][4].value == None:
                     print("****")
                     print(gaugeItems[i][3])
-                    print("****")
+                    print("none")
                 else:
-                    print(str(gaugeItems[i][4].value.magnitude))
+                    print(str(print(gaugeItems[i][3]),"===",gaugeItems[i][4].value.magnitude))
 
     connection.close()
 
