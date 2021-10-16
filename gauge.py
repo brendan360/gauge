@@ -1316,7 +1316,7 @@ def firstBoot():
     print(gaugemenu)
 
 def OBDcleanup():
-
+    print(bootState)
     print("Initial Gauge Items: ",len(gaugeItems))
     if bootState["adc"][2]==0:
         cleanupMenu()
@@ -1327,8 +1327,7 @@ def OBDcleanup():
                 value[2]=1
     if bootState["obd"][2] ==1:
         for key,value in gaugeItems.items():
-            if value[6] =="obd":
-                value[2]=1
+            value[2]=1
  
     if bootState["obd"][2]==0:
         cleanupMenu()
