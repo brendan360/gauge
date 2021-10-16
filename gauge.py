@@ -125,6 +125,7 @@ BuzzerPin = 21
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(BuzzerPin,GPIO.OUT, initial=GPIO.LOW)
+buzzerMute=0
 
 
 ###
@@ -133,7 +134,7 @@ GPIO.setup(BuzzerPin,GPIO.OUT, initial=GPIO.LOW)
 
 topmenu=["Gauges","gaugemenu","ECU","ecumenu","Config","configmenu","Multi 1","QUAD_GAUGE","Temp Multi","TEMP_GAUGE"]
 ecumenu=["Clear DTC","ecu_reset","Read DTC","ecu_read","Back","backtotop2"]
-configmenu=["IP","ipaddress","Reload","reinitialise","Reboot","reboot_pi","Back","backtotop3"]
+configmenu=["Mute", "muteBuzzer", "IP","ipaddress","Reload","reinitialise","Reboot","reboot_pi","Back","backtotop3"]
 gaugemenu=["Back","backtotop2"]
 #              obd name    PID, location, enabled or false##, Friendly Name,value,pid squence, pid array,alertlow,alerthigh,alertcount
 gaugeItems={"ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
@@ -322,21 +323,33 @@ def adcTHREAD():
 #********************
 
 def flashLed():
+    lobal buzzerMute
     
     pixel = neopixel.NeoPixel(seesaw, 6, 1)
     pixel.brightness = 0.5
     i=0
-    while i <=10:
-        color = 0  # start at red
-        pixel.brightness = 0.9
-        GPIO.output(BuzzerPin,GPIO.HIGH)
-        pixel.fill(_pixelbuf.colorwheel(color))
-        time.sleep(.5)
-        pixel.brightness = 0.0
-        GPIO.output(BuzzerPin,GPIO.LOW)
-        pixel.fill(_pixelbuf.colorwheel(color))
-        time.sleep(.5)
-        i+=1
+    if buzzerMute == 0:    
+        while i <=10:
+            color = 0  # start at red
+            pixel.brightness = 0.9
+            GPIO.output(BuzzerPin,GPIO.HIGH)
+            pixel.fill(_pixelbuf.colorwheel(color))
+            time.sleep(.5)
+            pixel.brightness = 0.0
+            GPIO.output(BuzzerPin,GPIO.LOW)
+            pixel.fill(_pixelbuf.colorwheel(color))
+            time.sleep(.5)
+            i+=1
+    else:
+            while i <=10:
+            color = 0  # start at red
+            pixel.brightness = 0.9
+            pixel.fill(_pixelbuf.colorwheel(color))
+            time.sleep(.5)
+            pixel.brightness = 0.0
+            pixel.fill(_pixelbuf.colorwheel(color))
+            time.sleep(.5)
+            i+=1
 
 def shiftALERTING():
     global alertScreen
@@ -397,7 +410,8 @@ def alertTHREAD():
             if key == "RPM":
                 if round(int(value[4])) >= 5500 and round(int(value[4])) < 6500:
                     if value[9] == 0:
-                        value[9]=85500
+                       # value[9]=85500
+                        value[9]=500000
                         threading.Thread(target=shiftALERTING).start()
                     else: 
                         value[9]-=1
@@ -723,12 +737,10 @@ def RPM():
             if alertScreen ==1:
                 alertScreen =0
                 menuloop(breadCrumb[0],breadCrumb[1])
-                print(breadCrumb[0],"..",breadCrumb[1])
                 button_held=False
             else:
                 button_held = False
                 menuloop(breadCrumb[0],breadCrumb[1]) 
-                print(breadCrumb[0],"..",breadCrumb[1])
 
 def SPEED():
     button_held=False
@@ -1291,7 +1303,7 @@ def ipaddress():
     IP=getIpAddress()
     highlightDisplay(IP,"Car Guage")
     time.sleep(5)
-    menuloop(0,configmenu)
+    menuloop(2,configmenu)
 
 def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3984.0):
     import math
@@ -1305,6 +1317,20 @@ def ecu_read():
 
 def ecu_reset():
     print("doing ECU reset")
+    
+def muteBuzzer():
+    global buzzerMute
+    if buzzerMute == 1:
+        buzzerMute =0
+        highlightDisplay("Buzzer","Unmuted")
+        time.sleep(5)
+        menuloop(0,configmenu)
+        
+    else:
+        buzzerMute =1
+        highlightDisplay("Buzzer","Muted")
+        time.sleep(5)
+        menuloop(0,configmenu)
 
 #********************
 #********************
