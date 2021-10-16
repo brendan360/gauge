@@ -400,7 +400,7 @@ def alertTHREAD():
             if key == fafbAlert:
                 if round(int(value[4]))== fafbTrigger:
                     if value[9] == 0:
-                        value[9]=5000000
+                        value[9]=2000000
                         time.sleep(2)
                         alertScreen=1
                         threading.Thread(target=fafbALERTING).start()
