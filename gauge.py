@@ -1404,7 +1404,7 @@ try:
         threading.Thread(target=obdTHREAD).start()
     if bootState["adc"][2]==1:
         threading.Thread(target=adcTHREAD).start()
-    threading.Thread(target=alertTHREAD).start()
+   # threading.Thread(target=alertTHREAD).start()
 
 except:
     print("failed starting threads")
