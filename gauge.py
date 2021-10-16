@@ -91,8 +91,6 @@ DC=25
 BL=18
 bus=0
 device = 0
-
-#Display
 disp = LCD_1inch28.LCD_1inch28()
 rotation=180
 #--------------------------#
@@ -118,12 +116,6 @@ seesaw.pin_mode(24, seesaw.INPUT_PULLUP)
 button = digitalio.DigitalIO(seesaw, 24)
 seesaw_product = (seesaw.get_version() >> 16) & 0xFFFF
 #--------------------------#
-
-
-###
-#OBD setup
-###
-
 
 
 ###
@@ -187,7 +179,7 @@ def connectADC():
             i+=1
             bootState['adc']=(i,"fail",0)
             highlightbootDisplay()
-            time.sleep(2)
+            time.sleep(1)
     bootState['adc']=(i,"fail",0)
     print("     ADC failed")
 
@@ -207,13 +199,12 @@ def connectELM():
                 return
             else:
                 i=i+1
-                time.sleep(2)
+                time.sleep(1)
                 bootState['elm']=(i,"fail",0)
                 highlightbootDisplay()
                 continue
         except:
             i=i+1
-            time.sleep(2)
             bootState['elm']=(i,"fail",0)
             highlightbootDisplay()
 
@@ -233,13 +224,12 @@ def connectOBD():
                 return
             else:
                 i=i+1
-                time.sleep(2)
+                time.sleep(1)
                 bootState['obd']=(i,"fail",0)
                 highlightbootDisplay()
                 continue
         except:
             i=i+1
-            time.sleep(2)
             bootState['obd']=(i,"fail",0)
             highlightbootDisplay()
 
