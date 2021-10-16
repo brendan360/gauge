@@ -329,7 +329,7 @@ def flashLed():
     pixel.brightness = 0.5
     i=0
     if buzzerMute == 0:    
-        while i <=10:
+        while i <=5:
             color = 0  # start at red
             pixel.brightness = 0.9
             GPIO.output(BuzzerPin,GPIO.HIGH)
@@ -341,7 +341,7 @@ def flashLed():
             time.sleep(.5)
             i+=1
     else:
-        while i <=10:
+        while i <=5:
             color = 0  # start at red
             pixel.brightness = 0.9
             pixel.fill(_pixelbuf.colorwheel(color))
@@ -400,7 +400,7 @@ def alertTHREAD():
             if key == fafbAlert:
                 if round(int(value[4]))== fafbTrigger:
                     if value[9] == 0:
-                        value[9]=900000
+                        value[9]=5000000
                         time.sleep(2)
                         alertScreen=1
                         threading.Thread(target=fafbALERTING).start()
@@ -422,7 +422,7 @@ def alertTHREAD():
                 if value[9] <= 0:
                     threading.Thread(target=flashLed).start()
                     print("Alert ",key," is going high")
-                    value[9]=900000
+                    value[9]=5000000
                     alertScreen=1
                     eval(key +"()")
                 else: 
