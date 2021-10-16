@@ -131,7 +131,7 @@ gaugeItems={"ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
  #           "COOLANT_TEMP":["05","OBD",0,"Water °C","0",4,"a","na","100",0],
  #           "FUEL_PRESSURE":["0A","OBD",0,"Fuel Pres","0",9,"a","na","100",0],
             "INTAKE_PRESSURE":["0B","OBD",0,"Intake Pres","0",10,"a","na","100",0],
-            "RPM":["0C","OBD",0,"RPM","0",11,"a","na","1000",0],
+            "RPM":["0C","OBD",0,"RPM","0",11,"a","na","6000",0],
             "SPEED":["0D","OBD",0,"Speed","0",12,"a","na","100",0],
             "TIMING_ADVANCE":["0E","OBD",0,"Timing","0",13,"a","na","100",0],
             "INTAKE_TEMP":["0F","OBD",0,"Intake C","0",14,"a","na","100",0],
@@ -712,10 +712,12 @@ def RPM():
             if alertScreen ==1:
                 alertScreen =0
                 menuloop(breadCrumb[0],breadCrumb[1])
+                print(breadCrumb[0],"..",breadCrumb[1])
                 button_held=False
             else:
                 button_held = False
-                menuloop(breadCrumb[0],breadCrumb[1])  
+                menuloop(breadCrumb[0],breadCrumb[1]) 
+                print(breadCrumb[0],"..",breadCrumb[1])
 
 def SPEED():
     button_held=False
