@@ -609,7 +609,6 @@ def menuloop(item,menu):
            item=(len(menu))-2
        breadCrumb=(item,menu)
        menuDisplay(item,menu)
-       print("-----",breadCrumb)
 
         
        if not button.value and not button_held:
@@ -620,8 +619,8 @@ def menuloop(item,menu):
            doaction(item,menu)
 
 def doaction(item,menu):
-    global ingauge
-    ingauge=1
+#    global ingauge
+#    ingauge=1
     time.sleep(.333)
     if (menu[item]=="Gauges"):
         menuloop(0,gaugemenu)
@@ -630,7 +629,6 @@ def doaction(item,menu):
     if (menu[item] == "Config"):
         menuloop(0,configmenu)
     highlightDisplay("Loading",menu[item])
-    print(menu[item+1])
     eval(menu[item+1] + "()")
     
 def backtotop1():
@@ -808,6 +806,8 @@ def TIMING_ADVANCE():
 
 def INTAKE_TEMP():
     button_held=False
+    global ingauge
+    ingauge=1
     global alertScreen
     while alertScreen==0:
         drawimage=setupDisplay()
