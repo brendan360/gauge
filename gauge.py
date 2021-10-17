@@ -388,7 +388,28 @@ def fafbALERTING():
         menuloop(breadCrumb[0],breadCrumb[1])
     if ingauge == 1:
         doaction(breadCrumb[0],breadCrumb[1])  
-    
+
+def highALERTING(key):
+    global alertScreen
+    global ingauge
+    global breadCrumb
+    alert=1
+    while alert <=5:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((53,95),str(gaugeItems[key][4])+"°C",font=gfont, fill="RED")
+        draw.text((50,26),key, font=font, fill="RED") 
+        time.sleep(.5)
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        alert+=1
+    alertScreen =0
+    if ingauge == 0:  
+        menuloop(breadCrumb[0],breadCrumb[1])
+    if ingauge == 1:
+        doaction(breadCrumb[0],breadCrumb[1])   
+        
 def alertTHREAD():
     time.sleep(5)
     global alertScreen
@@ -423,7 +444,7 @@ def alertTHREAD():
                     print("Alert ",key," is going high")
                     value[9]=4500000
                     alertScreen=1
-                    eval(key +"()")
+                    highALERTING(key)
                 else: 
                     value[9]-=1
 
@@ -1052,25 +1073,25 @@ def BLOCK_TEMP1_ADC():
 def BLOCK_TEMP2_ADC():
     button_held=False
     global alertScreen
-    #while alertScreen==0:
-    drawimage=setupDisplay()
-    image=drawimage[0]
-    draw=drawimage[1]
-    draw.text((53,95),str(gaugeItems["BLOCK_TEMP2_ADC"][4])+"°C",font=gfont, fill="WHITE")
-    draw.text((50,26),"Heads", font=font, fill="WHITE") 
-    im_r=image.rotate(rotation)
-    disp.ShowImage(im_r)
-    if not button.value and not button_held:
-        button_held = True
-    if button.value and button_held:
-        if alertScreen ==1:
-            alertScreen =0
-            print("trying to exit")
-            menuloop(breadCrumb[0],breadCrumb[1])
-            button_held=False
-        else:
-            button_held = False
-            menuloop(breadCrumb[0],breadCrumb[1])
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((53,95),str(gaugeItems["BLOCK_TEMP2_ADC"][4])+"°C",font=gfont, fill="WHITE")
+        draw.text((50,26),"Heads", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                print("trying to exit")
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])
  
 def CABIN_TEMP_i2c():
     button_held=False
