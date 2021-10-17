@@ -427,6 +427,7 @@ def alertTHREAD():
                         value[9]=4500000
                         time.sleep(2)
                         alertScreen=1
+                        print("FAFB")
                         threading.Thread(target=fafbALERTING).start()
                     else: 
                         value[9]-=1
