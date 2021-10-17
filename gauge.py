@@ -444,6 +444,7 @@ def alertTHREAD():
                     print("Alert ",key," is going high")
                     value[9]=4500000
                     alertScreen=1
+                    print(key)
                     threading.Thread(target=highALERTING, args=(key)).start()
                 else: 
                     value[9]-=1
@@ -608,6 +609,7 @@ def menuloop(item,menu):
            item=(len(menu))-2
        breadCrumb=(item,menu)
        menuDisplay(item,menu)
+       print(breadCrumb)
 
         
        if not button.value and not button_held:
