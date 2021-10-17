@@ -609,7 +609,7 @@ def menuloop(item,menu):
            item=(len(menu))-2
        breadCrumb=(item,menu)
        menuDisplay(item,menu)
-       print(breadCrumb)
+       print("-----",breadCrumb)
 
         
        if not button.value and not button_held:
