@@ -442,19 +442,17 @@ def alertTHREAD():
 
             if value[8]=="na":
                 continue
-
-            elif value[9] <= 0:
-                if int(value[4]) >= int(value[8]):
+                
+            if int(value[4]) >= int(value[8]):
+                elif value[9] <= 0:
                     threading.Thread(target=flashLed).start()
                     print("Alert",key,"is going high")
                     value[9]=4500000
                     alertScreen=1
-                    sendkey=str(key.strip())
-                    print(";;;;;;",sendkey)
-                    threading.Thread(target=menuloop, args=(0,topmenu)).start()
-                    threading.Thread(target=highALERTING, args=(sendkey)).start()
+                    print(gaugeItems[key][2])
+                    print(gaugeItems[key])
+                    threading.Thread(target=highALERTING, args=(key)).start()
                 else: 
-
                     value[9]-=1
 
 
