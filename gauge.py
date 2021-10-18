@@ -424,7 +424,7 @@ def alertTHREAD():
             if key == fafbAlert:
                 if round(int(value[4]))== fafbTrigger:
                     if value[9] == 0:
-                        value[9]=40000
+                        value[9]=800000
                         time.sleep(2)
                         alertScreen=1
                         print("FAFB")
