@@ -393,7 +393,7 @@ def fafbALERTING():
     if ingauge == 1:
         doaction(breadCrumb[0],breadCrumb[1])  
 
-def highALERTING(key):
+def highALERTING(discard,key):
     global alertScreen
     global ingauge
     global breadCrumb
@@ -402,7 +402,7 @@ def highALERTING(key):
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        draw.text((53,95),str(gaugeItems[key][4])+"°C",font=gfont, fill="RED")
+        draw.text((53,95),str(gaugeItems[key][4]),font=gfont, fill="RED")
         draw.text((50,26),gaugeItems[key][2], font=font, fill="RED") 
         time.sleep(.5)
         im_r=image.rotate(rotation)
@@ -449,9 +449,8 @@ def alertTHREAD():
                     print("Alert",key,"is going high")
                     value[9]=4500000
                     alertScreen=1
-                    print(gaugeItems[key][2])
                     print(gaugeItems[key])
-                    threading.Thread(target=highALERTING, args=(key)).start()
+                    threading.Thread(target=highALERTING, args=(0,key)).start()
                 else: 
                     value[9]-=1
 
