@@ -623,8 +623,8 @@ def menuloop(item,menu):
            doaction(item,menu)
 
 def doaction(item,menu):
-#    global ingauge
-#    ingauge=1
+    global ingauge
+    ingauge=1
     time.sleep(.333)
     if (menu[item]=="Gauges"):
         menuloop(0,gaugemenu)
@@ -810,8 +810,6 @@ def TIMING_ADVANCE():
 
 def INTAKE_TEMP():
     button_held=False
-    global ingauge
-    ingauge=1
     global alertScreen
     while alertScreen==0:
         drawimage=setupDisplay()
