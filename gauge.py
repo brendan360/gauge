@@ -80,11 +80,11 @@ address="/home/pi/gauge/"
 alertScreen=0
 ads=''
 
-fafbAlert="SPEED"
-fafbTrigger=105
+#fafbAlert="SPEED"
+#fafbTrigger=105
 
-#fafbAlert="BLOCK_TEMP1_ADC"
-#fafbTrigger=30
+fafbAlert="BLOCK_TEMP1_ADC"
+fafbTrigger=30
 
 ###
 #DISPLAY SETUP
@@ -424,7 +424,7 @@ def alertTHREAD():
             if key == fafbAlert:
                 if round(int(value[4]))== fafbTrigger:
                     if value[9] == 0:
-                        value[9]=400000
+                        value[9]=40000
                         time.sleep(2)
                         alertScreen=1
                         print("FAFB")
