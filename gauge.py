@@ -398,12 +398,14 @@ def highALERTING(discard,key):
     global ingauge
     global breadCrumb
     alert=1
+    print(key)
+    print(gaugeItems[key])
     while alert <=5:
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
         draw.text((53,95),str(gaugeItems[key][4]),font=gfont, fill="RED")
-        draw.text((50,26),gaugeItems[key][2], font=font, fill="RED") 
+        draw.text((50,26),str(gaugeItems[key][2]), font=font, fill="RED") 
         time.sleep(.5)
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
@@ -449,7 +451,6 @@ def alertTHREAD():
                     print("Alert",key,"is going high")
                     value[9]=4500000
                     alertScreen=1
-                    print(gaugeItems[key])
                     threading.Thread(target=highALERTING, args=(0,key)).start()
                 else: 
                     value[9]-=1
