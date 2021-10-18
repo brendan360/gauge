@@ -446,7 +446,7 @@ def alertTHREAD():
             elif value[9] <= 0:
                 if int(value[4]) >= int(value[8]):
                     threading.Thread(target=flashLed).start()
-                    print("Alert ",key," is going high")
+                    print("Alert",key,"is going high")
                     value[9]=4500000
                     alertScreen=1
                     sendkey=str(key)
@@ -1379,10 +1379,9 @@ def firstBoot():
 #    connectELM()
 #    connectOBD()
     OBDcleanup()
-    print(gaugemenu)
+
 
 def OBDcleanup():
-    print(bootState)
     print("Initial Gauge Items: ",len(gaugeItems))
     if bootState["adc"][2]==0:
         cleanupMenu()
