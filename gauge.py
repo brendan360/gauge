@@ -443,8 +443,8 @@ def alertTHREAD():
             if value[8]=="na":
                 continue
                 
-            if int(value[4]) >= int(value[8]):
-                elif value[9] <= 0:
+            elif int(value[4]) >= int(value[8]):
+                if value[9] <= 0:
                     threading.Thread(target=flashLed).start()
                     print("Alert",key,"is going high")
                     value[9]=4500000
