@@ -450,7 +450,7 @@ def alertTHREAD():
                     value[9]=4500000
                     alertScreen=1
                     print(key)
-                    threading.Thread(target=highALERTING, args=(key)).start()
+                    threading.Thread(target=highALERTING, args=(str(key))).start()
                 else: 
                     value[9]-=1
 
