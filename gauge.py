@@ -67,7 +67,7 @@ except ImportError:
 
 obdConnection="/dev/ttyS0"
 
-bme280.sea_level_pressure = 1001.5
+bme280.sea_level_pressure = 1014.5
 
 breadCrumb=[0,"topmenu"]
 ingauge =0
@@ -146,23 +146,23 @@ gaugeItems={"ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
  #           "FUEL_PRESSURE":["0A","OBD",0,"Fuel Pres","0",9,"a","na","100",0],
             "INTAKE_PRESSURE":["0B","OBD",0,"Intake Pres","0",10,"a","na","100",0],
             "RPM":["0C","OBD",0,"RPM","0",11,"a","na","6000",0],
-            "SPEED":["0D","OBD",0,"Speed","0",12,"a","na","100",0],
+            "SPEED":["0D","OBD",0,"Speed","0",12,"a","na","na",0],
             "TIMING_ADVANCE":["0E","OBD",0,"Timing","0",13,"a","na","100",0],
             "INTAKE_TEMP":["0F","OBD",0,"Intake C","0",14,"a","na","100",0],
             "MAF":["10","OBD",0,"MAF","0",15,"a","na","100",0],
-            "THROTTLE_POS":["11","OBD",0,"Throttle","0",15,"a","na","100",0],
-            "RUN_TIME":["1F","OBD",0,"Run Time","0",30,"a","na","10000",0],
-            "FUEL_LEVEL":["2F","OBD",0,"Fuel %","0",14,"b","na","100",0],
-            "BAROMETRIC_PRESSURE":["33","OBD",0,"Air Pres","0",18,"b","na","100",0],
-            "AMBIANT_AIR_TEMP":["46","OBD",0,"Air °C","0",5,"c","na","100",0],
+            "THROTTLE_POS":["11","OBD",0,"Throttle","0",15,"a","na","na",0],
+            "RUN_TIME":["1F","OBD",0,"Run Time","0",30,"a","na","na",0],
+            "FUEL_LEVEL":["2F","OBD",0,"Fuel %","0",14,"b","na","na",0],
+            "BAROMETRIC_PRESSURE":["33","OBD",0,"Air Pres","0",18,"b","na","na",0],
+            "AMBIANT_AIR_TEMP":["46","OBD",0,"Air °C","0",5,"c","na","na",0],
  #           "FUEL_RATE":["5E","OBD",0,"Fuel Rate","0",29,"c","na","100",0],
             "OIL_TEMP":["5C","OBD",0,"Oil C","0",27,"c","na","100",0],
             "OIL_PRESSURE_ADC":["ADCPIN0","ADC",0,"Oil Pres","0",0,"adc","na","100",0],
-            "BOOST_ADC":["ADCPIN1","ADC",0,"Boost","0",0,"adc","na","15",0],
+            "BOOST_ADC":["ADCPIN1","ADC",0,"Boost","0",0,"adc","na","20",0],
             "BLOCK_TEMP1_ADC":["ADCPIN2","ADC",0,"Block °C","0",2,"adc","na","90",0],
-            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",0,"Head °C","0",3,"adc","na","30",0],
-            "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin °C","0",4,"adc","na","40",0],
-            "ALTITUDE_i2c":["ALTADDR","I2C",1,"Altitude","0",4,"adc","na","2000",0]
+            "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",0,"Head °C","0",3,"adc","na","90",0],
+            "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin °C","0",4,"adc","na","na",0],
+            "ALTITUDE_i2c":["ALTADDR","I2C",1,"Altitude","0",4,"adc","na","na",0]
             }
 
 
@@ -1310,9 +1310,7 @@ def reinitialise():
     resetComm()
     firstBoot()
 
-def resetComm():
-    print("")
-    
+   
 def getIpAddress():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
