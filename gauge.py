@@ -398,14 +398,12 @@ def highALERTING(discard,key):
     global ingauge
     global breadCrumb
     alert=1
-    print(key)
-    print(gaugeItems[key])
-    while alert <=5:
+    while alert <=6:
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
         draw.text((53,95),str(gaugeItems[key][4]),font=gfont, fill="RED")
-        draw.text((50,26),str(gaugeItems[key][2]), font=font, fill="RED") 
+        draw.text((50,26),str(gaugeItems[key][3]), font=font, fill="RED") 
         time.sleep(.5)
         im_r=image.rotate(rotation)
         disp.ShowImage(im_r)
