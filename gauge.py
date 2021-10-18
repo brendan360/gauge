@@ -398,7 +398,7 @@ def highALERTING(discard,key):
     global ingauge
     global breadCrumb
     alert=1
-    while alert <=6:
+    while alert <=8:
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
