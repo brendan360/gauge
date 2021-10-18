@@ -424,7 +424,7 @@ def alertTHREAD():
             if key == fafbAlert:
                 if round(int(value[4]))== fafbTrigger:
                     if value[9] == 0:
-                        value[9]=800000
+                        value[9]=1400000
                         time.sleep(2)
                         alertScreen=1
                         print("FAFB")
@@ -625,7 +625,7 @@ def menuloop(item,menu):
 def doaction(item,menu):
     global ingauge
     ingauge=1
-    time.sleep(.333)
+    time.sleep(.2)
     if (menu[item]=="Gauges"):
         menuloop(0,gaugemenu)
     if (menu[item]=="ECU"):
