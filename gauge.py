@@ -449,7 +449,7 @@ def alertTHREAD():
                     print("Alert ",key," is going high")
                     value[9]=4500000
                     alertScreen=1
-                    print(key)
+                    print(str(key))
                     threading.Thread(target=highALERTING, args=(str(key))).start()
                 else: 
                     value[9]-=1
