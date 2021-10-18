@@ -449,10 +449,12 @@ def alertTHREAD():
                     print("Alert",key,"is going high")
                     value[9]=4500000
                     alertScreen=1
-                    sendkey=str(key)
+                    sendkey=str(key.strip())
                     print(";;;;;;",sendkey)
+                    threading.Thread(target=menuloop, args=(0,topmenu)).start()
                     threading.Thread(target=highALERTING, args=(sendkey)).start()
                 else: 
+
                     value[9]-=1
 
 
