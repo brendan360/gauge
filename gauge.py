@@ -1359,8 +1359,6 @@ def update():
     highlightDisplay("Updating","Car Guage")
     gitrepo=repo.remotes.origin
     gitrepo.pull()   
-   
-   
 def getIpAddress():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
