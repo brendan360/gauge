@@ -138,7 +138,7 @@ buzzerMute=0
 
 topmenu=["Gauges","gaugemenu","ECU","ecumenu","Config","configmenu","Multi 1","QUAD_GAUGE","Temp Multi","TEMP_GAUGE"]
 ecumenu=["Clear DTC","ecu_reset","Read DTC","ecu_read","Back","backtotop2"]
-configmenu=["Mute", "muteBuzzer", "IP","ipaddress","Reload","reinitialise","Reboot","reboot_pi","Back","backtotop3"]
+configmenu=["Mute", "muteBuzzer", "IP","ipaddress","Update","update","Reload","reinitialise","Reboot","reboot_pi","Back","backtotop3"]
 gaugemenu=["Back","backtotop2"]
 #              obd name    PID, location, enabled or false##, Friendly Name,value,pid squence, pid array,alertlow,alerthigh,alertcount
 gaugeItems={"ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
@@ -1319,6 +1319,9 @@ def reinitialise():
     resetComm()
     firstBoot()
 
+def update():
+    highlightDisplay("Updating","Car Guage")
+    os.system('cd /home/pi/gauge; git pull; sudo reboot now')
    
 def getIpAddress():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
