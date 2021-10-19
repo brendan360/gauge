@@ -679,7 +679,28 @@ def backtotop3():
 ##################### 
 #********************
 #********************
-
+def CPU_temp:
+    button_held=False
+    global alertScreen
+    while alertScreen==0:
+        drawimage=setupDisplay()
+        image=drawimage[0]
+        draw=drawimage[1]
+        draw.text((42,90),str(gaugeItems["CPU_temp"][4]),font=gfont, fill="WHITE")
+        draw.text((60,26),"CPU", font=font, fill="WHITE") 
+        im_r=image.rotate(rotation)
+        disp.ShowImage(im_r)
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1]) 
+                
 def ENGINE_LOAD():
     button_held=False
     global alertScreen
@@ -1403,8 +1424,8 @@ def firstBoot():
     disp.ShowImage(im_r)
     time.sleep(3)  
     connectADC()
-    connectELM()
-    connectOBD()
+ #   connectELM()
+ #   connectOBD()
     OBDcleanup()
 
 
