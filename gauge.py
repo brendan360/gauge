@@ -1412,7 +1412,7 @@ def muteBuzzer():
         menuloop(0,configmenu)
 
 def sealevel():
-   try:
+    try:
         url=requests.get(presURL)
         text = url.text
         data= json.loads(text)
