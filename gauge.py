@@ -467,7 +467,7 @@ def alertTHREAD():
                 if int(value[4]) >= int(value[8]):
                     GPIO.output(FanPin,GPIO.HIGH)
                 else:
-                    GPIO.output(FANPin,GPIO.LOW)
+                    GPIO.output(FanPin,GPIO.LOW)
                 
 
             
