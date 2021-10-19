@@ -1413,7 +1413,7 @@ def muteBuzzer():
 ##################### 
 #********************
 #********************
-
+ 
 def firstBoot():
     disp.Init()
     image=Image.open(address+'logo.jpg')
