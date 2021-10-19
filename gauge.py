@@ -167,7 +167,7 @@ gaugeItems={"ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
             "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",0,"Head °C","0",3,"adc","na","90",0],
             "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin °C","0",4,"adc","na","na",0],
             "ALTITUDE_i2c":["ALTADDR","I2C",1,"Altitude","0",4,"adc","na","na",0],
-            "CPU_temp":["ALTADDR","I2C",1,"CPU °C","0",4,"adc","na","40",0]
+            "CPU_temp":["ALTADDR","I2C",1,"CPU °C","0",4,"adc","na","65",0]
             }
 
 
@@ -463,14 +463,10 @@ def alertTHREAD():
                 
             if key == "CPU_temp":
                 if int(value[4]) >= int(value[8]):
-                    print("hotCPU")
                     GPIO.output(FanPin,GPIO.HIGH)
                 else:
                     GPIO.output(FanPin,GPIO.LOW)
-                    print("coldcpu")
-                
 
-            
             elif int(value[4]) >= int(value[8]):
                 if value[9] <= 0:
                     threading.Thread(target=flashLed).start()
