@@ -72,6 +72,7 @@ bme280.sea_level_pressure = 1014.5
 breadCrumb=[0,"topmenu"]
 ingauge =0
 rpmHIGH=0
+
 bootState={"adc":[0,"fail",0],
            "elm":[0,"fail",0],
            "obd":[0,"fail",0]
@@ -82,7 +83,7 @@ ads=''
 statusState = ""
 
 fafbAlert="SPEED"
-fafbTrigger=115
+fafbTrigger=105
 
 
 
@@ -264,7 +265,6 @@ def connectOBD():
 
 
 
-
 #********************
 #********************
 #####################
@@ -329,6 +329,7 @@ def adcTHREAD():
         gaugeItems["BLOCK_TEMP2_ADC"][4]=round(steinhart_temperature_C(R2))
         gaugeItems["OIL_PRESSURE_ADC"][4]=oilpsi 
         gaugeItems["BOOST_ADC"][4]=boostpsi 
+
 
 
 #********************
@@ -432,6 +433,9 @@ def alertTHREAD():
     while True:
 
         for key,value in gaugeItems.items():
+            if value > 0:
+                value[9]-=1
+                
             if key == fafbAlert:
                 if round(int(value[4]))== fafbTrigger:
                     if value[9] == 0:
@@ -440,16 +444,12 @@ def alertTHREAD():
                         alertScreen=1
                         print("FAFB")
                         threading.Thread(target=fafbALERTING).start()
-                    else: 
-                        value[9]-=1
-
+                  
             if key == "RPM":
                 if round(int(value[4])) >= 5500 and round(int(value[4])) < 6500:
                     if value[9] == 0:
                         value[9]=105500
                         threading.Thread(target=shiftALERTING).start()
-                    else: 
-                        value[9]-=1
 
             if value[8]=="na":
                 continue
@@ -461,8 +461,6 @@ def alertTHREAD():
                     value[9]=4500000
                     alertScreen=1
                     threading.Thread(target=highALERTING, args=(0,key)).start()
-                else: 
-                    value[9]-=1
 
 
 
