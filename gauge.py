@@ -17,6 +17,8 @@ import time
 import threading
 from PIL import Image, ImageDraw, ImageFont
 import fcntl
+import json
+import requests
 import struct
 import os
 import git 
@@ -69,7 +71,8 @@ except ImportError:
 
 obdConnection="/dev/ttyS0"
 
-bme280.sea_level_pressure = 1014.5
+#bme280.sea_level_pressure = 1014.5
+presURL = "https://api.manly.hydraulics.works/api.php?page=latest-readings&id=60284042&username=publicwww"
 
 breadCrumb=[0,"topmenu"]
 ingauge =0
@@ -1408,6 +1411,16 @@ def muteBuzzer():
         time.sleep(5)
         menuloop(0,configmenu)
 
+def sealevel():
+    url=requests.get(presURL)
+    text = url.text
+    data= json.loads(text)
+    pressure=data['60284042']['value']
+    cleanpressure=str(pressure).replace("[","")
+    cleanpressure=pressure.replace("]","")
+    print(cleanpressure)
+    bme280.sea_level_pressure=cleanpressure
+    
 #********************
 #********************
 #####################
@@ -1423,7 +1436,7 @@ def firstBoot():
     image=Image.open(address+'logo.jpg')
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
-    time.sleep(3)  
+    sealevel()
     connectADC()
     connectELM()
     connectOBD()
