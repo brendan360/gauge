@@ -1418,7 +1418,7 @@ def sealevel():
     data= json.loads(text)
     pressure=data['60284042']['value']
     cleanpressure=str(pressure).replace("[","")
-    cleanpressure=str(pressure).replace("]","")
+    cleanpressure=cleanpressure.replace("]","")
     print(cleanpressure)
     bme280.sea_level_pressure=cleanpressure
  #   except:
