@@ -232,8 +232,8 @@ def connectELM():
 def connectOBD():
     print("Connecting OBD")
     i=0
-    if bootState['elm'][1]="fail":
-       bootState['obd']==(5,"fail",0) 
+    if bootState['elm'][1]=="fail":
+       bootState['obd']=(5,"fail",0) 
        return
     
     if statusState == "Car Connected": 
