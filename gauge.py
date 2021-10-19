@@ -87,8 +87,6 @@ statusState = ""
 fafbAlert="SPEED"
 fafbTrigger=105
 
-repo = git.cmd.Git(address)
-
 
 ###
 #DISPLAY SETUP
@@ -1357,8 +1355,22 @@ def reinitialise():
 
 def update():
     highlightDisplay("Updating","Car Guage")
-    gitrepo=repo.remotes.origin
-    gitrepo.pull()   
+    
+    git.Repo(address).remotes.origin.fetch()
+    diff = str(git.Repo(address).git.diff('origin/master')).splitlines()
+    if len(diff) != 0:
+        highlightDisplay("Processing","Update")
+        git.Repo(address).remote().pull()
+        reboot_pi()
+    else:
+        highlightDisplay("No Update","Update")
+        time.sleep(3)
+        
+
+
+
+
+  
 def getIpAddress():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
