@@ -128,7 +128,7 @@ seesaw_product = (seesaw.get_version() >> 16) & 0xFFFF
 #buzzer setup
 ####
 BuzzerPin = 21
-FanPin = 25
+FanPin = 26
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(BuzzerPin,GPIO.OUT, initial=GPIO.LOW)
