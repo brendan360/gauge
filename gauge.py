@@ -679,7 +679,7 @@ def backtotop3():
 ##################### 
 #********************
 #********************
-def CPU_temp:
+def CPU_temp():
     button_held=False
     global alertScreen
     while alertScreen==0:
