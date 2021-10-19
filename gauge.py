@@ -1423,7 +1423,8 @@ def sealevel():
         bme280.sea_level_pressure=cleanpressure
     except:
         print("no internet using defeault sealevel")
-        continue
+
+
 #********************
 #********************
 #####################
