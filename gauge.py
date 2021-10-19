@@ -205,7 +205,7 @@ def connectELM():
         try:
             connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
             statusState=connection.status()
-            if statusState == "ELM Connected" 
+            if statusState == "ELM Connected":
                 print("     ELM conected")
                 bootState['elm']=(i,"win",1)
                 highlightbootDisplay()
@@ -213,7 +213,7 @@ def connectELM():
                 return
             elif statusState == "Car Connected":
                 bootState['elm']=(i,"win",1)
-                bootState['obd']=(i,"win",1)
+                bootState['obd']=(0,"win",1)
                 highlightbootDisplay()
                 connection.close()
                 return
@@ -232,8 +232,13 @@ def connectELM():
 def connectOBD():
     print("Connecting OBD")
     i=0
+    if bootState['elm'][1]="fail":
+       bootState['obd']==(5,"fail",0) 
+       return
+    
     if statusState == "Car Connected": 
         return
+        
     else:
         statusState=""
         while i<5:
