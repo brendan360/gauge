@@ -167,7 +167,7 @@ gaugeItems={"ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
             "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",0,"Head °C","0",3,"adc","na","90",0],
             "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin °C","0",4,"adc","na","na",0],
             "ALTITUDE_i2c":["ALTADDR","I2C",1,"Altitude","0",4,"adc","na","na",0],
-            "CPU_temp":["ALTADDR","I2C",1,"CPU °C","0",4,"adc","na","20",0]
+            "CPU_temp":["ALTADDR","I2C",1,"CPU °C","0",4,"adc","na","40",0]
             }
 
 
@@ -335,7 +335,7 @@ def adcTHREAD():
         gaugeItems["OIL_PRESSURE_ADC"][4]=oilpsi 
         gaugeItems["BOOST_ADC"][4]=boostpsi 
         cpu = CPUTemperature()
-        gaugeItems["CPU_temp"][4]=cpu.temperature
+        gaugeItems["CPU_temp"][4]=round(cpu.temperature)
 
 
 
@@ -463,9 +463,11 @@ def alertTHREAD():
                 
             if key == "CPU_temp":
                 if int(value[4]) >= int(value[8]):
+                    print("hotCPU")
                     GPIO.output(FanPin,GPIO.HIGH)
                 else:
                     GPIO.output(FanPin,GPIO.LOW)
+                    print("coldcpu")
                 
 
             
@@ -1365,11 +1367,6 @@ def update():
     else:
         highlightDisplay("No Update","Update")
         time.sleep(3)
-        
-
-
-
-
   
 def getIpAddress():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
