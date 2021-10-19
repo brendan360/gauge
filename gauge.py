@@ -87,7 +87,7 @@ statusState = ""
 fafbAlert="SPEED"
 fafbTrigger=105
 
-repo = git.Repo(address)
+repo = git.cmd.Git(address)
 
 
 ###
@@ -130,9 +130,11 @@ seesaw_product = (seesaw.get_version() >> 16) & 0xFFFF
 #buzzer setup
 ####
 BuzzerPin = 21
+FanPin = 25
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(BuzzerPin,GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(FanPin,GPIO.OUT, initial=GPIO.LOW)
 buzzerMute=0
 
 
@@ -167,7 +169,7 @@ gaugeItems={"ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
             "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",0,"Head °C","0",3,"adc","na","90",0],
             "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin °C","0",4,"adc","na","na",0],
             "ALTITUDE_i2c":["ALTADDR","I2C",1,"Altitude","0",4,"adc","na","na",0],
-            "CPU_temp":["ALTADDR","I2C",1,"CPU °C","0",4,"adc","na","na",0]
+            "CPU_temp":["ALTADDR","I2C",1,"CPU °C","0",4,"adc","na","60",0]
             }
 
 
@@ -334,6 +336,8 @@ def adcTHREAD():
         gaugeItems["BLOCK_TEMP2_ADC"][4]=round(steinhart_temperature_C(R2))
         gaugeItems["OIL_PRESSURE_ADC"][4]=oilpsi 
         gaugeItems["BOOST_ADC"][4]=boostpsi 
+        cpu = CPUTemperature()
+        gaugeItems["CPU_temp"][4]=cpu.temperature
 
 
 
@@ -459,6 +463,14 @@ def alertTHREAD():
             if value[8]=="na":
                 continue
                 
+            if key == "CPU_temp":
+                if int(value[4]) >= int(value[8]):
+                    GPIO.output(FanPin,GPIO.HIGH)
+                else:
+                    GPIO.output(FANPin,GPIO.LOW)
+                
+
+            
             elif int(value[4]) >= int(value[8]):
                 if value[9] <= 0:
                     threading.Thread(target=flashLed).start()
@@ -1437,8 +1449,6 @@ def cleanupMenu():
 #********************
 
 firstBoot()
-cpu = CPUTemperature()
-print(cpu.temperature)
 try:
     threading.Thread(target=menuloop, args=(0,topmenu)).start()
     if bootState["obd"][2]==1:
