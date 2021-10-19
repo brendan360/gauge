@@ -1319,7 +1319,7 @@ def reinitialise():
 
 def update():
     highlightDisplay("Updating","Car Guage")
-    os.system('cd /home/pi/gauge; git pull; sudo reboot now')
+    os.system("cd /home/pi/gauge; git pull;")
    
 def getIpAddress():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
