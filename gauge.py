@@ -19,6 +19,7 @@ from PIL import Image, ImageDraw, ImageFont
 import fcntl
 import struct
 import os
+import git 
 import obd
 from obd import OBDStatus
 import sys
@@ -85,6 +86,7 @@ statusState = ""
 fafbAlert="SPEED"
 fafbTrigger=105
 
+repo = git.Repo(address)
 
 
 ###
@@ -1319,7 +1321,7 @@ def reinitialise():
 
 def update():
     highlightDisplay("Updating","Car Guage")
-    os.system("cd /home/pi/gauge; git pull;")
+    repo.remotes.upstream.pull('master')
    
 def getIpAddress():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
