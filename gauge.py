@@ -1412,17 +1412,17 @@ def muteBuzzer():
         menuloop(0,configmenu)
 
 def sealevel():
-    try:
-        url=requests.get(presURL)
-        text = url.text
-        data= json.loads(text)
-        pressure=data['60284042']['value']
-        cleanpressure=str(pressure).replace("[","")
-        cleanpressure=pressure.replace("]","")
-        print(cleanpressure)
-        bme280.sea_level_pressure=cleanpressure
-    except:
-        print("no internet using defeault sealevel")
+ #   try:
+    url=requests.get(presURL)
+    text = url.text
+    data= json.loads(text)
+    pressure=data['60284042']['value']
+    cleanpressure=str(pressure).replace("[","")
+    cleanpressure=pressure.replace("]","")
+    print(cleanpressure)
+    bme280.sea_level_pressure=cleanpressure
+ #   except:
+ #       print("no internet using defeault sealevel")
     
 #********************
 #********************
@@ -1439,6 +1439,7 @@ def firstBoot():
     image=Image.open(address+'logo.jpg')
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
+    time.sleep(1)
     sealevel()
     connectADC()
     connectELM()
