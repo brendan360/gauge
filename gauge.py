@@ -30,6 +30,7 @@ import colorsys
 import signal
 import sys
 import RPi.GPIO as GPIO
+from gpiozero import CPUTemperature
 from adafruit_seesaw import seesaw, neopixel, rotaryio, digitalio
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
@@ -435,7 +436,7 @@ def alertTHREAD():
     while True:
 
         for key,value in gaugeItems.items():
-            if value > 0:
+            if value[9] > 0:
                 value[9]-=1
                 
             if key == fafbAlert:
@@ -1434,6 +1435,8 @@ def cleanupMenu():
 #********************
 
 firstBoot()
+cpu = CPUTemperature()
+print(cpu.temperature)
 try:
     threading.Thread(target=menuloop, args=(0,topmenu)).start()
     if bootState["obd"][2]==1:
