@@ -220,7 +220,6 @@ def connectELM():
             
             else:
                 i=i+1
-                time.sleep(1)
                 bootState['elm']=(i,"fail",0)
                 highlightbootDisplay()
                 continue
@@ -230,6 +229,7 @@ def connectELM():
             highlightbootDisplay()
 
 def connectOBD():
+    global statusState
     print("Connecting OBD")
     i=0
     if bootState['elm'][1]=="fail":
