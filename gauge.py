@@ -79,12 +79,12 @@ bootState={"adc":[0,"fail",0],
 address="/home/pi/gauge/"
 alertScreen=0
 ads=''
+statusState = ""
 
-#fafbAlert="SPEED"
-#fafbTrigger=105
+fafbAlert="SPEED"
+fafbTrigger=115
 
-fafbAlert="BLOCK_TEMP1_ADC"
-fafbTrigger=30
+
 
 ###
 #DISPLAY SETUP
@@ -200,17 +200,24 @@ def connectADC():
 def connectELM():
     print("Connecting ELM")
     i=0
-    statusState=""
+    global statusState
     while i<5:
         try:
             connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
             statusState=connection.status()
-            if statusState == "ELM Connected" or statusState == "Car Connected":
+            if statusState == "ELM Connected" 
                 print("     ELM conected")
                 bootState['elm']=(i,"win",1)
                 highlightbootDisplay()
                 connection.close()
                 return
+            elif statusState == "Car Connected":
+                bootState['elm']=(i,"win",1)
+                bootState['obd']=(i,"win",1)
+                highlightbootDisplay()
+                connection.close()
+                return
+            
             else:
                 i=i+1
                 time.sleep(1)
@@ -225,27 +232,30 @@ def connectELM():
 def connectOBD():
     print("Connecting OBD")
     i=0
-    statusState=""
-    while i<5:
-        try:
-            connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
-            statusState=connection.status()
-            if statusState == "Car Connected":
-                print("     OBD conected")
-                bootState['obd']=(i,"win",1)
-                highlightbootDisplay()
-                connection.close()
-                return
-            else:
+    if statusState == "Car Connected": 
+        return
+    else:
+        statusState=""
+        while i<5:
+            try:
+                connection = obd.OBD(obdConnection, check_voltage=False, baudrate=9600)
+                statusState=connection.status()
+                if statusState == "Car Connected":
+                    print("     OBD conected")
+                    bootState['obd']=(i,"win",1)
+                    highlightbootDisplay()
+                    connection.close()
+                    return
+                else:
+                    i=i+1
+                    time.sleep(1)
+                    bootState['obd']=(i,"fail",0)
+                    highlightbootDisplay()
+                    continue
+            except:
                 i=i+1
-                time.sleep(1)
                 bootState['obd']=(i,"fail",0)
                 highlightbootDisplay()
-                continue
-        except:
-            i=i+1
-            bootState['obd']=(i,"fail",0)
-            highlightbootDisplay()
 
 
 
@@ -355,10 +365,6 @@ def flashLed():
             i+=1
 
 def shiftALERTING():
-    global alertScreen
-    global ingauge
-    global breadCrumb
-
     pixel = neopixel.NeoPixel(seesaw, 6, 1)
     pixel.brightness = 0.5
     i=1
@@ -424,7 +430,7 @@ def alertTHREAD():
             if key == fafbAlert:
                 if round(int(value[4]))== fafbTrigger:
                     if value[9] == 0:
-                        value[9]=1400000
+                        value[9]=1100000
                         time.sleep(2)
                         alertScreen=1
                         print("FAFB")
