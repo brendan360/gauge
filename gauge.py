@@ -71,7 +71,7 @@ except ImportError:
 
 obdConnection="/dev/ttyS0"
 
-#bme280.sea_level_pressure = 1014.5
+bme280.sea_level_pressure = 1010
 presURL = "https://api.manly.hydraulics.works/api.php?page=latest-readings&id=60284042&username=publicwww"
 
 breadCrumb=[0,"topmenu"]
@@ -1412,14 +1412,17 @@ def muteBuzzer():
         menuloop(0,configmenu)
 
 def sealevel():
-    url=requests.get(presURL)
-    text = url.text
-    data= json.loads(text)
-    pressure=data['60284042']['value']
-    cleanpressure=str(pressure).replace("[","")
-    cleanpressure=pressure.replace("]","")
-    print(cleanpressure)
-    bme280.sea_level_pressure=cleanpressure
+    try:
+        url=requests.get(presURL)
+        text = url.text
+        data= json.loads(text)
+        pressure=data['60284042']['value']
+        cleanpressure=str(pressure).replace("[","")
+        cleanpressure=pressure.replace("]","")
+        print(cleanpressure)
+        bme280.sea_level_pressure=cleanpressure
+    except:
+        print("no internet using defeault sealevel")
     
 #********************
 #********************
