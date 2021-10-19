@@ -167,6 +167,7 @@ gaugeItems={"ENGINE_LOAD":["04","OBD",0,"Engine Load","0",3,"a","na","100",0],
             "BLOCK_TEMP2_ADC":["ADCPIN3","ADC",0,"Head °C","0",3,"adc","na","90",0],
             "CABIN_TEMP_i2c":["TEMPADDR","I2C",1,"Cabin °C","0",4,"adc","na","na",0],
             "ALTITUDE_i2c":["ALTADDR","I2C",1,"Altitude","0",4,"adc","na","na",0]
+            "CPU_temp":["ALTADDR","I2C",1,"CPU °C","0",4,"adc","na","na",0]
             }
 
 
@@ -1322,7 +1323,7 @@ def reinitialise():
 
 def update():
     highlightDisplay("Updating","Car Guage")
-    repo.remotes.upstream.pull('')
+    repo.pull()
    
 def getIpAddress():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
