@@ -1357,11 +1357,8 @@ def reinitialise():
 
 def update():
     highlightDisplay("Updating","Car Guage")
-    current = repo.head.commit
-    repo.remotes.origin.pull()
-    if current != repo.head.commit:
-        print("It changed")
-        
+    gitrepo=repo.remotes.origin
+    gitrepo.pull()   
    
 def getIpAddress():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
