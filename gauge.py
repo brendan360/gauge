@@ -1322,7 +1322,7 @@ def reinitialise():
 
 def update():
     highlightDisplay("Updating","Car Guage")
-    repo.remotes.upstream.pull('master')
+    repo.remotes.upstream.pull('')
    
 def getIpAddress():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
