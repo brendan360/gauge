@@ -1381,8 +1381,8 @@ def firstBoot():
     disp.ShowImage(im_r)
     time.sleep(3)  
     connectADC()
-#    connectELM()
-#    connectOBD()
+    connectELM()
+    connectOBD()
     OBDcleanup()
 
 
