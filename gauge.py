@@ -466,12 +466,12 @@ def alertTHREAD():
                 continue
                 
             if key == "CPU_temp":
-                if int(value[4]) >= int(value[8]):
+                if float(value[4]) >= float(value[8]):
                     GPIO.output(FanPin,GPIO.HIGH)
                 else:
                     GPIO.output(FanPin,GPIO.LOW)
 
-            elif int(value[4]) >= int(value[8]):
+            elif float(value[4]) >= float(value[8]):
                 if value[9] <= 0:
                     threading.Thread(target=flashLed).start()
                     print("Alert",key,"is going high")
@@ -1266,7 +1266,7 @@ def TEMP_GAUGE():
         drawimage=setupDisplay()
         image=drawimage[0]
         draw=drawimage[1]
-        if int(watch_OIL)>99:
+        if float(watch_OIL)>99:
             if (len(str(watch_OIL))==2):
                 draw.text((105,20),str(watch_OIL), font=font, fill="RED")
             else:
@@ -1420,7 +1420,7 @@ def sealevel():
     pressure=data['60284042']['value']
     cleanpressure=str(pressure).replace("[","")
     cleanpressure=cleanpressure.replace("]","")
-    bme280.sea_level_pressure=int(cleanpressure)
+    bme280.sea_level_pressure=float(cleanpressure)
  #   except:
  #       print("no internet using defeault sealevel")
 
