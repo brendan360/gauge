@@ -1421,6 +1421,7 @@ def sealevel():
     cleanpressure=str(pressure).replace("[","")
     cleanpressure=cleanpressure.replace("]","")
     bme280.sea_level_pressure=float(cleanpressure)
+    print(cleanpressure)
  #   except:
  #       print("no internet using defeault sealevel")
 
