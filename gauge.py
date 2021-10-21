@@ -1413,17 +1413,17 @@ def muteBuzzer():
         menuloop(0,configmenu)
 
 def sealevel():
-#    try:
-    url=requests.get(presURL)
-    text = url.text
-    data= json.loads(text)
-    pressure=data['60284042']['value']
-    cleanpressure=str(pressure).replace("[","")
-    cleanpressure=cleanpressure.replace("]","")
-    bme280.sea_level_pressure=float(cleanpressure)
-    print(cleanpressure)
- #   except:
- #       print("no internet using defeault sealevel")
+    try:
+        url=requests.get(presURL)
+        text = url.text
+        data= json.loads(text)
+        pressure=data['60284042']['value']
+        cleanpressure=str(pressure).replace("[","")
+        cleanpressure=cleanpressure.replace("]","")
+        bme280.sea_level_pressure=float(cleanpressure)
+        print(cleanpressure)
+    except:
+        print("no internet using defeault sealevel")
 
 
 #********************
