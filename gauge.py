@@ -1395,8 +1395,8 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3984.0):
 def ecu_read():
     print("doing ECU read")
     button_held=0
-    
-    while aler =0:
+    global alertScreen
+    while alertScreen =0:
     
         try:
             highlightDisplay("Retreiving","Codes")
