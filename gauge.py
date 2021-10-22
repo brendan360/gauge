@@ -1409,9 +1409,18 @@ def ecu_read():
                     i+=1
                     if i >= (len(response.value.DTC_count)):
                         i =0
+            else:
+                print("no codes in system")
+                highlightDisplay("No Codes" ,"Codes")
+                time.sleep(3)
+                menuloop(breadCrumb[0],breadCrumb[1])  
+            
+            
                     
         except:
             print("fialed to get codes")
+            highlightDisplay("Failed" ,"Codes")
+            time.sleep(3)
             menuloop(breadCrumb[0],breadCrumb[1])  
             
                 
@@ -1431,7 +1440,16 @@ def ecu_reset():
     print("doing ECU reset")
     try:
         highlightDisplay("Clearing","Codes")
-        connection.query(obd.commands.CLEAR_DTC)
+        response=connection.query(obd.commands.GET_DTC)
+        print(response.value.DTC_count," codes to clear")
+        
+        if response.value.DTC_count >0:
+            connection.query(obd.commands.CLEAR_DTC)
+            highlightDisplay("Cleared","Codes")
+            time.sleep(3)
+        else:
+            highlightDisplay("None to clear","Codes")
+            time.sleep(3)
     except:
         highlightDisplay("FAILED","Codes")
         time.sleep(3)
