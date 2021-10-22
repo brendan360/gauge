@@ -1403,7 +1403,13 @@ def ecu_read():
             response=connection.query(obd.commands.GET_DTC)
             highlightDisplay(response.value.DTC_count ,"Codes")
             if response.value.DTC_count >0:
-                highlightDisplay(response.value.DTC_count[0] ,"Codes")
+                for i in len(response.value.DTC_count):
+                    highlightDisplay(response.value.DTC_count[i][0] ,"Codes")
+                    time.sleep(3)
+                    i+=1
+                    if i >= (len(response.value.DTC_count)):
+                        i =0
+                    
         except:
             print("fialed to get codes")
                 
