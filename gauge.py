@@ -1396,7 +1396,7 @@ def ecu_read():
     print("doing ECU read")
     button_held=0
     global alertScreen
-    while alertScreen =0:
+    while alertScreen ==0:
     
         try:
             highlightDisplay("Retreiving","Codes")
