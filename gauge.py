@@ -1412,6 +1412,8 @@ def ecu_read():
                     
         except:
             print("fialed to get codes")
+            menuloop(breadCrumb[0],breadCrumb[1])  
+            
                 
         if not button.value and not button_held:
             button_held = True
@@ -1432,6 +1434,7 @@ def ecu_reset():
         connection.query(obd.commands.CLEAR_DTC)
     except:
         highlightDisplay("FAILED","Codes")
+        time.sleep(3)
         
         
 
