@@ -1404,7 +1404,8 @@ def ecu_read():
             highlightDisplay(response.value.DTC_count ,"Codes")
             if response.value.DTC_count >0:
                 highlightDisplay(response.value.DTC_count[0] ,"Codes")
-               
+        except:
+            print("fialed to get codes")
                 
         if not button.value and not button_held:
             button_held = True
