@@ -1394,9 +1394,40 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3984.0):
 
 def ecu_read():
     print("doing ECU read")
+    button_held=0
+    
+    while aler =0:
+    
+        try:
+            highlightDisplay("Retreiving","Codes")
+            response=connection.query(obd.commands.GET_DTC)
+            highlightDisplay(response.value.DTC_count ,"Codes")
+            if response.value.DTC_count >0:
+                highlightDisplay(response.value.DTC_count[0] ,"Codes")
+               
+                
+        if not button.value and not button_held:
+            button_held = True
+        if button.value and button_held:
+            if alertScreen ==1:
+                alertScreen =0
+                menuloop(breadCrumb[0],breadCrumb[1])
+                button_held=False
+            else:
+                button_held = False
+                menuloop(breadCrumb[0],breadCrumb[1])  
+        
 
 def ecu_reset():
     print("doing ECU reset")
+    try:
+        highlightDisplay("Clearing","Codes")
+        connection.query(obd.commands.CLEAR_DTC)
+    except:
+        highlightDisplay("FAILED","Codes")
+        
+        
+
     
 def muteBuzzer():
     global buzzerMute
