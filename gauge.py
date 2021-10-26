@@ -316,10 +316,10 @@ def adcTHREAD():
         altitude= bme280.altitude
         gaugeItems["CABIN_TEMP_i2c"][4]=round(temperature)
         gaugeItems["ALTITUDE_i2c"][4]=round(altitude)
-        chan1 = AnalogIn(ads, ADS.P2)  #oil pres
-        chan2 = AnalogIn(ads, ADS.P3)  #booost
-        chan3 = AnalogIn(ads, ADS.P0)  #block 1
-        chan4 = AnalogIn(ads, ADS.P1)  #block 2
+        chan1 = AnalogIn(ads, ADS.P0)  #oil pres
+        chan2 = AnalogIn(ads, ADS.P1)  #booost
+        chan3 = AnalogIn(ads, ADS.P2)  #block 1
+        chan4 = AnalogIn(ads, ADS.P3)  #block 2
 
         adcoil=chan3.value
         adcboost=chan4.value
@@ -1503,7 +1503,7 @@ def firstBoot():
     im_r=image.rotate(rotation)
     disp.ShowImage(im_r)
     time.sleep(1)
-    sealevel()
+#    sealevel()
     connectADC()
     connectELM()
     connectOBD()
