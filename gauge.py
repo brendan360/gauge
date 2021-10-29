@@ -148,7 +148,7 @@ ecumenu=["Clear DTC","ecu_reset","Read DTC","ecu_read","Back","backtotop2"]
 configmenu=["Mute", "muteBuzzer", "IP","ipaddress","Update","update","Reload","reinitialise","Reboot","reboot_pi","Back","backtotop3"]
 gaugemenu=["Back","backtotop2"]
 #              obd name    PID, location, enabled or false##, Friendly Name,value,pid squence, pid array,alertlow,alerthigh,alertcount
-gaugeItems={"CPU_temp":["ALTADDR","I2C",1,"CPU °C","0",4,"adc","na","65",0],
+gaugeItems={"CPU_temp":["ALTADDR","I2C",1,"CPU °C","0",4,"adc","na","30",0],
             "ALTITUDE_i2c":["ALTADDR","I2C",1,"Altitude","0",4,"adc","na","na",0],
 			"OIL_PRESSURE_ADC":["ADCPIN0","ADC",0,"Oil Pres","0",0,"adc","na","100",0],
             "BOOST_ADC":["ADCPIN1","ADC",0,"Boost","0",0,"adc","na","20",0],
