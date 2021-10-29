@@ -468,10 +468,8 @@ def alertTHREAD():
             if key == "CPU_temp":
                 if float(value[4]) >= float(value[8]):
                     GPIO.output(FanPin,GPIO.HIGH)
-                    print("fanon")
                 else:
                     GPIO.output(FanPin,GPIO.LOW)
-                    print("fanOff")
 
             elif float(value[4]) >= float(value[8]):
                 if value[9] <= 0:
