@@ -32,3 +32,23 @@ sudo pip3 install adafruit-circuitpython-seesaw Adafruit-Blinka adafruit-circuit
 cd ~
 
 git clone https://github.com/brendan360/gauge.git
+
+
+
+#remote obd 1
+#a1
+#a2
+#a3
+#a4
+#d1
+#d2
+
+
+
+#remote obd 2
+#a1
+#a2
+#a3
+#a4
+#d1
+#d22
